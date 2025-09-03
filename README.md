@@ -1,2 +1,2 @@
 # LLZK-Verifier
-Porting ZEQUAL to LLZK
+Porting [ZEQUAL](https://www.cs.utexas.edu/~isil/zequal.pdf) to LLZK 
