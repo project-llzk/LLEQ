@@ -29,15 +29,15 @@
           "llzk-pkgs",
           "nixpkgs"
         ],
-        "pcl-mlir": "pcl-mlir",
+        "pcl-mlir-pkg": "pcl-mlir-pkg",
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1762364290,
-        "narHash": "sha256-4/broazIUDY8gzssRoLrJSUsndUFhkWe7ORDNOTxyk8=",
+        "lastModified": 1762372918,
+        "narHash": "sha256-DIYl5fsferaqikYo30TU7T1MzEkzVm/tg3OOqpskxE0=",
         "ref": "main",
-        "rev": "5e16831867ae1f8286d7c93ce914fc99e00e79b1",
-        "revCount": 281,
+        "rev": "29e41be001acffbd3b6696f7d9ae230e9835c1ee",
+        "revCount": 282,
         "type": "git",
         "url": "ssh://git@github.com/Veridise/llzk-lib.git"
       },
@@ -83,7 +83,7 @@
         "type": "github"
       }
     },
-    "pcl-mlir": {
+    "pcl-mlir-pkg": {
       "inputs": {
         "flake-utils": [
           "llzk",
@@ -105,11 +105,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762321052,
-        "narHash": "sha256-Dmj0HJvsMpM8RNcPtUvaveZRb9LBNhLgudMTnRyIOuc=",
+        "lastModified": 1762369885,
+        "narHash": "sha256-j7aARWOa10cranctQ39cfEELMlEAeZsRrJIGKPJ5o88=",
         "owner": "Veridise",
         "repo": "pcl-mlir",
-        "rev": "8f71aa01bf01ca3928b49a7138bb2b75d4e27ae7",
+        "rev": "a82620c4dabf6e51ceda66bba2abb19f7f74ac7d",
         "type": "github"
       },
       "original": {
