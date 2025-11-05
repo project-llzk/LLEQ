@@ -33,17 +33,15 @@
       # First, we define the packages used in this repository/flake
       overlays.default = final: prev: {
 
-        # Default zklang build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
-        zklang = final.callPackage ./nix/zklang.nix { clang = final.clang_18; llzk = final.llzk; };
+        # Default verifier build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
+        verifier = final.callPackage ./nix/verifier.nix { clang = final.clang_18; llzk = final.llzk; };
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.
         # Mostly useful for development and CI
-        zklangClang = (final.zklang.override { stdenv = final.clangStdenv; }).overrideAttrs(attrs: {
+        verifierClang = (final.verifier.override { stdenv = final.clangStdenv; }).overrideAttrs(attrs: {
           cmakeBuildType = "RelWithDebInfo";
-          cmakeFlags = attrs.cmakeFlags ++ [ "-DZKLANG_ENABLE_SANITIZERS=ON" ];
         });
-        zklangGCC = (final.zklang.override { stdenv = final.gccStdenv; }).overrideAttrs(attrs: {
+        verifierGCC = (final.verifier.override { stdenv = final.gccStdenv; }).overrideAttrs(attrs: {
           cmakeBuildType = "RelWithDebInfo";
-          cmakeFlags = attrs.cmakeFlags ++ [ "-DZKLANG_ENABLE_SANITIZERS=ON" ];
         });
       };
     } //
@@ -64,7 +62,7 @@
         # Now, we can define the actual outputs of the flake
         packages = flake-utils.lib.flattenTree {
           # Copy the packages from the overlay.
-          inherit (pkgs) zklang;
+          inherit (pkgs) verifier;
 
           # For debug purposes, expose the MLIR/LLVM packages.
           inherit (pkgs) mlir llzk clang gtest python3 lit z3 cvc5;
@@ -72,13 +70,13 @@
           # versions than the mlir from llzk-pkgs.
           inherit (pkgs.llzk_llvmPackages) libllvm llvm;
 
-          default = pkgs.zklang;
-          withClang = pkgs.zklangClang;
-          withGCC = pkgs.zklangGCC;
+          default = pkgs.verifier;
+          withClang = pkgs.verifierClang;
+          withGCC = pkgs.verifierGCC;
         };
 
         devShells = flake-utils.lib.flattenTree {
-          default =  pkgs.zklang.overrideAttrs (old: {
+          default =  pkgs.verifier.overrideAttrs (old: {
             nativeBuildInputs = (with pkgs; [
               doxygen
               git
