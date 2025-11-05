@@ -11,13 +11,13 @@
   gtest, python3, lit, z3, # cvc5 ??
 }:
 stdenv.mkDerivation {
-  name = "verifier";
+  name = "lleq";
   version = "0.1.0";
   src = 
     let
       src0 = lib.cleanSource (builtins.path {
         path = ./..;
-        name = "verifier-source";
+        name = "lleq-source";
       });
     in
       lib.cleanSourceWith {

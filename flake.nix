@@ -33,14 +33,14 @@
       # First, we define the packages used in this repository/flake
       overlays.default = final: prev: {
 
-        # Default verifier build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
-        verifier = final.callPackage ./nix/verifier.nix { clang = final.clang_18; llzk = final.llzk; };
+        # Default lleq build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
+        lleq = final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk; };
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.
         # Mostly useful for development and CI
-        verifierClang = (final.verifier.override { stdenv = final.clangStdenv; }).overrideAttrs(attrs: {
+        lleqClang = (final.lleq.override { stdenv = final.clangStdenv; }).overrideAttrs(attrs: {
           cmakeBuildType = "RelWithDebInfo";
         });
-        verifierGCC = (final.verifier.override { stdenv = final.gccStdenv; }).overrideAttrs(attrs: {
+        lleqGCC = (final.lleq.override { stdenv = final.gccStdenv; }).overrideAttrs(attrs: {
           cmakeBuildType = "RelWithDebInfo";
         });
       };
@@ -62,27 +62,27 @@
         # Now, we can define the actual outputs of the flake
         packages = flake-utils.lib.flattenTree {
           # Copy the packages from the overlay.
-          inherit (pkgs) verifier;
+          inherit (pkgs) lleq;
 
           # For debug purposes, expose the MLIR/LLVM packages.
           inherit (pkgs) mlir llzk clang gtest python3 lit z3 cvc5;
           # Prevent use of libllvm and llvm from nixpkgs, which will have different
           # versions than the mlir from llzk-pkgs.
-          inherit (pkgs.llzk_llvmPackages) libllvm llvm;
+          inherit (pkgs.llzk-llvmPackages) libllvm llvm;
 
-          default = pkgs.verifier;
-          withClang = pkgs.verifierClang;
-          withGCC = pkgs.verifierGCC;
+          default = pkgs.lleq;
+          withClang = pkgs.lleqClang;
+          withGCC = pkgs.lleqGCC;
         };
 
         devShells = flake-utils.lib.flattenTree {
-          default =  pkgs.verifier.overrideAttrs (old: {
+          default =  pkgs.lleq.overrideAttrs (old: {
             nativeBuildInputs = (with pkgs; [
               doxygen
               git
 
               # clang-tidy and clang-format
-              clang-tools_18
+              llzk-llvmPackages.clang-tools
 
               # git-clang-format
               libclang.python
