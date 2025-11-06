@@ -4,12 +4,12 @@
     llzk-pkgs.url = "github:Veridise/llzk-nix-pkgs?ref=main";
 
     nixpkgs = {
-      url = "github:NixOS/nixpkgs";
+      # url = "github:NixOS/nixpkgs";
       follows = "llzk-pkgs/nixpkgs";
     };
 
     flake-utils = {
-      url = "github:numtide/flake-utils/v1.0.0";
+      # url = "github:numtide/flake-utils/v1.0.0";
       follows = "llzk-pkgs/flake-utils";
     };
 

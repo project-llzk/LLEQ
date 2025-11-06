@@ -33,11 +33,11 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1762372918,
-        "narHash": "sha256-DIYl5fsferaqikYo30TU7T1MzEkzVm/tg3OOqpskxE0=",
+        "lastModified": 1762453858,
+        "narHash": "sha256-PKMVM8Gbwz4VftljEaIMuk1XbFqE2ahTKjeUBj0vNU8=",
         "ref": "main",
-        "rev": "29e41be001acffbd3b6696f7d9ae230e9835c1ee",
-        "revCount": 282,
+        "rev": "c26bbdfb4e57e405288d5aab94a81a4094731390",
+        "revCount": 286,
         "type": "git",
         "url": "ssh://git@github.com/Veridise/llzk-lib.git"
       },

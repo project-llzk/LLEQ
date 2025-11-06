@@ -37,6 +37,14 @@ stdenv.mkDerivation {
     export LD_LIBRARY_PATH=${z3.lib}/lib:$LD_LIBRARY_PATH
   '';
 
-  preConfigure = '' if [[ "$(uname)" == "Darwin" ]]; then export OLD_PATH=$PATH export PATH="$PATH:/usr/bin/" fi '';
-  postConfigure = '' if [[ "$(uname)" == "Darwin" ]]; then export PATH=$OLD_PATH fi '';
+  preConfigure = ''
+    if [[ "$(uname)" == "Darwin" ]]; then 
+      export OLD_PATH=$PATH export PATH="$PATH:/usr/bin/" 
+    fi
+  '';
+  postConfigure = ''
+    if [[ "$(uname)" == "Darwin" ]]; then 
+      export PATH=$OLD_PATH
+    fi
+  '';
 }
