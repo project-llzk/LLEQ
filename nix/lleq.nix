@@ -13,7 +13,7 @@
 stdenv.mkDerivation {
   name = "lleq";
   version = "0.1.0";
-  src = 
+  src =
     let
       src0 = lib.cleanSource (builtins.path {
         path = ./..;
@@ -29,7 +29,7 @@ stdenv.mkDerivation {
           ]);
         src = src0;
       };
-  
+
   nativeBuildInputs = [clang cmake ninja z3.lib z3];
   buildInputs = [mlir llzk z3.lib];
 
@@ -38,13 +38,20 @@ stdenv.mkDerivation {
   '';
 
   preConfigure = ''
-    if [[ "$(uname)" == "Darwin" ]]; then 
-      export OLD_PATH=$PATH export PATH="$PATH:/usr/bin/" 
+    if [[ "$(uname)" == "Darwin" ]]; then
+      export OLD_PATH=$PATH export PATH="$PATH:/usr/bin/"
     fi
   '';
   postConfigure = ''
-    if [[ "$(uname)" == "Darwin" ]]; then 
+    if [[ "$(uname)" == "Darwin" ]]; then
       export PATH=$OLD_PATH
     fi
+  '';
+
+  # Currently LLEQ doesn't have anything to install, but the
+  # derivation wants an install phase anyway with an output directory.
+  # Once something in the project needs to be installed, this can be removed.
+  installPhase = ''
+    mkdir -p $out
   '';
 }
