@@ -10,10 +10,10 @@ jobs:
       matrix:
         compiler:
           - name: GCC
-            derivation: ".#debugGCC"
+            derivation: ".#withGCC"
             report: gcc-report.xml
           - name: Clang
-            derivation: ".#debugClangCov"
+            derivation: ".#withClang"
             report: clang-report.xml
     runs-on: ubuntu-24.04
     timeout-minutes: 10
