@@ -1,0 +1,39 @@
+name: Run Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        compiler:
+          - name: GCC
+            derivation: ".#debugGCC"
+            report: gcc-report.xml
+          - name: Clang
+            derivation: ".#debugClangCov"
+            report: clang-report.xml
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persistent-credentials: false
+      - uses: cachix/install-nix-action@d1ca217b388ee87b2507a9a93bf01368bde7cec2 # v37.1.0
+        with:
+          install_url: https://releases.nixos.org/nix/nix-2.23.3/install
+          github_access_token: "${{secrets.GITHUB_TOKEN}}"
+      - name: Set Git credentials
+        run: |
+          git config --global 'url.https://api@github.com/'.insteadOf 'https://github.com/'
+          git config --global 'url.https://ssh@github.com/'.insteadOf 'ssh://github.com/'
+          git config --global 'url.https://git@github.com/'.insteadOf 'git@github.com/'
+      - uses: cachix/cachix-action@0fc020193b5a1fa3ac4575aa3a7d3aa6a35435ad # v16
+        with:
+          name: veridise-private
+          authToken: "${{secrets.CACHIX_PUBLIC_TOKEN}}"
+      - name: "Build with ${{matrix.compiler.name}}"
+        run: "nix --print-build-logs build '${{matrix.compiler.derivation}}'"
