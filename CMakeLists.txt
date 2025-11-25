@@ -21,6 +21,6 @@ message(STATUS "Using MLIR in: ${MLIR_DIR}")
 find_package(LLZK REQUIRED CONFIG)
 message(STATUS "Using LLZK in: ${LLZK_DIR}")
 
-# add_subdirectory(include)
-# add_subdirectory(lib)
+add_subdirectory(include)
+add_subdirectory(lib)
 add_subdirectory(tools)

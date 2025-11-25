@@ -1,0 +1,12 @@
+add_library(LLEQHeaders INTERFACE)
+target_include_directories(LLEQHeaders INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_include_directories(LLEQHeaders SYSTEM INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/" "${CMAKE_CURRENT_BINARY_DIR}/"
+    TYPE INCLUDE
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN CMakeFiles EXCLUDE)
+
+# add_subdirectory(Analysis)
