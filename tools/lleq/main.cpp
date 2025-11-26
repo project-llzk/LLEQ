@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 
   lleq::SymbolPool pool;
   lleq::Symbol expr = pool.arith(
-      pool.fresh_unknown(),
+      pool.constant(mlir::APInt{8, 250}),
       pool.arith(pool.fresh_unknown(), pool.templ_param("N"), '+'), '*');
   lleq::Symbol expr2 = pool.index(mlir::Value::getFromOpaquePointer(nullptr),
                                   {expr, pool.templ_param("M")});
