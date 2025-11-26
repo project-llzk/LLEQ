@@ -11,9 +11,11 @@ int main(int argc, char **argv) {
   lleq::Symbol expr = pool.arith(
       pool.fresh_unknown(),
       pool.arith(pool.fresh_unknown(), pool.templ_param("N"), '+'), '*');
+  lleq::Symbol expr2 = pool.index(mlir::Value::getFromOpaquePointer(nullptr),
+                                  {expr, pool.templ_param("M")});
 
   if (mlir::failed(test())) {
-    std::cout << "Good job: " << expr << "\n";
+    std::cout << "Good job: " << expr2 << "\n";
   }
   return 0;
 }

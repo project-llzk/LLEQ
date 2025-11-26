@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <initializer_list>
 #include <memory_resource>
 #include <mlir/IR/Value.h>
 
@@ -14,14 +15,14 @@ using Symbol = impl::SymbolBase *;
 
 class SymbolPool {
   std::pmr::monotonic_buffer_resource memory;
-  std::pmr::polymorphic_allocator<Symbol> pool;
+  std::pmr::polymorphic_allocator<Symbol> alloc;
 
 public:
-  SymbolPool() : pool{&memory} {}
+  SymbolPool() : alloc{&memory} {}
   Symbol fresh_unknown();
   Symbol constant(int value);
   Symbol templ_param(std::string_view name);
-  Symbol index(mlir::Value signal, Symbol n);
+  Symbol index(mlir::Value signal, std::initializer_list<Symbol> ns);
   Symbol arith(Symbol lhs, Symbol rhs, char op);
 };
 
