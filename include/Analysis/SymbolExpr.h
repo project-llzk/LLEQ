@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Util/Arena.h"
 #include <cstddef>
+#include <memory_resource>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
@@ -13,9 +13,11 @@ struct SymbolBase;
 using Symbol = impl::SymbolBase *;
 
 class SymbolPool {
-  Arena<2048> pool;
+  std::pmr::monotonic_buffer_resource memory;
+  std::pmr::polymorphic_allocator<Symbol> pool;
 
 public:
+  SymbolPool() : pool{&memory} {}
   Symbol fresh_unknown();
   Symbol constant(int value);
   Symbol templ_param(std::string_view name);

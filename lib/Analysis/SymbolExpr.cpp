@@ -66,18 +66,20 @@ struct Arith : impl::SymbolBase {
 
 Symbol SymbolPool::fresh_unknown() {
   static std::size_t n;
-  return pool.alloc<Unknown>(n++);
+  return pool.new_object<Unknown>(n++);
 }
 
-Symbol SymbolPool::constant(int value) { return pool.alloc<Constant>(value); }
+Symbol SymbolPool::constant(int value) {
+  return pool.new_object<Constant>(value);
+}
 Symbol SymbolPool::templ_param(std::string_view name) {
-  return pool.alloc<TemplParam>(name);
+  return pool.new_object<TemplParam>(name);
 }
 Symbol SymbolPool::index(mlir::Value signal, Symbol n) {
-  return pool.alloc<Index>(signal, n);
+  return pool.new_object<Index>(signal, n);
 }
 Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) {
-  return pool.alloc<Arith>(lhs, rhs, op);
+  return pool.new_object<Arith>(lhs, rhs, op);
 }
 
 std::ostream &operator<<(std::ostream &os, Symbol s) { return s->print(os); }
