@@ -6,7 +6,6 @@
 mlir::LogicalResult test() { return mlir::failure(); }
 
 int main(int argc, char **argv) {
-
   lleq::SymbolPool pool;
   lleq::Symbol expr = pool.arith(
       pool.constant(mlir::APInt{8, 250}),

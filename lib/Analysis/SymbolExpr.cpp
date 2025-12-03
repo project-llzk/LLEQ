@@ -79,21 +79,22 @@ struct Arith : impl::SymbolBase {
   }
 };
 
-Symbol SymbolPool::fresh_unknown() {
+Symbol SymbolPool::fresh_unknown() const {
   static std::size_t n;
   return alloc.new_object<Unknown>(n++);
 }
 
-Symbol SymbolPool::constant(mlir::APInt value) {
+Symbol SymbolPool::constant(mlir::APInt value) const {
   return alloc.new_object<Constant>(value);
 }
-Symbol SymbolPool::templ_param(std::string_view name) {
+Symbol SymbolPool::templ_param(std::string_view name) const {
   return alloc.new_object<TemplParam>(name);
 }
-Symbol SymbolPool::index(mlir::Value signal, std::initializer_list<Symbol> ns) {
+Symbol SymbolPool::index(mlir::Value signal,
+                         std::initializer_list<Symbol> ns) const {
   return alloc.new_object<Index>(&memory, signal, ns);
 }
-Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) {
+Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) const {
   if (std::find(ALLOWED_OPS.begin(), ALLOWED_OPS.end(), op) ==
       ALLOWED_OPS.end()) {
     // TODO: What's a better way of signaling an error here? An exception?
