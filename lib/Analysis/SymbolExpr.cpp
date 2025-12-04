@@ -2,7 +2,10 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
+#include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/Support/LLVM.h>
 #include <ostream>
@@ -97,7 +100,10 @@ Symbol SymbolPool::index(mlir::Value signal,
 Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) const {
   if (std::find(ALLOWED_OPS.begin(), ALLOWED_OPS.end(), op) ==
       ALLOWED_OPS.end()) {
-    // TODO: What's a better way of signaling an error here? An exception?
+    std::string message;
+    llvm::raw_string_ostream s(message);
+    s << "Illegal operation: " << op;
+    llvm::report_fatal_error(message.c_str());
     return nullptr;
   }
   return alloc.new_object<Arith>(lhs, rhs, op);
