@@ -1,12 +1,13 @@
 #include "Analysis/SymbolicStore.h"
 
+#include <llvm/ADT/Twine.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
-#include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Felt/IR/Dialect.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
+#include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Value.h>
@@ -19,6 +20,10 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
   if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(value)) {
     // TODO: what do we do here??
     llvm::report_fatal_error("ruh-roh");
+  }
+
+  if (mlir::isa<mlir::TypedValue<llzk::array::ArrayType>>(value)) {
+    llvm::report_fatal_error("cannot generate a symbol for a non-scalar value");
   }
 
   mlir::Operation *definingOp = value.getDefiningOp();
@@ -64,5 +69,14 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
         // TODO: this won't work for "arith.constant"
         return pool.constant(op.getValue());
       })
+      .Case<llzk::component::FieldReadOp>(
+          [&](llzk::component::FieldReadOp read) {
+            // Reading from a scalar field should copy from the symbol store
+            SignalRef ref{.value = read.getFieldName(), .indices = {}};
+            if (!signalStore.contains(ref)) {
+              signalStore[ref] = pool.fresh_unknown();
+            }
+            return signalStore[ref];
+          })
       .Default([&](auto) { return pool.fresh_unknown(); });
 }

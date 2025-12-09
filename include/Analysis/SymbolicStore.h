@@ -24,8 +24,8 @@ static inline bool operator==(const Ref<T> &a, const Ref<T> &b) {
 
 // Indexing into an ordinary MLIR value
 using ValueRef = Ref<mlir::Value>;
-// Indexing into a struct signal (StringRef for field name, BlockArg for input)
-using SignalRef = Ref<llvm::PointerUnion<llvm::StringRef, mlir::BlockArgument>>;
+// Indexing into a struct signal (either fieldName or blockArgIndex)
+using SignalRef = Ref<llvm::StringRef>;
 } // namespace lleq
 
 namespace llvm {
@@ -57,9 +57,7 @@ template <>
 struct DenseMapInfo<lleq::ValueRef> : public RefInfo<mlir::Value> {};
 
 template <>
-struct DenseMapInfo<lleq::SignalRef>
-    : public RefInfo<llvm::PointerUnion<llvm::StringRef, mlir::BlockArgument>> {
-};
+struct DenseMapInfo<lleq::SignalRef> : public RefInfo<llvm::StringRef> {};
 
 } // namespace llvm
 
