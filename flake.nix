@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:Veridise/llzk-lib?ref=raghav/242-add-an-opinterface-for-felt-arithmetic-ops#10086aabd55ffe9299b4c7db02145c5c599375ff";
+      url = "github:Veridise/llzk-lib?rev=10086aabd55ffe9299b4c7db02145c5c599375ff";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";

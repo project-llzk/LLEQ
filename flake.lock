@@ -33,17 +33,17 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1765305946,
-        "narHash": "sha256-qKkzRcj3gyIkaD0z+sDAGsLBMUDrJ1rIs34+7wuC1ko=",
+        "lastModified": 1765306827,
+        "narHash": "sha256-D3Lfku63XqcEoa614ZXZynC+CcMZUm7lChNJ4xsy4h0=",
         "owner": "Veridise",
         "repo": "llzk-lib",
-        "rev": "5bdc5cac4541246f5b20f0ed1e14705828f0ca63",
+        "rev": "10086aabd55ffe9299b4c7db02145c5c599375ff",
         "type": "github"
       },
       "original": {
         "owner": "Veridise",
-        "ref": "raghav/242-add-an-opinterface-for-felt-arithmetic-ops",
         "repo": "llzk-lib",
+        "rev": "10086aabd55ffe9299b4c7db02145c5c599375ff",
         "type": "github"
       }
     },
