@@ -33,17 +33,17 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1765306827,
-        "narHash": "sha256-D3Lfku63XqcEoa614ZXZynC+CcMZUm7lChNJ4xsy4h0=",
+        "lastModified": 1765390649,
+        "narHash": "sha256-/q44ocEDizh8of96AW/b4DgVb+4UDy+GA48jXsHnzcU=",
         "owner": "Veridise",
         "repo": "llzk-lib",
-        "rev": "10086aabd55ffe9299b4c7db02145c5c599375ff",
+        "rev": "33d0381c63bc4331b31ff85d833ebecfbedbbc2f",
         "type": "github"
       },
       "original": {
         "owner": "Veridise",
+        "ref": "main",
         "repo": "llzk-lib",
-        "rev": "10086aabd55ffe9299b4c7db02145c5c599375ff",
         "type": "github"
       }
     },
