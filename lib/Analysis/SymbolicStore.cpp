@@ -6,6 +6,7 @@
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Dialect.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
@@ -14,6 +15,14 @@
 #include <mlir/Support/LLVM.h>
 
 using namespace lleq;
+
+void SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
+  auto computeFunc = structDef.getComputeFuncOp();
+  // TODO: this doesn't work if there's any control flow in the blocks lol
+  for (auto &block : computeFunc.getFunctionBody().getBlocks()) {
+    process_block(&block);
+  }
+}
 
 Symbol SymbolicStore::lookup(mlir::Value value) {
   // Input signal
@@ -72,11 +81,62 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
       .Case<llzk::component::FieldReadOp>(
           [&](llzk::component::FieldReadOp read) {
             // Reading from a scalar field should copy from the symbol store
-            SignalRef ref{.value = read.getFieldName(), .indices = {}};
+            SignalRef ref{.name = read.getFieldName(), .indices = {}};
             if (!signalStore.contains(ref)) {
               signalStore[ref] = pool.fresh_unknown();
             }
             return signalStore[ref];
           })
       .Default([&](auto) { return pool.fresh_unknown(); });
+}
+
+void SymbolicStore::process_operation(mlir::Operation *op) {
+  // TODO: handle control flow ops
+  // TODO: handle constraint ops
+
+  llvm::TypeSwitch<mlir::Operation *>(op)
+      .Case<llzk::component::FieldReadOp>(
+          [&](llzk::component::FieldReadOp read) {
+            // Copy every written index from signalStore to valueStore
+            for (const auto &[signalRef, value] : signalStore) {
+              if (signalRef.name == read.getFieldName()) {
+                valueStore[ValueRef{.name = read.getResult(),
+                                    .indices = signalRef.indices}] = value;
+              }
+            }
+          })
+      .Case<llzk::component::FieldWriteOp>(
+          [&](llzk::component::FieldWriteOp write) {
+            // Copy every written index from valueStore to signalStore
+            for (const auto &[valueRef, value] : valueStore) {
+              if (valueRef.name == write.getVal()) {
+                signalStore[SignalRef{.name = write.getFieldName(),
+                                      .indices = valueRef.indices}] = value;
+              }
+            }
+          })
+      .Case<llzk::array::WriteArrayOp>([&](llzk::array::WriteArrayOp write) {
+        // Havoc every possible array index that could be clobbered
+        auto array = write.getArrRef();
+        for (const auto &[valueRef, value] : valueStore) {
+          // TODO: actually check if the index could be clobbered
+          if (valueRef.name == array) {
+            valueStore[valueRef] = pool.fresh_unknown();
+          }
+        }
+
+        // Write the new symbol
+        std::vector<Symbol> indices;
+        for (auto index : write.getIndices()) {
+          indices.push_back(lookup(index));
+        }
+        valueStore[ValueRef{array, indices}] = lookup(write.getRvalue());
+      })
+      .Default([](auto) {});
+}
+
+void SymbolicStore::process_block(mlir::Block *block) {
+  for (auto &op : block->getOperations()) {
+    process_operation(&op);
+  }
 }
