@@ -69,19 +69,33 @@ struct DenseMapInfo<lleq::SignalRef> : public RefInfo<llvm::StringRef> {};
 
 namespace lleq {
 
+/// @brief Represents a mapping between circuit signals and symbolic
+/// expressions. Each entry in the store is keyed by both the signal, which is
+/// assumed to be a (possibly multidimensional) array, and a vector of symbolic
+/// indices into the array, one per dimension. This is later used to statically
+/// prove equivalence between pairs of witness/constraint signals.
 class SymbolicStore {
   SymbolPool pool;
   mlir::DenseMap<SignalRef, Symbol> signalStore;
   mlir::DenseMap<ValueRef, Symbol> valueStore;
 
 public:
+  /// @brief Build a store from a given circuit component (struct)
+  /// @param structDef
   void build_store(llzk::component::StructDefOp structDef);
-  // Update the signalStore and valueStore based on a single operation
+
+  /// @brief Update the signalStore and valueStore based on a single operation
+  /// @param op
   void process_operation(mlir::Operation *op);
 
-  // Update the signalStore and valueStore based on the operations in a block
+  /// @brief Update the signalStore and valueStore based on the operations in a
+  /// block
+  /// @param block
   void process_block(mlir::Block *block);
 
+  /// @brief Generate a symbolic expression corresponding to an MLIR SSA value,
+  /// possibly looking up values in the store to do so
+  /// @param value
   Symbol lookup(mlir::Value value);
 };
 } // namespace lleq
