@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #pragma once
 
 #include <cstddef>
@@ -9,8 +14,11 @@
 namespace lleq {
 
 namespace impl {
-struct SymbolBase;
+struct SymbolBase {
+  virtual std::ostream &print(std::ostream &os) const = 0;
+  virtual unsigned hash_value() const = 0;
 };
+}; // namespace impl
 
 // Represents a symbolic expression assigned to a signal (as defined on pg.11 of
 // https://www.cs.utexas.edu/~isil/zequal.pdf)
@@ -31,9 +39,9 @@ public:
   // Arbitrary-precision felt
   Symbol constant(mlir::APInt value);
   // Struct template parameter
-  Symbol templ_param(std::string_view name);
+  Symbol templ_param(llvm::StringRef name);
   // Indexing expression into an N-dimensional array
-  Symbol index(mlir::Value signal, std::initializer_list<Symbol> ns);
+  Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
   // Arithmetic
   Symbol arith(Symbol lhs, Symbol rhs, char op);
 };
@@ -45,3 +53,6 @@ Symbol join(Symbol a, Symbol b);
 }; // namespace lleq
 
 std::ostream &operator<<(std::ostream &os, lleq::Symbol s);
+namespace llvm {
+inline unsigned hash_value(lleq::Symbol s) { return s->hash_value(); }
+} // namespace llvm

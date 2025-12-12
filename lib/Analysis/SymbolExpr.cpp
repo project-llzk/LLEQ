@@ -1,8 +1,16 @@
+/**
+ * Copyright 2025 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "Analysis/SymbolExpr.h"
 
 #include <algorithm>
-#include <initializer_list>
+#include <llvm/ADT/Hashing.h>
+#include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
+#include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/Support/LLVM.h>
 #include <ostream>
@@ -10,16 +18,15 @@
 
 using namespace lleq;
 
-struct impl::SymbolBase {
-  virtual std::ostream &print(std::ostream &os) const = 0;
-};
-
 struct Unknown : impl::SymbolBase {
   size_t n;
   Unknown(size_t n) : impl::SymbolBase{}, n{n} {}
   std::ostream &print(std::ostream &os) const override {
     os << '?' << n;
     return os;
+  }
+  unsigned hash_value() const override {
+    return llvm::hash_combine("unknown", n);
   }
 };
 
@@ -32,14 +39,20 @@ struct Constant : impl::SymbolBase {
     value.print(ros, true);
     return os;
   }
+  unsigned hash_value() const override {
+    return llvm::hash_combine("constant", value);
+  }
 };
 
 struct TemplParam : impl::SymbolBase {
-  std::string_view name;
-  TemplParam(std::string_view name) : impl::SymbolBase{}, name{name} {}
+  llvm::StringRef name;
+  TemplParam(llvm::StringRef name) : impl::SymbolBase{}, name{name} {}
   std::ostream &print(std::ostream &os) const override {
-    os << '@' << name;
+    os << '@' << name.data();
     return os;
+  }
+  unsigned hash_value() const override {
+    return llvm::hash_combine("template", name);
   }
 };
 
@@ -50,7 +63,7 @@ struct Index : impl::SymbolBase {
   // Takes a pointer to the memory resource backing the SymbolPool so we can
   // reuse it for the vector of indices
   Index(std::pmr::memory_resource *memory, mlir::Value signal,
-        std::initializer_list<Symbol> ns)
+        llvm::ArrayRef<Symbol> ns)
       : impl::SymbolBase{}, signal{signal} {
     indices = std::pmr::vector<Symbol>{ns.begin(), ns.end(), memory};
   }
@@ -62,6 +75,11 @@ struct Index : impl::SymbolBase {
       n->print(os) << "]";
     }
     return os;
+  }
+  unsigned hash_value() const override {
+    return llvm::hash_combine(
+        "indices", signal,
+        llvm::hash_combine_range(indices.begin(), indices.end()));
   }
 };
 
@@ -77,6 +95,9 @@ struct Arith : impl::SymbolBase {
     rhs->print(os) << ')';
     return os;
   }
+  unsigned hash_value() const override {
+    return llvm::hash_combine("arith", lhs, op, rhs);
+  }
 };
 
 Symbol SymbolPool::fresh_unknown() {
@@ -87,16 +108,19 @@ Symbol SymbolPool::fresh_unknown() {
 Symbol SymbolPool::constant(mlir::APInt value) {
   return alloc.new_object<Constant>(value);
 }
-Symbol SymbolPool::templ_param(std::string_view name) {
+Symbol SymbolPool::templ_param(llvm::StringRef name) {
   return alloc.new_object<TemplParam>(name);
 }
-Symbol SymbolPool::index(mlir::Value signal, std::initializer_list<Symbol> ns) {
+Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
   return alloc.new_object<Index>(&memory, signal, ns);
 }
 Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) {
   if (std::find(ALLOWED_OPS.begin(), ALLOWED_OPS.end(), op) ==
       ALLOWED_OPS.end()) {
-    // TODO: What's a better way of signaling an error here? An exception?
+    std::string message;
+    llvm::raw_string_ostream s(message);
+    s << "Illegal operation: " << op;
+    llvm::report_fatal_error(message.c_str());
     return nullptr;
   }
   return alloc.new_object<Arith>(lhs, rhs, op);
