@@ -44,11 +44,11 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
   return llvm::TypeSwitch<mlir::Operation *, Symbol>(definingOp)
       // A template parameter
       .Case<llzk::polymorphic::ConstReadOp>(
-          [&](llzk::polymorphic::ConstReadOp templRead) {
+          [this](llzk::polymorphic::ConstReadOp templRead) {
             return pool.templ_param(templRead.getConstName());
           })
       // Read from a value array into a value scalar
-      .Case<llzk::array::ReadArrayOp>([&](llzk::array::ReadArrayOp arrRead) {
+      .Case<llzk::array::ReadArrayOp>([this](llzk::array::ReadArrayOp arrRead) {
         auto array = arrRead.getArrRef();
         // Get the indices as symbols
         std::vector<Symbol> indices;
@@ -69,7 +69,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
         return valueStore[ref];
       })
       .Case<llzk::felt::FeltBinaryOpInterface>(
-          [&](llzk::felt::FeltBinaryOpInterface binop) {
+          [this](llzk::felt::FeltBinaryOpInterface binop) {
             char op = mlir::isa<llzk::felt::AddFeltOp>(binop)   ? '+'
                       : mlir::isa<llzk::felt::SubFeltOp>(binop) ? '-'
                       : mlir::isa<llzk::felt::MulFeltOp>(binop) ? '*'
@@ -79,12 +79,12 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
             return pool.arith(lookup(binop.getLhs()), lookup(binop.getRhs()),
                               op);
           })
-      .Case<llzk::felt::FeltConstantOp>([&](llzk::felt::FeltConstantOp op) {
+      .Case<llzk::felt::FeltConstantOp>([this](llzk::felt::FeltConstantOp op) {
         // TODO: this won't work for "arith.constant"
         return pool.constant(op.getValue());
       })
       .Case<llzk::component::FieldReadOp>(
-          [&](llzk::component::FieldReadOp read) {
+          [this](llzk::component::FieldReadOp read) {
             // Reading from a scalar field should copy from the symbol store
             SignalRef ref{.name = read.getFieldName(), .indices = {}};
             if (!signalStore.contains(ref)) {
@@ -92,7 +92,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
             }
             return signalStore[ref];
           })
-      .Default([&](auto) { return pool.fresh_unknown(); });
+      .Default([this](auto) { return pool.fresh_unknown(); });
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
@@ -101,7 +101,7 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
 
   llvm::TypeSwitch<mlir::Operation *>(op)
       .Case<llzk::component::FieldReadOp>(
-          [&](llzk::component::FieldReadOp read) {
+          [this](llzk::component::FieldReadOp read) {
             // Copy every written index from signalStore to valueStore
             for (const auto &[signalRef, value] : signalStore) {
               if (signalRef.name == read.getFieldName()) {
@@ -111,7 +111,7 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
             }
           })
       .Case<llzk::component::FieldWriteOp>(
-          [&](llzk::component::FieldWriteOp write) {
+          [this](llzk::component::FieldWriteOp write) {
             // Copy every written index from valueStore to signalStore
             for (const auto &[valueRef, value] : valueStore) {
               if (valueRef.name == write.getVal()) {
@@ -120,7 +120,7 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
               }
             }
           })
-      .Case<llzk::array::WriteArrayOp>([&](llzk::array::WriteArrayOp write) {
+      .Case<llzk::array::WriteArrayOp>([this](llzk::array::WriteArrayOp write) {
         // Havoc every possible array index that could be clobbered
         auto array = write.getArrRef();
         for (const auto &[valueRef, value] : valueStore) {
