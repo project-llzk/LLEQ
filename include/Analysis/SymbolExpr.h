@@ -44,6 +44,8 @@ public:
   Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
   // Arithmetic
   Symbol arith(Symbol lhs, Symbol rhs, char op);
+  // Uninterpreted function calls, or unhandled operation
+  Symbol func_call(llvm::StringRef name, llvm::ArrayRef<Symbol> args);
 };
 
 // The "join" operation defined in Fig. 15 of

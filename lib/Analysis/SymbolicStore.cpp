@@ -92,6 +92,13 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
             }
             return signalStore[ref];
           })
+      .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
+        llvm::SmallVector<Symbol> args;
+        for (auto arg : call.getArgOperands()) {
+          args.push_back(lookup(arg));
+        }
+        return pool.func_call(call.getCallee().getLeafReference(), args);
+      })
       .Default([this](auto) { return pool.fresh_unknown(); });
 }
 

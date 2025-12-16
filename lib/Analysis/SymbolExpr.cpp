@@ -14,7 +14,6 @@
 #include <memory_resource>
 #include <mlir/Support/LLVM.h>
 #include <ostream>
-#include <vector>
 
 using namespace lleq;
 
@@ -45,7 +44,7 @@ struct Constant : impl::SymbolBase {
 };
 
 struct TemplParam : impl::SymbolBase {
-  llvm::StringRef name;
+  std::string name;
   TemplParam(llvm::StringRef name) : impl::SymbolBase{}, name{name} {}
   std::ostream &print(std::ostream &os) const override {
     os << '@' << name.data();
@@ -58,15 +57,12 @@ struct TemplParam : impl::SymbolBase {
 
 struct Index : impl::SymbolBase {
   mlir::Value signal;
-  std::pmr::vector<Symbol> indices;
+  llvm::SmallVector<Symbol> indices;
 
   // Takes a pointer to the memory resource backing the SymbolPool so we can
   // reuse it for the vector of indices
-  Index(std::pmr::memory_resource *memory, mlir::Value signal,
-        llvm::ArrayRef<Symbol> ns)
-      : impl::SymbolBase{}, signal{signal} {
-    indices = std::pmr::vector<Symbol>{ns.begin(), ns.end(), memory};
-  }
+  Index(mlir::Value signal, llvm::ArrayRef<Symbol> ns)
+      : impl::SymbolBase{}, signal{signal}, indices{ns} {}
   std::ostream &print(std::ostream &os) const override {
     // TODO: print the MLIR value too
     os << "sig";
@@ -100,6 +96,27 @@ struct Arith : impl::SymbolBase {
   }
 };
 
+struct OpCall : impl::SymbolBase {
+  llvm::SmallVector<Symbol> arguments;
+  std::string opName;
+
+  OpCall(llvm::StringRef opName, llvm::ArrayRef<Symbol> arguments)
+      : arguments{arguments}, opName{opName} {}
+
+  std::ostream &print(std::ostream &os) const override {
+    os << opName << "(";
+    std::copy(arguments.begin(), arguments.end(),
+              std::ostream_iterator<Symbol>(os, ","));
+    os << ")";
+    return os;
+  }
+
+  unsigned hash_value() const override {
+    return llvm::hash_combine(
+        opName, llvm::hash_combine_range(arguments.begin(), arguments.end()));
+  }
+};
+
 Symbol SymbolPool::fresh_unknown() {
   static std::size_t n;
   return alloc.new_object<Unknown>(n++);
@@ -112,7 +129,7 @@ Symbol SymbolPool::templ_param(llvm::StringRef name) {
   return alloc.new_object<TemplParam>(name);
 }
 Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
-  return alloc.new_object<Index>(&memory, signal, ns);
+  return alloc.new_object<Index>(signal, ns);
 }
 Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) {
   if (std::find(ALLOWED_OPS.begin(), ALLOWED_OPS.end(), op) ==
@@ -124,6 +141,11 @@ Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) {
     return nullptr;
   }
   return alloc.new_object<Arith>(lhs, rhs, op);
+}
+
+Symbol SymbolPool::func_call(llvm::StringRef name,
+                             llvm::ArrayRef<Symbol> args) {
+  return alloc.new_object<OpCall>(name, args);
 }
 
 std::ostream &operator<<(std::ostream &os, Symbol s) { return s->print(os); }
