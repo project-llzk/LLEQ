@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:Veridise/llzk-lib?ref=main";
+      url = "github:Veridise/llzk-lib?rev=9da102b12f9c947d2b9b440fcc1f69c579b0f7aa";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";
