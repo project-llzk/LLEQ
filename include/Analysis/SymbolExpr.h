@@ -13,11 +13,15 @@
 #include <mlir/IR/Value.h>
 
 namespace lleq {
-
+class SymbolPool;
 namespace impl {
 struct SymbolBase {
+  SymbolBase(SymbolPool *pool) : pool{pool} {}
   virtual llvm::raw_ostream &print(llvm::raw_ostream &os) const = 0;
   virtual unsigned hash_value() const = 0;
+
+protected:
+  SymbolPool *pool;
 };
 }; // namespace impl
 
@@ -30,12 +34,13 @@ class SymbolPool {
   std::pmr::monotonic_buffer_resource memory;
   std::pmr::polymorphic_allocator<Symbol> alloc;
 
-  mlir::DenseMap<mlir::Value, std::string> valueNameMap;
-  std::string getValueName(mlir::Value value);
+  std::string _gen_name(mlir::Value value);
 
 public:
   SymbolPool() : alloc{&memory} {}
 
+  // Generate a pretty-printable name corresponding to the SSA value
+  std::string getNameForValue(mlir::Value value);
   // A fresh symbolic variable
   Symbol fresh_unknown();
   // Arbitrary-precision felt
