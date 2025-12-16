@@ -22,6 +22,8 @@
 #include <mlir/IR/Value.h>
 #include <mlir/Support/LLVM.h>
 
+#define DEBUG_TYPE "symbolic-store"
+
 using namespace lleq;
 
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
@@ -89,7 +91,6 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
                 {lookup(binop.getLhs()), lookup(binop.getRhs())});
           })
       .Case<llzk::felt::FeltConstantOp>([this](llzk::felt::FeltConstantOp op) {
-        // TODO: this won't work for "arith.constant"
         return pool.constant(op.getValue());
       })
       .Case<mlir::arith::ConstantOp>([this](mlir::arith::ConstantOp op) {
@@ -126,7 +127,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
-  llvm::dbgs() << "Processing op: " << *op << "\n";
+  LLVM_DEBUG(llvm::dbgs() << "Processing op: " << *op << "\n");
   // TODO: handle control flow ops
   // TODO: handle constraint ops
 
