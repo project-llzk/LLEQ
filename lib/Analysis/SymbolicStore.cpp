@@ -70,14 +70,9 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
       })
       .Case<llzk::felt::FeltBinaryOpInterface>(
           [this](llzk::felt::FeltBinaryOpInterface binop) {
-            char op = mlir::isa<llzk::felt::AddFeltOp>(binop)   ? '+'
-                      : mlir::isa<llzk::felt::SubFeltOp>(binop) ? '-'
-                      : mlir::isa<llzk::felt::MulFeltOp>(binop) ? '*'
-                                                                : '?';
-            if (op == '?')
-              return pool.fresh_unknown();
-            return pool.arith(lookup(binop.getLhs()), lookup(binop.getRhs()),
-                              op);
+            return pool.func_call(
+                binop->getName().getStringRef(),
+                {lookup(binop.getLhs()), lookup(binop.getRhs())});
           })
       .Case<llzk::felt::FeltConstantOp>([this](llzk::felt::FeltConstantOp op) {
         // TODO: this won't work for "arith.constant"
