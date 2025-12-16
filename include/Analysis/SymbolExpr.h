@@ -24,8 +24,6 @@ struct SymbolBase {
 // https://www.cs.utexas.edu/~isil/zequal.pdf)
 using Symbol = impl::SymbolBase *;
 
-static constexpr auto ALLOWED_OPS = {'+', '-', '*'};
-
 // A "pool" of symbolic expressions that all refer to each other
 class SymbolPool {
   std::pmr::monotonic_buffer_resource memory;
@@ -42,8 +40,8 @@ public:
   Symbol templ_param(llvm::StringRef name);
   // Indexing expression into an N-dimensional array
   Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
-  // Arithmetic
-  Symbol arith(Symbol lhs, Symbol rhs, char op);
+  // Handles operations like function calls and arithmetic
+  Symbol func_call(llvm::StringRef name, llvm::ArrayRef<Symbol> args);
 };
 
 // The "join" operation defined in Fig. 15 of
