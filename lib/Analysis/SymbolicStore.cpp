@@ -94,7 +94,17 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
         }
         return pool.func_call(call.getCallee().getLeafReference(), args);
       })
-      .Default([this](auto) { return pool.fresh_unknown(); });
+      .Default([this](mlir::Operation *op) {
+        if (op->getNumResults() != 1) {
+          return pool.fresh_unknown();
+        }
+        // Treat it as an uninterpreted function
+        llvm::SmallVector<Symbol> args;
+        for (auto arg : op->getOperands()) {
+          args.push_back(lookup(arg));
+        }
+        return pool.func_call(op->getName().getStringRef(), args);
+      });
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
