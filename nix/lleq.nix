@@ -6,6 +6,7 @@
   clang, cmake, ninja,
   mlir, # nlohmann_json, do I need nlohmann??
   llzk,
+  lldb,
 
   # test dependencies
   gtest, python3, lit, z3, # cvc5 ??
@@ -30,8 +31,8 @@ stdenv.mkDerivation {
         src = src0;
       };
 
-  nativeBuildInputs = [clang cmake ninja z3.lib z3];
-  buildInputs = [mlir llzk z3.lib];
+  nativeBuildInputs = [clang cmake ninja z3.lib z3 lldb];
+  buildInputs = [mlir llzk z3.lib lldb];
 
   preBuild = ''
     export LD_LIBRARY_PATH=${z3.lib}/lib:$LD_LIBRARY_PATH
