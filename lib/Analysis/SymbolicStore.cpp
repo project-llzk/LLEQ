@@ -70,14 +70,9 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
       })
       .Case<llzk::felt::FeltBinaryOpInterface>(
           [this](llzk::felt::FeltBinaryOpInterface binop) {
-            char op = mlir::isa<llzk::felt::AddFeltOp>(binop)   ? '+'
-                      : mlir::isa<llzk::felt::SubFeltOp>(binop) ? '-'
-                      : mlir::isa<llzk::felt::MulFeltOp>(binop) ? '*'
-                                                                : '?';
-            if (op == '?')
-              return pool.fresh_unknown();
-            return pool.arith(lookup(binop.getLhs()), lookup(binop.getRhs()),
-                              op);
+            return pool.func_call(
+                binop->getName().getStringRef(),
+                {lookup(binop.getLhs()), lookup(binop.getRhs())});
           })
       .Case<llzk::felt::FeltConstantOp>([this](llzk::felt::FeltConstantOp op) {
         // TODO: this won't work for "arith.constant"
@@ -92,7 +87,24 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
             }
             return signalStore[ref];
           })
-      .Default([this](auto) { return pool.fresh_unknown(); });
+      .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
+        llvm::SmallVector<Symbol> args;
+        for (auto arg : call.getArgOperands()) {
+          args.push_back(lookup(arg));
+        }
+        return pool.func_call(call.getCallee().getLeafReference(), args);
+      })
+      .Default([this](mlir::Operation *op) {
+        if (op->getNumResults() != 1) {
+          return pool.fresh_unknown();
+        }
+        // Treat it as an uninterpreted function
+        llvm::SmallVector<Symbol> args;
+        for (auto arg : op->getOperands()) {
+          args.push_back(lookup(arg));
+        }
+        return pool.func_call(op->getName().getStringRef(), args);
+      });
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
