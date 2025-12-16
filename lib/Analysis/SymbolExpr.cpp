@@ -59,8 +59,6 @@ struct Index : impl::SymbolBase {
   mlir::Value signal;
   llvm::SmallVector<Symbol> indices;
 
-  // Takes a pointer to the memory resource backing the SymbolPool so we can
-  // reuse it for the vector of indices
   Index(mlir::Value signal, llvm::ArrayRef<Symbol> ns)
       : impl::SymbolBase{}, signal{signal}, indices{ns} {}
   std::ostream &print(std::ostream &os) const override {
@@ -76,23 +74,6 @@ struct Index : impl::SymbolBase {
     return llvm::hash_combine(
         "indices", signal,
         llvm::hash_combine_range(indices.begin(), indices.end()));
-  }
-};
-
-struct Arith : impl::SymbolBase {
-  Symbol lhs, rhs;
-  char op;
-
-  Arith(Symbol lhs, Symbol rhs, char op)
-      : impl::SymbolBase{}, lhs{lhs}, rhs{rhs}, op{op} {}
-  std::ostream &print(std::ostream &os) const override {
-    os << '(';
-    lhs->print(os) << op;
-    rhs->print(os) << ')';
-    return os;
-  }
-  unsigned hash_value() const override {
-    return llvm::hash_combine("arith", lhs, op, rhs);
   }
 };
 
@@ -131,18 +112,6 @@ Symbol SymbolPool::templ_param(llvm::StringRef name) {
 Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
   return alloc.new_object<Index>(signal, ns);
 }
-Symbol SymbolPool::arith(Symbol lhs, Symbol rhs, char op) {
-  if (std::find(ALLOWED_OPS.begin(), ALLOWED_OPS.end(), op) ==
-      ALLOWED_OPS.end()) {
-    std::string message;
-    llvm::raw_string_ostream s(message);
-    s << "Illegal operation: " << op;
-    llvm::report_fatal_error(message.c_str());
-    return nullptr;
-  }
-  return alloc.new_object<Arith>(lhs, rhs, op);
-}
-
 Symbol SymbolPool::func_call(llvm::StringRef name,
                              llvm::ArrayRef<Symbol> args) {
   return alloc.new_object<OpCall>(name, args);
