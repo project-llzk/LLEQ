@@ -40,7 +40,7 @@ public:
   Symbol templ_param(llvm::StringRef name);
   // Indexing expression into an N-dimensional array
   Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
-  // Uninterpreted function calls
+  // Handles operations like function calls and arithmetic
   Symbol func_call(llvm::StringRef name, llvm::ArrayRef<Symbol> args);
 };
 
