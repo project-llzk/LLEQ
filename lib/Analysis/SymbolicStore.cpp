@@ -4,10 +4,12 @@
  */
 
 #include "Analysis/SymbolicStore.h"
+#include "Analysis/SymbolExpr.h"
 
 #include <llvm/ADT/Twine.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Dialect.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
@@ -20,6 +22,17 @@
 #include <mlir/Support/LLVM.h>
 
 using namespace lleq;
+
+void SymbolicStore::dump(llvm::raw_ostream &os) const {
+  os << "Signals:\n";
+  for (const auto &[sig, sym] : signalStore) {
+    os << "* " << sig.name;
+    for (auto idx : sig.indices) {
+      os << "[" << idx << "]";
+    }
+    os << " -> " << sym << "\n";
+  }
+}
 
 void SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   auto computeFunc = structDef.getComputeFuncOp();
@@ -96,6 +109,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
+  llvm::dbgs() << "Processing op: " << *op << "\n";
   // TODO: handle control flow ops
   // TODO: handle constraint ops
 

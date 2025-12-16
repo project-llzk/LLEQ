@@ -10,6 +10,7 @@
 #include <concepts>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/IR/Block.h>
@@ -97,5 +98,9 @@ public:
   /// possibly looking up values in the store to do so
   /// @param value
   Symbol lookup(mlir::Value value);
+
+  /// @brief Pretty-print the contents of the store
+  /// @param os
+  void dump(llvm::raw_ostream &os) const;
 };
 } // namespace lleq

@@ -3,11 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "Analysis/SymbolicStore.h"
 #include <cstdlib>
+#include <iostream>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
+#include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/InitDialects.h>
+#include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
@@ -18,6 +22,13 @@
 #include <mlir/Support/LogicalResult.h>
 
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
+
+void dumpStore(llzk::component::StructDefOp structDef) {
+  lleq::SymbolicStore store;
+  store.build_store(structDef);
+  llvm::raw_os_ostream cos(std::cout);
+  store.dump(cos);
+}
 
 int main(int argc, char **argv) {
   llvm::sys::PrintStackTraceOnErrorSignal(llvm::StringRef());
@@ -51,6 +62,12 @@ int main(int argc, char **argv) {
     llvm::errs() << "Failed to parse " << inputFilename << '\n';
     return EXIT_FAILURE;
   }
-  mod->dumpPretty();
+  // mod->dumpPretty();
+
+  mod.walk([](llzk::component::StructDefOp structDef) {
+    llvm::dbgs() << "[For struct " << structDef.getSymName() << "]\n";
+    dumpStore(structDef);
+  });
+
   return EXIT_SUCCESS;
 }
