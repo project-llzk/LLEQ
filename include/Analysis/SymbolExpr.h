@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <llvm/ADT/APInt.h>
+#include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/IR/Value.h>
 
@@ -15,7 +16,7 @@ namespace lleq {
 
 namespace impl {
 struct SymbolBase {
-  virtual std::ostream &print(std::ostream &os) const = 0;
+  virtual llvm::raw_ostream &print(llvm::raw_ostream &os) const = 0;
   virtual unsigned hash_value() const = 0;
 };
 }; // namespace impl
@@ -28,6 +29,9 @@ using Symbol = impl::SymbolBase *;
 class SymbolPool {
   std::pmr::monotonic_buffer_resource memory;
   std::pmr::polymorphic_allocator<Symbol> alloc;
+
+  mlir::DenseMap<mlir::Value, std::string> valueNameMap;
+  std::string getValueName(mlir::Value value);
 
 public:
   SymbolPool() : alloc{&memory} {}
@@ -50,7 +54,7 @@ Symbol join(Symbol a, Symbol b);
 
 }; // namespace lleq
 
-std::ostream &operator<<(std::ostream &os, lleq::Symbol s);
+llvm::raw_ostream &operator<<(llvm::raw_ostream &os, lleq::Symbol s);
 namespace llvm {
 inline unsigned hash_value(lleq::Symbol s) { return s->hash_value(); }
 } // namespace llvm

@@ -18,6 +18,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/IR/Block.h>
+#include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/Value.h>
 #include <mlir/Support/LLVM.h>
 
@@ -43,14 +44,14 @@ void SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
 }
 
 Symbol SymbolicStore::lookup(mlir::Value value) {
+  if (mlir::isa<mlir::TypedValue<llzk::array::ArrayType>>(value)) {
+    llvm::report_fatal_error("cannot generate a symbol for a non-scalar value");
+  }
+
   // Input signal
   if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(value)) {
     // TODO: what do we do here??
-    llvm::report_fatal_error("ruh-roh");
-  }
-
-  if (mlir::isa<mlir::TypedValue<llzk::array::ArrayType>>(value)) {
-    llvm::report_fatal_error("cannot generate a symbol for a non-scalar value");
+    return pool.index(value, {});
   }
 
   mlir::Operation *definingOp = value.getDefiningOp();
@@ -90,6 +91,10 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
       .Case<llzk::felt::FeltConstantOp>([this](llzk::felt::FeltConstantOp op) {
         // TODO: this won't work for "arith.constant"
         return pool.constant(op.getValue());
+      })
+      .Case<mlir::arith::ConstantOp>([this](mlir::arith::ConstantOp op) {
+        return pool.constant(
+            mlir::dyn_cast<mlir::IntegerAttr>(op.getValue()).getValue());
       })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {

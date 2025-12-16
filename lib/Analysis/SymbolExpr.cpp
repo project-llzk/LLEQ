@@ -5,22 +5,21 @@
 
 #include "Analysis/SymbolExpr.h"
 
-#include <algorithm>
 #include <llvm/ADT/Hashing.h>
+#include <llvm/ADT/iterator_range.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/Support/LLVM.h>
-#include <ostream>
 
 using namespace lleq;
 
 struct Unknown : impl::SymbolBase {
   size_t n;
   Unknown(size_t n) : impl::SymbolBase{}, n{n} {}
-  std::ostream &print(std::ostream &os) const override {
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '?' << n;
     return os;
   }
@@ -32,10 +31,9 @@ struct Unknown : impl::SymbolBase {
 struct Constant : impl::SymbolBase {
   mlir::APInt value;
   Constant(mlir::APInt value) : impl::SymbolBase{}, value{value} {}
-  std::ostream &print(std::ostream &os) const override {
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // Print it as signed
-    llvm::raw_os_ostream ros(os);
-    value.print(ros, true);
+    value.print(os, true);
     return os;
   }
   unsigned hash_value() const override {
@@ -46,7 +44,7 @@ struct Constant : impl::SymbolBase {
 struct TemplParam : impl::SymbolBase {
   std::string name;
   TemplParam(llvm::StringRef name) : impl::SymbolBase{}, name{name} {}
-  std::ostream &print(std::ostream &os) const override {
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '@' << name.data();
     return os;
   }
@@ -61,7 +59,7 @@ struct Index : impl::SymbolBase {
 
   Index(mlir::Value signal, llvm::ArrayRef<Symbol> ns)
       : impl::SymbolBase{}, signal{signal}, indices{ns} {}
-  std::ostream &print(std::ostream &os) const override {
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // TODO: print the MLIR value too
     os << "sig";
     for (auto n : indices) {
@@ -84,10 +82,12 @@ struct OpCall : impl::SymbolBase {
   OpCall(llvm::StringRef opName, llvm::ArrayRef<Symbol> arguments)
       : arguments{arguments}, opName{opName} {}
 
-  std::ostream &print(std::ostream &os) const override {
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << opName << "(";
-    std::copy(arguments.begin(), arguments.end(),
-              std::ostream_iterator<Symbol>(os, ","));
+    for (unsigned i = 0; i < arguments.size() - 1; i++) {
+      os << arguments[i] << ", ";
+    }
+    os << arguments[arguments.size() - 1];
     os << ")";
     return os;
   }
@@ -117,4 +117,6 @@ Symbol SymbolPool::func_call(llvm::StringRef name,
   return alloc.new_object<OpCall>(name, args);
 }
 
-std::ostream &operator<<(std::ostream &os, Symbol s) { return s->print(os); }
+llvm::raw_ostream &operator<<(llvm::raw_ostream &os, Symbol s) {
+  return s->print(os);
+}

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
+#include <llvm/Support/WithColor.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/InitDialects.h>
@@ -23,11 +24,33 @@
 
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
-void dumpStore(llzk::component::StructDefOp structDef) {
+static inline void dumpStore(llzk::component::StructDefOp structDef) {
   lleq::SymbolicStore store;
   store.build_store(structDef);
-  llvm::raw_os_ostream cos(std::cout);
-  store.dump(cos);
+  store.dump(llvm::dbgs());
+}
+
+static inline void printDiag(mlir::Diagnostic &d) {
+  switch (d.getSeverity()) {
+  case mlir::DiagnosticSeverity::Error:
+    llvm::WithColor::error() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  case mlir::DiagnosticSeverity::Warning:
+    llvm::WithColor::warning() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  case mlir::DiagnosticSeverity::Remark:
+    llvm::WithColor::remark() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  case mlir::DiagnosticSeverity::Note:
+    llvm::WithColor::note() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  default:
+    break;
+  }
+
+  for (auto &note : d.getNotes()) {
+    printDiag(note);
+  }
 }
 
 int main(int argc, char **argv) {
@@ -48,7 +71,7 @@ int main(int argc, char **argv) {
 
   mlir::MLIRContext context(registry);
   context.getDiagEngine().registerHandler([](mlir::Diagnostic &diag) {
-    (void)diag; // TODO
+    printDiag(diag);
     return mlir::success();
   });
 
