@@ -54,9 +54,7 @@ template <std::equality_comparable T> struct RefInfo {
   }
 
   static unsigned getHashValue(const lleq::Ref<T> &Val) {
-    return llvm::hash_combine(
-        llvm::hash_value(Val.name),
-        llvm::hash_combine_range(Val.indices.begin(), Val.indices.end()));
+    return llvm::hash_combine(Val.name, Val.indices.size());
   }
   static bool isEqual(const lleq::Ref<T> &LHS, const lleq::Ref<T> &RHS) {
     return LHS == RHS;
