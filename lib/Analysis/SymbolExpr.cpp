@@ -17,9 +17,9 @@
 
 using namespace lleq;
 
-struct Unknown : impl::SymbolBase {
+struct Unknown : impl::SymbolEq<Unknown> {
   size_t n;
-  Unknown(size_t n) : impl::SymbolBase{}, n{n} {}
+  Unknown(size_t n) : impl::SymbolEq<Unknown>{}, n{n} {}
   std::ostream &print(std::ostream &os) const override {
     os << '?' << n;
     return os;
@@ -27,11 +27,12 @@ struct Unknown : impl::SymbolBase {
   unsigned hash_value() const override {
     return llvm::hash_combine("unknown", n);
   }
+  bool operator==(const Unknown &other) const { return n == other.n; }
 };
 
-struct Constant : impl::SymbolBase {
+struct Constant : impl::SymbolEq<Constant> {
   mlir::APInt value;
-  Constant(mlir::APInt value) : impl::SymbolBase{}, value{value} {}
+  Constant(mlir::APInt value) : impl::SymbolEq<Constant>{}, value{value} {}
   std::ostream &print(std::ostream &os) const override {
     // Print it as signed
     llvm::raw_os_ostream ros(os);
@@ -41,11 +42,12 @@ struct Constant : impl::SymbolBase {
   unsigned hash_value() const override {
     return llvm::hash_combine("constant", value);
   }
+  bool operator==(const Constant &other) const { return value == other.value; }
 };
 
-struct TemplParam : impl::SymbolBase {
+struct TemplParam : impl::SymbolEq<TemplParam> {
   std::string name;
-  TemplParam(llvm::StringRef name) : impl::SymbolBase{}, name{name} {}
+  TemplParam(llvm::StringRef name) : impl::SymbolEq<TemplParam>{}, name{name} {}
   std::ostream &print(std::ostream &os) const override {
     os << '@' << name.data();
     return os;
@@ -53,14 +55,15 @@ struct TemplParam : impl::SymbolBase {
   unsigned hash_value() const override {
     return llvm::hash_combine("template", name);
   }
+  bool operator==(const TemplParam &other) const { return name == other.name; }
 };
 
-struct Index : impl::SymbolBase {
+struct Index : impl::SymbolEq<Index> {
   mlir::Value signal;
   llvm::SmallVector<Symbol> indices;
 
   Index(mlir::Value signal, llvm::ArrayRef<Symbol> ns)
-      : impl::SymbolBase{}, signal{signal}, indices{ns} {}
+      : impl::SymbolEq<Index>{}, signal{signal}, indices{ns} {}
   std::ostream &print(std::ostream &os) const override {
     // TODO: print the MLIR value too
     os << "sig";
@@ -75,14 +78,19 @@ struct Index : impl::SymbolBase {
         "indices", signal,
         llvm::hash_combine_range(indices.begin(), indices.end()));
   }
+  bool operator==(const Index &other) const {
+    return signal == other.signal && indices.size() == other.indices.size() &&
+           std::equal(indices.begin(), indices.end(), other.indices.begin(),
+                      [](auto *a, auto *b) { return *a == *b; });
+  }
 };
 
-struct OpCall : impl::SymbolBase {
+struct OpCall : impl::SymbolEq<OpCall> {
   llvm::SmallVector<Symbol> arguments;
   std::string opName;
 
   OpCall(llvm::StringRef opName, llvm::ArrayRef<Symbol> arguments)
-      : arguments{arguments}, opName{opName} {}
+      : impl::SymbolEq<OpCall>{}, arguments{arguments}, opName{opName} {}
 
   std::ostream &print(std::ostream &os) const override {
     os << opName << "(";
@@ -95,6 +103,13 @@ struct OpCall : impl::SymbolBase {
   unsigned hash_value() const override {
     return llvm::hash_combine(
         opName, llvm::hash_combine_range(arguments.begin(), arguments.end()));
+  }
+  bool operator==(const OpCall &other) const {
+    return opName == other.opName &&
+           arguments.size() == other.arguments.size() &&
+           std::equal(arguments.begin(), arguments.end(),
+                      other.arguments.begin(),
+                      [](auto *a, auto *b) { return *a == *b; });
   }
 };
 
