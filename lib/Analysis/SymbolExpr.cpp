@@ -68,7 +68,7 @@ struct Index : impl::SymbolEq<Index> {
       : impl::SymbolEq<Index>{pool}, signal{signal}, indices{ns} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // TODO: print the MLIR value too
-    os << "sig";
+    os << pool->getNameForValue(signal);
     for (auto n : indices) {
       os << "[";
       n->print(os) << "]";
