@@ -6,7 +6,6 @@
 #pragma once
 
 #include <cstddef>
-#include <initializer_list>
 #include <llvm/ADT/APInt.h>
 #include <memory_resource>
 #include <mlir/IR/Value.h>
@@ -17,7 +16,25 @@ namespace impl {
 struct SymbolBase {
   virtual std::ostream &print(std::ostream &os) const = 0;
   virtual unsigned hash_value() const = 0;
+
+  bool operator==(const SymbolBase &other) const {
+    if (typeid(this) != typeid(&other)) {
+      return false;
+    }
+    return eq(other);
+  }
+
+private:
+  virtual bool eq(const SymbolBase &other) const = 0;
 };
+
+template <class SymbolT> struct SymbolEq : SymbolBase {
+  bool eq(const SymbolBase &other) const override {
+    return static_cast<const SymbolT &>(*this) ==
+           static_cast<const SymbolT &>(other);
+  }
+};
+
 }; // namespace impl
 
 // Represents a symbolic expression assigned to a signal (as defined on pg.11 of
