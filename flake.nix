@@ -103,7 +103,7 @@
               export PATH="${pkgs.samply.out}/bin":"$PATH"
 
               # Add LLDB to the PATH for debugging
-              export PATH="${pkgs.lldb.out}/bin":"$PATH"
+              #export PATH="${pkgs.lldb.out}/bin":"$PATH"
 
               # For using mlir-tblgen inside the dev environment
               export LD_LIBRARY_PATH=${pkgs.z3.lib}/lib:$LD_LIBRARY_PATH
