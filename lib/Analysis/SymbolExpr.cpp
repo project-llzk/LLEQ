@@ -121,7 +121,7 @@ Symbol SymbolPool::func_call(llvm::StringRef name,
   return alloc.new_object<OpCall>(this, name, args);
 }
 
-std::string SymbolPool::getNameForValue(mlir::Value value) {
+std::string SymbolPool::_gen_name(mlir::Value value) const {
   static unsigned value_number = 0u;
   std::string result;
   llvm::raw_string_ostream ss(result);
@@ -132,7 +132,7 @@ std::string SymbolPool::getNameForValue(mlir::Value value) {
   }
   return result;
 }
-std::string SymbolPool::_gen_name(mlir::Value value) {
+std::string SymbolPool::getNameForValue(mlir::Value value) const {
   static mlir::DenseMap<mlir::Value, std::string> valueNameMap;
   if (!valueNameMap.contains(value)) {
     valueNameMap[value] = _gen_name(value);

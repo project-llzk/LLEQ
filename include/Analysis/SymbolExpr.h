@@ -34,13 +34,13 @@ class SymbolPool {
   std::pmr::monotonic_buffer_resource memory;
   std::pmr::polymorphic_allocator<Symbol> alloc;
 
-  std::string _gen_name(mlir::Value value);
+  std::string _gen_name(mlir::Value value) const;
 
 public:
   SymbolPool() : alloc{&memory} {}
 
   // Generate a pretty-printable name corresponding to the SSA value
-  std::string getNameForValue(mlir::Value value);
+  std::string getNameForValue(mlir::Value value) const;
   // A fresh symbolic variable
   Symbol fresh_unknown();
   // Arbitrary-precision felt
