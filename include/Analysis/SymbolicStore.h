@@ -7,6 +7,7 @@
 
 #include "Analysis/SymbolExpr.h"
 
+#include <algorithm>
 #include <concepts>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
@@ -25,7 +26,9 @@ template <std::equality_comparable NameT> struct Ref {
 
 template <std::equality_comparable T>
 static inline bool operator==(const Ref<T> &a, const Ref<T> &b) {
-  return a.name == b.name && a.indices == b.indices;
+  return a.name == b.name && a.indices.size() == b.indices.size() &&
+         std::equal(a.indices.begin(), a.indices.end(), b.indices.begin(),
+                    [](auto *a, auto *b) { return *a == *b; });
 }
 
 // Indexing into an ordinary MLIR value
