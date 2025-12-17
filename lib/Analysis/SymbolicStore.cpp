@@ -27,9 +27,18 @@
 using namespace lleq;
 
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
-  os << "Signals:\n";
+  os << "Signal store: (" << signalStore.size() << " entries)\n";
   for (const auto &[sig, sym] : signalStore) {
     os << "* " << sig.name;
+    for (auto idx : sig.indices) {
+      os << "[" << idx << "]";
+    }
+    os << " -> " << sym << "\n";
+  }
+
+  os << "Value store: (" << valueStore.size() << " entries)\n";
+  for (const auto &[sig, sym] : valueStore) {
+    os << "+ " << pool.getNameForValue(sig.name);
     for (auto idx : sig.indices) {
       os << "[" << idx << "]";
     }
@@ -78,8 +87,28 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
           return pool.index(array, indices);
         }
 
+        llvm::dbgs() << "Reading array " << pool.getNameForValue(array)
+                     << " indices ";
+        for (auto idx : indices)
+          llvm::dbgs() << "[" << idx << "]";
+        llvm::dbgs() << "\n";
+
+        dump(llvm::dbgs());
+
+        for (auto [k, v] : valueStore) {
+          llvm::dbgs() << pool.getNameForValue(k.name);
+          for (auto i : k.indices)
+            llvm::dbgs() << "[" << i << "]";
+          if (k == ref) {
+            llvm::dbgs() << " <MATCHED>\n";
+          } else {
+            llvm::dbgs() << " X\n";
+          }
+        }
+
         // If the index hasn't been written to before, mark it
         if (!valueStore.contains(ref)) {
+          llvm::dbgs() << "Generating fresh value\n";
           valueStore[ref] = pool.fresh_unknown();
         }
         return valueStore[ref];
@@ -127,7 +156,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
-  LLVM_DEBUG(llvm::dbgs() << "Processing op: " << *op << "\n");
+  llvm::dbgs() << "Processing op: " << *op << "\n";
   // TODO: handle control flow ops
   // TODO: handle constraint ops
 
@@ -158,6 +187,9 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         for (const auto &[valueRef, value] : valueStore) {
           // TODO: actually check if the index could be clobbered
           if (valueRef.name == array) {
+            // llvm::dbgs() << "Clobbering " <<
+            // pool.getNameForValue(valueRef.name)
+            //              << " -> " << value << "\n";
             valueStore[valueRef] = pool.fresh_unknown();
           }
         }
@@ -167,7 +199,30 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         for (auto index : write.getIndices()) {
           indices.push_back(lookup(index));
         }
-        valueStore[ValueRef{array, indices}] = lookup(write.getRvalue());
+        // llvm::dbgs() << "Writing to ValueRef " <<
+        // pool.getNameForValue(array); for (auto idx : indices)
+        //   llvm::dbgs() << "[" << idx << "]";
+        // if (valueStore.contains(ValueRef{array, indices})) {
+        //   llvm::dbgs() << " (overwriting)";
+        // }
+        // llvm::dbgs() << "\n";
+
+        auto ref = ValueRef{array, indices};
+        auto val = lookup(write.getRvalue());
+        valueStore[ref] = val;
+        // auto [it, did] = valueStore.insert({ref, val});
+        // if (did) {
+        //   llvm::dbgs() << "Performed insert\n";
+        // } else {
+        //   llvm::dbgs() << "Ref was already in the map\n";
+        // }
+
+        // llvm::dbgs() << "Before writing, " << valueStore.size() << "
+        // entries\n"; valueStore.insert_or_assign(ValueRef{array, indices},
+        //                             lookup(write.getRvalue()));
+        // llvm::dbgs() << "Wrote value " << valueStore[ValueRef{array,
+        // indices}]
+        //              << ", now " << valueStore.size() << " entries\n";
       })
       .Default([](auto) {});
 }
@@ -175,5 +230,6 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
 void SymbolicStore::process_block(mlir::Block *block) {
   for (auto &op : block->getOperations()) {
     process_operation(&op);
+    // dump(llvm::dbgs());
   }
 }

@@ -76,6 +76,7 @@ Symbol join(Symbol a, Symbol b);
 }; // namespace lleq
 
 llvm::raw_ostream &operator<<(llvm::raw_ostream &os, lleq::Symbol s);
+
 namespace llvm {
 inline unsigned hash_value(lleq::Symbol s) { return s->hash_value(); }
 } // namespace llvm

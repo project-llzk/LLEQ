@@ -5,7 +5,6 @@
 
 #include "Analysis/SymbolicStore.h"
 #include <cstdlib>
-#include <iostream>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
 #include <llvm/Support/WithColor.h>
