@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 set(ZKVERIFIER_VERSION "0.1.0")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
 project(
     ZKVerifier
@@ -11,7 +12,8 @@ project(
 )
 
 
-set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard")
+set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fsanitize=address")
 
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Using LLVM in: ${LLVM_DIR}")

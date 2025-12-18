@@ -5,22 +5,23 @@
 
 #include "Analysis/SymbolExpr.h"
 
-#include <algorithm>
 #include <llvm/ADT/Hashing.h>
+#include <llvm/ADT/iterator_range.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
+#include <mlir/IR/Block.h>
+#include <mlir/IR/Value.h>
 #include <mlir/Support/LLVM.h>
-#include <ostream>
 
 using namespace lleq;
 
 struct Unknown : impl::SymbolEq<Unknown> {
   size_t n;
-  Unknown(size_t n) : impl::SymbolEq<Unknown>{}, n{n} {}
-  std::ostream &print(std::ostream &os) const override {
+  Unknown(SymbolPool *pool, size_t n) : impl::SymbolEq<Unknown>{pool}, n{n} {}
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '?' << n;
     return os;
   }
@@ -32,11 +33,11 @@ struct Unknown : impl::SymbolEq<Unknown> {
 
 struct Constant : impl::SymbolEq<Constant> {
   mlir::APInt value;
-  Constant(mlir::APInt value) : impl::SymbolEq<Constant>{}, value{value} {}
-  std::ostream &print(std::ostream &os) const override {
+  Constant(SymbolPool *pool, mlir::APInt value)
+      : impl::SymbolEq<Constant>{pool}, value{value} {}
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // Print it as signed
-    llvm::raw_os_ostream ros(os);
-    value.print(ros, true);
+    value.print(os, true);
     return os;
   }
   unsigned hash_value() const override {
@@ -47,8 +48,9 @@ struct Constant : impl::SymbolEq<Constant> {
 
 struct TemplParam : impl::SymbolEq<TemplParam> {
   std::string name;
-  TemplParam(llvm::StringRef name) : impl::SymbolEq<TemplParam>{}, name{name} {}
-  std::ostream &print(std::ostream &os) const override {
+  TemplParam(SymbolPool *pool, llvm::StringRef name)
+      : impl::SymbolEq<TemplParam>{pool}, name{name} {}
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '@' << name.data();
     return os;
   }
@@ -62,11 +64,11 @@ struct Index : impl::SymbolEq<Index> {
   mlir::Value signal;
   llvm::SmallVector<Symbol> indices;
 
-  Index(mlir::Value signal, llvm::ArrayRef<Symbol> ns)
-      : impl::SymbolEq<Index>{}, signal{signal}, indices{ns} {}
-  std::ostream &print(std::ostream &os) const override {
+  Index(SymbolPool *pool, mlir::Value signal, llvm::ArrayRef<Symbol> ns)
+      : impl::SymbolEq<Index>{pool}, signal{signal}, indices{ns} {}
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // TODO: print the MLIR value too
-    os << "sig";
+    os << pool->getNameForValue(signal);
     for (auto n : indices) {
       os << "[";
       n->print(os) << "]";
@@ -89,13 +91,16 @@ struct OpCall : impl::SymbolEq<OpCall> {
   llvm::SmallVector<Symbol> arguments;
   std::string opName;
 
-  OpCall(llvm::StringRef opName, llvm::ArrayRef<Symbol> arguments)
-      : impl::SymbolEq<OpCall>{}, arguments{arguments}, opName{opName} {}
+  OpCall(SymbolPool *pool, llvm::StringRef opName,
+         llvm::ArrayRef<Symbol> arguments)
+      : impl::SymbolEq<OpCall>{pool}, arguments{arguments}, opName{opName} {}
 
-  std::ostream &print(std::ostream &os) const override {
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << opName << "(";
-    std::copy(arguments.begin(), arguments.end(),
-              std::ostream_iterator<Symbol>(os, ","));
+    for (unsigned i = 0; i < arguments.size() - 1; i++) {
+      os << arguments[i] << ", ";
+    }
+    os << arguments[arguments.size() - 1];
     os << ")";
     return os;
   }
@@ -115,21 +120,42 @@ struct OpCall : impl::SymbolEq<OpCall> {
 
 Symbol SymbolPool::fresh_unknown() {
   static std::size_t n;
-  return alloc.new_object<Unknown>(n++);
+  return alloc.new_object<Unknown>(this, n++);
 }
 
 Symbol SymbolPool::constant(mlir::APInt value) {
-  return alloc.new_object<Constant>(value);
+  return alloc.new_object<Constant>(this, value);
 }
 Symbol SymbolPool::templ_param(llvm::StringRef name) {
-  return alloc.new_object<TemplParam>(name);
+  return alloc.new_object<TemplParam>(this, name);
 }
 Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
-  return alloc.new_object<Index>(signal, ns);
+  return alloc.new_object<Index>(this, signal, ns);
 }
 Symbol SymbolPool::func_call(llvm::StringRef name,
                              llvm::ArrayRef<Symbol> args) {
-  return alloc.new_object<OpCall>(name, args);
+  return alloc.new_object<OpCall>(this, name, args);
 }
 
-std::ostream &operator<<(std::ostream &os, Symbol s) { return s->print(os); }
+std::string SymbolPool::_gen_name(mlir::Value value) const {
+  static unsigned value_number = 0u;
+  std::string result;
+  llvm::raw_string_ostream ss(result);
+  if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(value)) {
+    ss << llvm::format("%%arg%u", blockArg.getArgNumber());
+  } else {
+    ss << llvm::format("%%val%u", value_number++);
+  }
+  return result;
+}
+std::string SymbolPool::getNameForValue(mlir::Value value) const {
+  static mlir::DenseMap<mlir::Value, std::string> valueNameMap;
+  if (!valueNameMap.contains(value)) {
+    valueNameMap[value] = _gen_name(value);
+  }
+  return valueNameMap[value];
+}
+
+llvm::raw_ostream &operator<<(llvm::raw_ostream &os, Symbol s) {
+  return s->print(os);
+}

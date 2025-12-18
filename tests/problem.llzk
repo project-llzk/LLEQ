@@ -1,0 +1,36 @@
+module attributes {veridise.lang = "llzk"} {
+    struct.def @A {
+        struct.field @a : !felt.type
+
+        function.def @compute(%a: !felt.type) -> !struct.type<@A> {
+            %self = struct.new : <@A>
+            struct.writef %self[@a] = %a : <@A>, !felt.type
+            function.return %self : !struct.type<@A>
+        }
+
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type) {
+            %my_a = struct.readf %self[@a] : <@A>, !felt.type
+            constrain.eq %my_a, %a : !felt.type
+            function.return
+        }
+    }
+
+    struct.def @B {
+        struct.field @a : !struct.type<@A>
+        
+        function.def @compute(%b1 : !felt.type, %b2: !felt.type) -> !struct.type<@B> {
+            %self = struct.new : <@B>
+            %b = felt.add %b1, %b2
+            %a = function.call @A::@compute(%b) : (!felt.type) -> !struct.type<@A>
+            struct.writef %self[@a] = %a : <@B>, !struct.type<@A>
+            function.return %self : !struct.type<@B>
+        }
+
+        function.def @constrain(%self: !struct.type<@B>, %b1: !felt.type, %b2: !felt.type) {
+            %a = struct.readf %self[@a] : <@B>, !struct.type<@A>
+            %b = felt.add %b1, %b2
+            function.call @A::@constrain(%a, %b) : (!struct.type<@A>, !felt.type) -> ()
+            function.return
+        }
+    }
+}

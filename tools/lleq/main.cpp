@@ -3,11 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "Analysis/SymbolicStore.h"
 #include <cstdlib>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
+#include <llvm/Support/WithColor.h>
+#include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/InitDialects.h>
+#include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
@@ -18,6 +22,35 @@
 #include <mlir/Support/LogicalResult.h>
 
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
+
+static inline void dumpStore(llzk::component::StructDefOp structDef) {
+  lleq::SymbolicStore store;
+  store.build_store(structDef);
+  store.dump(llvm::dbgs());
+}
+
+static inline void printDiag(mlir::Diagnostic &d) {
+  switch (d.getSeverity()) {
+  case mlir::DiagnosticSeverity::Error:
+    llvm::WithColor::error() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  case mlir::DiagnosticSeverity::Warning:
+    llvm::WithColor::warning() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  case mlir::DiagnosticSeverity::Remark:
+    llvm::WithColor::remark() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  case mlir::DiagnosticSeverity::Note:
+    llvm::WithColor::note() << d.getLocation() << ':' << d.str() << '\n';
+    break;
+  default:
+    break;
+  }
+
+  for (auto &note : d.getNotes()) {
+    printDiag(note);
+  }
+}
 
 int main(int argc, char **argv) {
   llvm::sys::PrintStackTraceOnErrorSignal(llvm::StringRef());
@@ -37,7 +70,7 @@ int main(int argc, char **argv) {
 
   mlir::MLIRContext context(registry);
   context.getDiagEngine().registerHandler([](mlir::Diagnostic &diag) {
-    (void)diag; // TODO
+    printDiag(diag);
     return mlir::success();
   });
 
@@ -51,6 +84,12 @@ int main(int argc, char **argv) {
     llvm::errs() << "Failed to parse " << inputFilename << '\n';
     return EXIT_FAILURE;
   }
-  mod->dumpPretty();
+  // mod->dumpPretty();
+
+  mod.walk([](llzk::component::StructDefOp structDef) {
+    llvm::dbgs() << "[For struct " << structDef.getSymName() << "]\n";
+    dumpStore(structDef);
+  });
+
   return EXIT_SUCCESS;
 }

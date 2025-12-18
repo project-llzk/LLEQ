@@ -11,6 +11,7 @@
 #include <concepts>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/IR/Block.h>
@@ -53,9 +54,7 @@ template <std::equality_comparable T> struct RefInfo {
   }
 
   static unsigned getHashValue(const lleq::Ref<T> &Val) {
-    return llvm::hash_combine(
-        llvm::hash_value(Val.name),
-        llvm::hash_combine_range(Val.indices.begin(), Val.indices.end()));
+    return llvm::hash_combine(Val.name, Val.indices.size());
   }
   static bool isEqual(const lleq::Ref<T> &LHS, const lleq::Ref<T> &RHS) {
     return LHS == RHS;
@@ -100,5 +99,9 @@ public:
   /// possibly looking up values in the store to do so
   /// @param value
   Symbol lookup(mlir::Value value);
+
+  /// @brief Pretty-print the contents of the store
+  /// @param os
+  void dump(llvm::raw_ostream &os) const;
 };
 } // namespace lleq

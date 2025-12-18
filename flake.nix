@@ -94,13 +94,16 @@
               export CXXFLAGS="$NIX_CFLAGS_COMPILE"
 
               # Add binary dir to PATH for convenience
-              export PATH="$PWD"/build/bin:"$PATH"
+              export PATH="$PWD"/build/tools/lleq/:"$PATH"
 
               # Add release helpers to the PATH for convenience
               export PATH="${pkgs.changelogCreator.out}/bin":"$PATH"
 
               # Add samply to the PATH for profiling during development
               export PATH="${pkgs.samply.out}/bin":"$PATH"
+
+              # Add LLDB to the PATH for debugging
+              #export PATH="${pkgs.lldb.out}/bin":"$PATH"
 
               # For using mlir-tblgen inside the dev environment
               export LD_LIBRARY_PATH=${pkgs.z3.lib}/lib:$LD_LIBRARY_PATH
