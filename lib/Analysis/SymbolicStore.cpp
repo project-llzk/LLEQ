@@ -61,7 +61,6 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 
   // Input signal
   if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(value)) {
-    // TODO: what do we do here??
     return pool.index(value, {});
   }
 
@@ -136,6 +135,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 }
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
+  LLVM_DEBUG(llvm::dbgs() << "Processing op: " << *op << "\n");
   // TODO: handle control flow ops
   // TODO: handle constraint ops
 
