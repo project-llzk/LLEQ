@@ -4,7 +4,10 @@
  */
 
 #include "Analysis/SymbolicStore.h"
+#include "lleq/CliOptions.h"
 #include <cstdlib>
+#include <llvm/Support/CommandLine.h>
+#include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
 #include <llvm/Support/WithColor.h>
@@ -58,12 +61,12 @@ int main(int argc, char **argv) {
                         " and include the crash backtrace, relevant LLZK "
                         "files, and associated run script(s).\n");
 
-  if (argc < 2) {
-    llvm::errs() << "Usage: " << argv[0] << " [.llzk file]\n";
-    return EXIT_FAILURE;
-  }
+  llvm::InitLLVM initLLVM(argc, argv);
+  llvm::setBugReportMsg(
+      "LLEQ has crashed! Please report the bug to contact@veridise.com\n");
 
-  auto inputFilename = argv[1];
+  llvm::cl::HideUnrelatedOptions(lleq::cli::llCat);
+  llvm::cl::ParseCommandLineOptions(argc, argv, "LLEQ Equivalence Verifier\n");
 
   mlir::DialectRegistry registry;
   llzk::registerAllDialects(registry);
@@ -79,17 +82,18 @@ int main(int argc, char **argv) {
       mlir::NameLoc::get(builder.getStringAttr("LLEQ")));
 
   auto parserConfig = mlir::ParserConfig(&context);
-  if (mlir::failed(
-          mlir::parseSourceFile(inputFilename, mod.getBody(), parserConfig))) {
-    llvm::errs() << "Failed to parse " << inputFilename << '\n';
+  if (mlir::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
+                                         parserConfig))) {
+    llvm::errs() << "Failed to parse " << lleq::cli::inputFile() << '\n';
     return EXIT_FAILURE;
   }
-  // mod->dumpPretty();
 
-  mod.walk([](llzk::component::StructDefOp structDef) {
-    llvm::dbgs() << "[For struct " << structDef.getSymName() << "]\n";
-    dumpStore(structDef);
-  });
+  if (lleq::cli::dumpStore()) {
+    mod.walk([](llzk::component::StructDefOp structDef) {
+      llvm::dbgs() << "[For struct " << structDef.getSymName() << "]\n";
+      dumpStore(structDef);
+    });
+  }
 
   return EXIT_SUCCESS;
 }
