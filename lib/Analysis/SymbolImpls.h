@@ -33,7 +33,10 @@ struct Constant : public impl::SymbolEq<Constant> {
   unsigned hash_value() const override {
     return llvm::hash_combine("constant", value);
   }
-  bool operator==(const Constant &other) const { return value == other.value; }
+  bool operator==(const Constant &other) const {
+    return value.getBitWidth() == other.value.getBitWidth() &&
+           value.eq(other.value);
+  }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Const;
   }
