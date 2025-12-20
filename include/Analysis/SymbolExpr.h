@@ -15,7 +15,16 @@ namespace lleq {
 class SymbolPool;
 namespace impl {
 struct SymbolBase {
-  SymbolBase(SymbolPool *pool) : pool{pool} {}
+  enum class SymbolKind {
+    SK_Unknown,
+    SK_Const,
+    SK_TemplParam,
+    SK_Index,
+    SK_Call
+  };
+  SymbolKind kind;
+
+  SymbolBase(SymbolPool *pool, SymbolKind k) : pool{pool}, kind{k} {}
   virtual llvm::raw_ostream &print(llvm::raw_ostream &os) const = 0;
   virtual unsigned hash_value() const = 0;
 
@@ -26,13 +35,12 @@ struct SymbolBase {
     return eq(other);
   }
 
-protected:
   SymbolPool *pool;
   virtual bool eq(const SymbolBase &other) const = 0;
 };
 
-template <class SymbolT> struct SymbolEq : SymbolBase {
-  SymbolEq(SymbolPool *pool) : SymbolBase{pool} {}
+template <class SymbolT> struct SymbolEq : public SymbolBase {
+  SymbolEq(SymbolPool *pool, SymbolKind k) : SymbolBase{pool, k} {}
   bool eq(const SymbolBase &other) const override {
     return static_cast<const SymbolT &>(*this) ==
            static_cast<const SymbolT &>(other);
@@ -67,11 +75,10 @@ public:
   Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
   // Handles operations like function calls and arithmetic
   Symbol func_call(llvm::StringRef name, llvm::ArrayRef<Symbol> args);
+  // The "join" operation defined in Fig. 15 of
+  // https://www.cs.utexas.edu/~isil/zequal.pdf
+  Symbol join(Symbol a, Symbol b);
 };
-
-// The "join" operation defined in Fig. 15 of
-// https://www.cs.utexas.edu/~isil/zequal.pdf
-Symbol join(Symbol a, Symbol b);
 
 }; // namespace lleq
 

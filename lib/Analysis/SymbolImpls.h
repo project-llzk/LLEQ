@@ -4,9 +4,10 @@
 
 namespace lleq {
 struct SymbolPool;
-struct Unknown : impl::SymbolEq<Unknown> {
+struct Unknown : public impl::SymbolEq<Unknown> {
   size_t n;
-  Unknown(SymbolPool *pool, size_t n) : impl::SymbolEq<Unknown>{pool}, n{n} {}
+  Unknown(SymbolPool *pool, size_t n)
+      : impl::SymbolEq<Unknown>{pool, SymbolKind::SK_Unknown}, n{n} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '?' << n;
     return os;
@@ -15,12 +16,15 @@ struct Unknown : impl::SymbolEq<Unknown> {
     return llvm::hash_combine("unknown", n);
   }
   bool operator==(const Unknown &other) const { return n == other.n; }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Unknown;
+  }
 };
 
-struct Constant : impl::SymbolEq<Constant> {
+struct Constant : public impl::SymbolEq<Constant> {
   mlir::APInt value;
   Constant(SymbolPool *pool, mlir::APInt value)
-      : impl::SymbolEq<Constant>{pool}, value{value} {}
+      : impl::SymbolEq<Constant>{pool, SymbolKind::SK_Const}, value{value} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // Print it as signed
     value.print(os, true);
@@ -30,12 +34,16 @@ struct Constant : impl::SymbolEq<Constant> {
     return llvm::hash_combine("constant", value);
   }
   bool operator==(const Constant &other) const { return value == other.value; }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Const;
+  }
 };
 
-struct TemplParam : impl::SymbolEq<TemplParam> {
+struct TemplParam : public impl::SymbolEq<TemplParam> {
   std::string name;
   TemplParam(SymbolPool *pool, llvm::StringRef name)
-      : impl::SymbolEq<TemplParam>{pool}, name{name} {}
+      : impl::SymbolEq<TemplParam>{pool, SymbolKind::SK_TemplParam},
+        name{name} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '@' << name.data();
     return os;
@@ -44,14 +52,18 @@ struct TemplParam : impl::SymbolEq<TemplParam> {
     return llvm::hash_combine("template", name);
   }
   bool operator==(const TemplParam &other) const { return name == other.name; }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_TemplParam;
+  }
 };
 
-struct Index : impl::SymbolEq<Index> {
+struct Index : public impl::SymbolEq<Index> {
   mlir::Value signal;
   llvm::SmallVector<Symbol> indices;
 
   Index(SymbolPool *pool, mlir::Value signal, llvm::ArrayRef<Symbol> ns)
-      : impl::SymbolEq<Index>{pool}, signal{signal}, indices{ns} {}
+      : impl::SymbolEq<Index>{pool, SymbolKind::SK_Index}, signal{signal},
+        indices{ns} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // TODO: print the MLIR value too
     os << pool->getNameForValue(signal);
@@ -71,15 +83,19 @@ struct Index : impl::SymbolEq<Index> {
            std::equal(indices.begin(), indices.end(), other.indices.begin(),
                       [](auto *a, auto *b) { return *a == *b; });
   }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Index;
+  }
 };
 
-struct OpCall : impl::SymbolEq<OpCall> {
+struct OpCall : public impl::SymbolEq<OpCall> {
   llvm::SmallVector<Symbol> arguments;
   std::string opName;
 
   OpCall(SymbolPool *pool, llvm::StringRef opName,
          llvm::ArrayRef<Symbol> arguments)
-      : impl::SymbolEq<OpCall>{pool}, arguments{arguments}, opName{opName} {}
+      : impl::SymbolEq<OpCall>{pool, SymbolKind::SK_Call}, arguments{arguments},
+        opName{opName} {}
 
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << opName << "(";
@@ -101,6 +117,9 @@ struct OpCall : impl::SymbolEq<OpCall> {
            std::equal(arguments.begin(), arguments.end(),
                       other.arguments.begin(),
                       [](auto *a, auto *b) { return *a == *b; });
+  }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Call;
   }
 };
 } // namespace lleq
