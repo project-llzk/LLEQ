@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "Analysis/Unification.h"
 #include "Analysis/SymbolExpr.h"
 #include "SymbolImpls.h"
