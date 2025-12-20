@@ -110,10 +110,17 @@ Symbol _single_subst(Symbol original, unsigned k, Symbol v) {
 }
 
 Symbol substitute(Symbol original, const Substitutions &m) {
-  // TODO: This fills the pool up with a bunch of intermediate symbols...
+  // To avoid filling the pool up with a bunch of temporary intermediate
+  // symbols, allocate a local pool for the temporaries...
+  SymbolPool local_pool;
+  // ...and copy the symbol into it
+  Symbol orig = local_pool.copy(original);
   for (auto [k, v] : m) {
-    original = _single_subst(original, k, v);
+    // _single_subst will continue returning symbols owned by `local_pool`
+    orig = _single_subst(orig, k, v);
   }
-  return original;
+  // Finally copy the result back into the original pool. When `local_pool` goes
+  // out of scope, all the temporaries are automatically freed
+  return original->pool->copy(orig);
 }
 } // namespace lleq

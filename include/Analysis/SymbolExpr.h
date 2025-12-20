@@ -63,6 +63,8 @@ class SymbolPool {
 public:
   SymbolPool() : alloc{&memory} {}
 
+  // Create and own a deep-copy of `s` (useful for transferring between pools)
+  Symbol copy(Symbol s);
   // Generate a pretty-printable name corresponding to the SSA value
   std::string getNameForValue(mlir::Value value) const;
   // A fresh symbolic variable
