@@ -128,4 +128,46 @@ Symbol substitute(Symbol original, const Substitutions &m) {
   // out of scope, all the temporaries are automatically freed
   return original->pool->copy(orig);
 }
+
+Symbol anti_unify(Symbol a, Symbol b) {
+  using enum impl::SymbolBase::SymbolKind;
+  if (*a == *b)
+    return a;
+  if (a->kind == SK_Unknown)
+    return a;
+  if (b->kind == SK_Unknown)
+    return b;
+  if (a->kind != b->kind)
+    return a->pool->fresh_unknown();
+  return llvm::TypeSwitch<Symbol, Symbol>(a)
+      .Case<OpCall>([b](OpCall *callA) -> Symbol {
+        auto callB = mlir::dyn_cast<OpCall>(b);
+        if (callA->opName != callB->opName ||
+            callA->arguments.size() != callB->arguments.size())
+          return callA->pool->fresh_unknown();
+
+        llvm::SmallVector<Symbol> anti_unified_args;
+        for (unsigned i = 0; i < callA->arguments.size(); i++) {
+          anti_unified_args.push_back(
+              anti_unify(callA->arguments[i], callB->arguments[i]));
+        }
+        return callA->pool->func_call(callA->opName, anti_unified_args);
+      })
+      .Case<Index>([b](Index *indexA) -> Symbol {
+        auto indexB = mlir::dyn_cast<Index>(b);
+        if (indexA->signal != indexB->signal ||
+            indexA->indices.size() != indexB->indices.size()) {
+          return indexA->pool->fresh_unknown();
+        }
+
+        llvm::SmallVector<Symbol> anti_unified_idx;
+        for (unsigned i = 0; i < indexA->indices.size(); i++) {
+          anti_unified_idx.push_back(
+              anti_unify(indexA->indices[i], indexB->indices[i]));
+        }
+        return indexA->pool->index(indexA->signal, anti_unified_idx);
+      })
+      .Default([b](auto) { return b->pool->fresh_unknown(); });
+}
+
 } // namespace lleq

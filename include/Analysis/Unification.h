@@ -26,4 +26,8 @@ mlir::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
 // Substitute a set of unknowns in a symbol
 Symbol substitute(Symbol original, const Substitutions &m);
 
+// Compute the universal symbol that can be substituted to reach both `a` and
+// `b` (i.e., compute the "anti-unification") of `a` and `b`
+Symbol anti_unify(Symbol a, Symbol b);
+
 } // namespace lleq
