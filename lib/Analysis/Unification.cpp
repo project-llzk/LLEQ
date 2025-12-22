@@ -191,9 +191,7 @@ void anti_unify_inplace(Symbol a, SymbolConst b) {
             callA->arguments.size() != callB->arguments.size()) {
           *a = *pool->fresh_unknown();
         }
-        for (unsigned i = 0; i < callA->arguments.size(); i++) {
-          anti_unify_inplace(callA->arguments[i], callB->arguments[i]);
-        }
+        anti_unify_all_inplace(callA->arguments, callB->arguments);
       })
       .Case<Index>([a, b, pool](Index *indexA) {
         auto indexB = mlir::dyn_cast<Index>(b);
@@ -201,11 +199,18 @@ void anti_unify_inplace(Symbol a, SymbolConst b) {
             indexA->indices.size() != indexB->indices.size()) {
           *a = *pool->fresh_unknown();
         }
-        for (unsigned i = 0; i < indexA->indices.size(); i++) {
-          anti_unify_inplace(indexA->indices[i], indexB->indices[i]);
-        }
+        anti_unify_all_inplace(indexA->indices, indexB->indices);
       })
       .Default([a, pool](auto) { *a = *pool->fresh_unknown(); });
+}
+
+void anti_unify_all_inplace(llvm::ArrayRef<Symbol> as,
+                            llvm::ArrayRef<Symbol> bs) {
+  assert(as.size() == bs.size() &&
+         "cannot anti-unify arrays of different size");
+  for (unsigned i = 0; i < as.size(); i++) {
+    anti_unify_inplace(as[i], bs[i]);
+  }
 }
 
 } // namespace lleq

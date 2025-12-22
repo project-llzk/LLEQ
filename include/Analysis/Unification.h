@@ -35,4 +35,7 @@ Symbol anti_unify(Symbol a, Symbol b);
 // multiple symbols)
 void anti_unify_inplace(Symbol a, SymbolConst b);
 
+void anti_unify_all_inplace(llvm::ArrayRef<Symbol> as,
+                            llvm::ArrayRef<Symbol> bs);
+
 } // namespace lleq

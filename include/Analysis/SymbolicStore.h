@@ -22,7 +22,7 @@ namespace lleq {
 
 template <std::equality_comparable NameT> struct Ref {
   NameT name;
-  std::vector<Symbol> indices;
+  llvm::SmallVector<Symbol> indices;
 };
 
 template <std::equality_comparable T>
@@ -46,11 +46,11 @@ inline unsigned hash_value(mlir::Value val) {
 
 template <std::equality_comparable T> struct RefInfo {
   static inline lleq::Ref<T> getEmptyKey() {
-    return {llvm::DenseMapInfo<T>::getEmptyKey(), {}};
+    return {mlir::DenseMapInfo<T>::getEmptyKey(), {}};
   }
 
   static inline lleq::Ref<T> getTombstoneKey() {
-    return {llvm::DenseMapInfo<T>::getTombstoneKey(), {}};
+    return {mlir::DenseMapInfo<T>::getTombstoneKey(), {}};
   }
 
   static unsigned getHashValue(const lleq::Ref<T> &Val) {
@@ -77,7 +77,7 @@ namespace lleq {
 /// indices into the array, one per dimension. This is later used to statically
 /// prove equivalence between pairs of witness/constraint signals.
 class SymbolicStore {
-  SymbolPool pool;
+  std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
   mlir::DenseMap<SignalRef, Symbol> signalStore;
   mlir::DenseMap<ValueRef, Symbol> valueStore;
 
@@ -103,5 +103,11 @@ public:
   /// @brief Pretty-print the contents of the store
   /// @param os
   void dump(llvm::raw_ostream &os) const;
+
+  /// @brief Compute a store that represents entries from both `a` and `b`
+  /// @param a
+  /// @param b
+  static SymbolicStore join(const SymbolicStore &a, const SymbolicStore &b);
 };
+
 } // namespace lleq
