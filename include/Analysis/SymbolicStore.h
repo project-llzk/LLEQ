@@ -83,6 +83,10 @@ class SymbolicStore {
   llvm::DenseMap<ValueRef, Symbol> valueStore;
 
 public:
+  SymbolicStore() {}
+  SymbolicStore(const SymbolicStore &other);
+  SymbolicStore &operator=(const SymbolicStore &other);
+
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef
   void build_store(llzk::component::StructDefOp structDef);

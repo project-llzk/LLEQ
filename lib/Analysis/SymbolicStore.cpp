@@ -17,7 +17,9 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <memory>
 #include <mlir/Dialect/Arith/IR/Arith.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/Value.h>
@@ -26,6 +28,34 @@
 #define DEBUG_TYPE "symbolic-store"
 
 using namespace lleq;
+
+template <class T>
+llvm::DenseMap<Ref<T>, Symbol>
+_copy_store(const llvm::DenseMap<Ref<T>, Symbol> &store, SymbolPool &pool) {
+  llvm::DenseMap<Ref<T>, Symbol> copied;
+  for (const auto [ref, val] : store) {
+    Ref<T> copiedRef{ref.name, {}};
+    for (auto idx : ref.indices) {
+      copiedRef.indices.push_back(pool.copy(idx));
+    }
+    copied[copiedRef] = pool.copy(val);
+  }
+  return copied;
+}
+
+SymbolicStore::SymbolicStore(const SymbolicStore &other) {
+  pool = std::make_unique<SymbolPool>();
+  signalStore = _copy_store(other.signalStore, *pool);
+  valueStore = _copy_store(other.valueStore, *pool);
+}
+
+SymbolicStore &SymbolicStore::operator=(const SymbolicStore &other) {
+  auto new_pool = std::make_unique<SymbolPool>();
+  signalStore = _copy_store(other.signalStore, *new_pool);
+  valueStore = _copy_store(other.valueStore, *new_pool);
+  pool.reset(new_pool.release());
+  return *this;
+}
 
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
   os << "Signal store: (" << signalStore.size() << " entries)\n";
@@ -141,6 +171,17 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
   // TODO: handle constraint ops
 
   llvm::TypeSwitch<mlir::Operation *>(op)
+      .Case<mlir::scf::IfOp>([this](mlir::scf::IfOp cond) {
+        SymbolicStore thenStore{*this};
+        SymbolicStore elseStore{*this};
+        for (auto &block : cond.getThenRegion()) {
+          thenStore.process_block(&block);
+        }
+        for (auto &block : cond.getElseRegion()) {
+          elseStore.process_block(&block);
+        }
+        *this = SymbolicStore::join(thenStore, elseStore);
+      })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {
             // Copy every written index from signalStore to valueStore
