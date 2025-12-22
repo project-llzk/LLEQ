@@ -41,8 +41,7 @@ llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
 
   // Different constructors can't be unified
   using SymbolKind = impl::SymbolBase::SymbolKind;
-  if (a->kind != SymbolKind::SK_Unknown && b->kind != SymbolKind::SK_Unknown &&
-      a->kind != b->kind)
+  if (!llvm::isa<Unknown>(a) && !llvm::isa<Unknown>(b) && a->kind != b->kind)
     return llvm::failure();
 
   // Here we know that either at least one of them is unknown, or they have the
@@ -50,14 +49,14 @@ llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
 
   // If one of them is unknown, make sure its not coinductive, update the
   // mapping, and succeed
-  if (a->kind == SymbolKind::SK_Unknown) {
+  if (llvm::isa<Unknown>(a)) {
     if (_occurs(llvm::dyn_cast<Unknown>(a)->n, b))
       return llvm::failure();
     s.push_back({llvm::dyn_cast<Unknown>(a)->n, b});
     return llvm::success();
   }
   // By symmetry
-  if (b->kind == SymbolKind::SK_Unknown) {
+  if (llvm::isa<Unknown>(b)) {
     return unify(b, a, s);
   }
 
@@ -133,12 +132,9 @@ Symbol substitute(Symbol original, const Substitutions &m) {
 }
 
 Symbol anti_unify(Symbol a, Symbol b) {
-  using enum impl::SymbolBase::SymbolKind;
-  if (*a == *b)
+  if (*a == *b || llvm::isa<Unknown>(a))
     return a;
-  if (a->kind == SK_Unknown)
-    return a;
-  if (b->kind == SK_Unknown)
+  if (llvm::isa<Unknown>(b))
     return b;
   if (a->kind != b->kind)
     return a->pool->fresh_unknown();
@@ -176,9 +172,9 @@ Symbol anti_unify(Symbol a, Symbol b) {
 void anti_unify_inplace(Symbol a, SymbolConst b) {
   auto pool = a->pool;
   using enum impl::SymbolBase::SymbolKind;
-  if (*a == *b || a->kind == SK_Unknown)
+  if (*a == *b || llvm::isa<Unknown>(a))
     return;
-  if (b->kind == SK_Unknown) {
+  if (llvm::isa<Unknown>(b)) {
     *a = *b;
     return;
   }
