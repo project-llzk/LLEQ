@@ -91,7 +91,8 @@ llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
   return llvm::success();
 }
 
-// Substitutes Unknown symbol with id `k` within `original` with `v` (or replaces `original` with `v` if `original` is an unknown symbol with id `k`)
+// Substitutes Unknown symbol with id `k` within `original` with `v` (or
+// replaces `original` with `v` if `original` is an unknown symbol with id `k`)
 Symbol _single_subst(Symbol original, unsigned k, Symbol v) {
   return llvm::TypeSwitch<Symbol, Symbol>(original)
       .Case<Unknown>([k, v](Unknown *u) -> Symbol {

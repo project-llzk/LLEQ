@@ -5,8 +5,8 @@
 namespace lleq {
 struct SymbolPool;
 struct Unknown : public impl::SymbolEq<Unknown> {
-  size_t n;
-  Unknown(SymbolPool *pool, size_t n)
+  unsigned n;
+  Unknown(SymbolPool *pool, unsigned n)
       : impl::SymbolEq<Unknown>{pool, SymbolKind::SK_Unknown}, n{n} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '?' << n;
