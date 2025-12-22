@@ -42,6 +42,7 @@ struct SymbolBase {
 template <class SymbolT> struct SymbolEq : public SymbolBase {
   SymbolEq(SymbolPool *pool, SymbolKind k) : SymbolBase{pool, k} {}
   bool eq(const SymbolBase &other) const override {
+    assert(typeid(this) == typeid(other));
     return static_cast<const SymbolT &>(*this) ==
            static_cast<const SymbolT &>(other);
   }

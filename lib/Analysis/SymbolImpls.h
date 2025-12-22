@@ -71,8 +71,8 @@ struct Index : public impl::SymbolEq<Index> {
     // TODO: print the MLIR value too
     os << pool->getNameForValue(signal);
     for (auto n : indices) {
-      os << "[";
-      n->print(os) << "]";
+      os << '[';
+      n->print(os) << ']';
     }
     return os;
   }
@@ -101,12 +101,12 @@ struct OpCall : public impl::SymbolEq<OpCall> {
         opName{opName} {}
 
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    os << opName << "(";
+    os << opName << '(';
     for (unsigned i = 0; i < arguments.size() - 1; i++) {
       os << arguments[i] << ", ";
     }
     os << arguments[arguments.size() - 1];
-    os << ")";
+    os << ')';
     return os;
   }
 

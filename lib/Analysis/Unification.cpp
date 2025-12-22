@@ -13,6 +13,7 @@
 
 namespace lleq {
 
+// Determine if an Unknown symbol with number `u` occurs within or is `s`
 bool _occurs(unsigned u, Symbol s) {
   return llvm::TypeSwitch<Symbol, bool>(s)
       .Case<Unknown>([u](Unknown *s) { return s->n == u; })
@@ -91,6 +92,7 @@ llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
   return llvm::success();
 }
 
+// Substitutes Unknown symbol with id `k` within `original` with `v` (or replaces `original` with `v` if `original` is an unknown symbol with id `k`)
 Symbol _single_subst(Symbol original, unsigned k, Symbol v) {
   return llvm::TypeSwitch<Symbol, Symbol>(original)
       .Case<Unknown>([k, v](Unknown *u) -> Symbol {
