@@ -8,7 +8,7 @@
 #include <llvm/Support/CommandLine.h>
 
 namespace lleq::cli {
-extern llvm::cl::OptionCategory llCat;
+extern llvm::cl::OptionCategory lleqCat;
 
 // Whether to stop after constructing the symbolic store and dump it
 [[nodiscard]] bool dumpStore();

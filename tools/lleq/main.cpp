@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
       "LLEQ has crashed! Please report the bug to contact@veridise.com\n");
 
   llvm::cl::HideUnrelatedOptions(lleq::cli::llCat);
-  llvm::cl::ParseCommandLineOptions(argc, argv, "LLEQ Equivalence Verifier\n");
+  llvm::cl::ParseCommandLineOptions(argc, argv, "LLZK Equivalence Verifier\n");
 
   mlir::DialectRegistry registry;
   llzk::registerAllDialects(registry);
