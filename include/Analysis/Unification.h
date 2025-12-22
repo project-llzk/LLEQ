@@ -30,4 +30,9 @@ Symbol substitute(Symbol original, const Substitutions &m);
 // `b` (i.e., compute the "anti-unification") of `a` and `b`
 Symbol anti_unify(Symbol a, Symbol b);
 
+// Compute the anti-unification of `a` and `b` and store the result in the
+// symbol pointed to by `a` (avoids allocating temporaries when anti-unifying
+// multiple symbols)
+void anti_unify_inplace(Symbol a, SymbolConst b);
+
 } // namespace lleq

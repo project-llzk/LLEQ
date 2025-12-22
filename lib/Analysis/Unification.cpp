@@ -8,6 +8,7 @@
 #include "SymbolImpls.h"
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <mlir/IR/MLIRContext.h>
 #include <mlir/Support/LLVM.h>
 
 namespace lleq {
@@ -168,6 +169,43 @@ Symbol anti_unify(Symbol a, Symbol b) {
         return indexA->pool->index(indexA->signal, anti_unified_idx);
       })
       .Default([b](auto) { return b->pool->fresh_unknown(); });
+}
+
+void anti_unify_inplace(Symbol a, SymbolConst b) {
+  auto pool = a->pool;
+  using enum impl::SymbolBase::SymbolKind;
+  if (*a == *b || a->kind == SK_Unknown)
+    return;
+  if (b->kind == SK_Unknown) {
+    *a = *b;
+    return;
+  }
+  if (a->kind != b->kind) {
+    *a = *a->pool->fresh_unknown();
+  }
+
+  llvm::TypeSwitch<Symbol, void>(a)
+      .Case<OpCall>([a, b, pool](OpCall *callA) {
+        auto callB = mlir::dyn_cast<OpCall>(b);
+        if (callA->opName != callB->opName ||
+            callA->arguments.size() != callB->arguments.size()) {
+          *a = *pool->fresh_unknown();
+        }
+        for (unsigned i = 0; i < callA->arguments.size(); i++) {
+          anti_unify_inplace(callA->arguments[i], callB->arguments[i]);
+        }
+      })
+      .Case<Index>([a, b, pool](Index *indexA) {
+        auto indexB = mlir::dyn_cast<Index>(b);
+        if (indexA->signal != indexB->signal ||
+            indexA->indices.size() != indexB->indices.size()) {
+          *a = *pool->fresh_unknown();
+        }
+        for (unsigned i = 0; i < indexA->indices.size(); i++) {
+          anti_unify_inplace(indexA->indices[i], indexB->indices[i]);
+        }
+      })
+      .Default([a, pool](auto) { *a = *pool->fresh_unknown(); });
 }
 
 } // namespace lleq

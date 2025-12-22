@@ -52,6 +52,7 @@ template <class SymbolT> struct SymbolEq : public SymbolBase {
 // Represents a symbolic expression assigned to a signal (as defined on pg.11 of
 // https://www.cs.utexas.edu/~isil/zequal.pdf)
 using Symbol = impl::SymbolBase *;
+using SymbolConst = const impl::SymbolBase *;
 
 // A "pool" of symbolic expressions that all refer to each other
 class SymbolPool {
