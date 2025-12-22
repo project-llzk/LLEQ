@@ -69,7 +69,7 @@ std::string SymbolPool::_gen_name(mlir::Value value) const {
   static unsigned value_number = 0u;
   std::string result;
   llvm::raw_string_ostream ss(result);
-  if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(value)) {
+  if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(value)) {
     ss << llvm::format("%%arg%u", blockArg.getArgNumber());
   } else {
     ss << llvm::format("%%val%u", value_number++);
@@ -77,7 +77,7 @@ std::string SymbolPool::_gen_name(mlir::Value value) const {
   return result;
 }
 std::string SymbolPool::getNameForValue(mlir::Value value) const {
-  static mlir::DenseMap<mlir::Value, std::string> valueNameMap;
+  static llvm::DenseMap<mlir::Value, std::string> valueNameMap;
   if (!valueNameMap.contains(value)) {
     valueNameMap[value] = _gen_name(value);
   }

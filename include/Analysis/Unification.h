@@ -15,12 +15,12 @@ using Substitutions = llvm::SmallVector<std::pair<unsigned, Symbol>>;
 
 // Attempt to unify a single pair of symbols, updating `s` with the
 // substitutions. Returns `failure()` if the symbols cannot be unified
-mlir::LogicalResult unify(Symbol a, Symbol b, Substitutions &s);
+llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s);
 
 // Attempt to simultaneously unify multiple pairs of symbols, updating `s` with
 // the substitutions. Returns `failure()` if any pair cannot be unified, or if
 // the substitutions disagree
-mlir::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
+llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
                               llvm::ArrayRef<Symbol> bs, Substitutions &s);
 
 // Substitute a set of unknowns in a symbol

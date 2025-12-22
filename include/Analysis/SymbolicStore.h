@@ -11,6 +11,7 @@
 #include <concepts>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
+#include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
@@ -46,11 +47,11 @@ inline unsigned hash_value(mlir::Value val) {
 
 template <std::equality_comparable T> struct RefInfo {
   static inline lleq::Ref<T> getEmptyKey() {
-    return {mlir::DenseMapInfo<T>::getEmptyKey(), {}};
+    return {llvm::DenseMapInfo<T>::getEmptyKey(), {}};
   }
 
   static inline lleq::Ref<T> getTombstoneKey() {
-    return {mlir::DenseMapInfo<T>::getTombstoneKey(), {}};
+    return {llvm::DenseMapInfo<T>::getTombstoneKey(), {}};
   }
 
   static unsigned getHashValue(const lleq::Ref<T> &Val) {
@@ -78,8 +79,8 @@ namespace lleq {
 /// prove equivalence between pairs of witness/constraint signals.
 class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
-  mlir::DenseMap<SignalRef, Symbol> signalStore;
-  mlir::DenseMap<ValueRef, Symbol> valueStore;
+  llvm::DenseMap<SignalRef, Symbol> signalStore;
+  llvm::DenseMap<ValueRef, Symbol> valueStore;
 
 public:
   /// @brief Build a store from a given circuit component (struct)

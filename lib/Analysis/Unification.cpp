@@ -33,16 +33,16 @@ bool _occurs(unsigned u, Symbol s) {
       .Default([](auto) { return false; });
 }
 
-mlir::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
+llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
   // Check the easy case first
   if (*a == *b)
-    return mlir::success();
+    return llvm::success();
 
   // Different constructors can't be unified
   using SymbolKind = impl::SymbolBase::SymbolKind;
   if (a->kind != SymbolKind::SK_Unknown && b->kind != SymbolKind::SK_Unknown &&
       a->kind != b->kind)
-    return mlir::failure();
+    return llvm::failure();
 
   // Here we know that either at least one of them is unknown, or they have the
   // same constructor and we'll have to recurse
@@ -50,10 +50,10 @@ mlir::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
   // If one of them is unknown, make sure its not coinductive, update the
   // mapping, and succeed
   if (a->kind == SymbolKind::SK_Unknown) {
-    if (_occurs(mlir::dyn_cast<Unknown>(a)->n, b))
-      return mlir::failure();
-    s.push_back({mlir::dyn_cast<Unknown>(a)->n, b});
-    return mlir::success();
+    if (_occurs(llvm::dyn_cast<Unknown>(a)->n, b))
+      return llvm::failure();
+    s.push_back({llvm::dyn_cast<Unknown>(a)->n, b});
+    return llvm::success();
   }
   // By symmetry
   if (b->kind == SymbolKind::SK_Unknown) {
@@ -61,34 +61,34 @@ mlir::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
   }
 
   // Neither is unknown, so we have to recurse
-  return llvm::TypeSwitch<Symbol, mlir::LogicalResult>(a)
+  return llvm::TypeSwitch<Symbol, llvm::LogicalResult>(a)
       .Case<OpCall>([b, &s](OpCall *callA) {
-        auto callB = mlir::dyn_cast<OpCall>(b);
+        auto callB = llvm::dyn_cast<OpCall>(b);
         if (callA->opName != callB->opName)
-          return mlir::failure();
+          return llvm::failure();
         return unify_all(callA->arguments, callB->arguments, s);
       })
       .Case<Index>([b, &s](Index *idxA) {
-        auto idxB = mlir::dyn_cast<Index>(b);
+        auto idxB = llvm::dyn_cast<Index>(b);
         if (idxA->signal != idxB->signal)
-          return mlir::failure();
+          return llvm::failure();
         return unify_all(idxA->indices, idxB->indices, s);
       })
-      .Default([](auto) { return mlir::failure(); });
+      .Default([](auto) { return llvm::failure(); });
 }
 
-mlir::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
+llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
                               llvm::ArrayRef<Symbol> bs, Substitutions &s) {
 
   if (as.size() != bs.size())
-    return mlir::failure();
+    return llvm::failure();
 
   for (auto [a, b] : llvm::zip(as, bs)) {
-    if (mlir::failed(unify(substitute(a, s), substitute(b, s), s))) {
-      return mlir::failure();
+    if (llvm::failed(unify(substitute(a, s), substitute(b, s), s))) {
+      return llvm::failure();
     }
   }
-  return mlir::success();
+  return llvm::success();
 }
 
 Symbol _single_subst(Symbol original, unsigned k, Symbol v) {
@@ -142,7 +142,7 @@ Symbol anti_unify(Symbol a, Symbol b) {
     return a->pool->fresh_unknown();
   return llvm::TypeSwitch<Symbol, Symbol>(a)
       .Case<OpCall>([b](OpCall *callA) -> Symbol {
-        auto callB = mlir::dyn_cast<OpCall>(b);
+        auto callB = llvm::dyn_cast<OpCall>(b);
         if (callA->opName != callB->opName ||
             callA->arguments.size() != callB->arguments.size())
           return callA->pool->fresh_unknown();
@@ -155,7 +155,7 @@ Symbol anti_unify(Symbol a, Symbol b) {
         return callA->pool->func_call(callA->opName, anti_unified_args);
       })
       .Case<Index>([b](Index *indexA) -> Symbol {
-        auto indexB = mlir::dyn_cast<Index>(b);
+        auto indexB = llvm::dyn_cast<Index>(b);
         if (indexA->signal != indexB->signal ||
             indexA->indices.size() != indexB->indices.size()) {
           return indexA->pool->fresh_unknown();
@@ -186,7 +186,7 @@ void anti_unify_inplace(Symbol a, SymbolConst b) {
 
   llvm::TypeSwitch<Symbol, void>(a)
       .Case<OpCall>([a, b, pool](OpCall *callA) {
-        auto callB = mlir::dyn_cast<OpCall>(b);
+        auto callB = llvm::dyn_cast<OpCall>(b);
         if (callA->opName != callB->opName ||
             callA->arguments.size() != callB->arguments.size()) {
           *a = *pool->fresh_unknown();
@@ -194,7 +194,7 @@ void anti_unify_inplace(Symbol a, SymbolConst b) {
         anti_unify_all_inplace(callA->arguments, callB->arguments);
       })
       .Case<Index>([a, b, pool](Index *indexA) {
-        auto indexB = mlir::dyn_cast<Index>(b);
+        auto indexB = llvm::dyn_cast<Index>(b);
         if (indexA->signal != indexB->signal ||
             indexA->indices.size() != indexB->indices.size()) {
           *a = *pool->fresh_unknown();

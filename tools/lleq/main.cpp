@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
   mlir::MLIRContext context(registry);
   context.getDiagEngine().registerHandler([](mlir::Diagnostic &diag) {
     printDiag(diag);
-    return mlir::success();
+    return llvm::success();
   });
 
   mlir::OpBuilder builder(&context);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
       mlir::NameLoc::get(builder.getStringAttr("LLEQ")));
 
   auto parserConfig = mlir::ParserConfig(&context);
-  if (mlir::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
+  if (llvm::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
                                          parserConfig))) {
     llvm::errs() << "Failed to parse " << lleq::cli::inputFile() << '\n';
     return EXIT_FAILURE;
