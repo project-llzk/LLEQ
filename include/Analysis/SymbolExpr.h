@@ -29,7 +29,7 @@ struct SymbolBase {
   virtual unsigned hash_value() const = 0;
 
   bool operator==(const SymbolBase &other) const {
-    if (typeid(this) != typeid(&other)) {
+    if (kind != other.kind) {
       return false;
     }
     return eq(other);
@@ -42,7 +42,7 @@ struct SymbolBase {
 template <class SymbolT> struct SymbolEq : public SymbolBase {
   SymbolEq(SymbolPool *pool, SymbolKind k) : SymbolBase{pool, k} {}
   bool eq(const SymbolBase &other) const override {
-    assert(typeid(this) == typeid(other));
+    assert(kind == other.kind);
     return static_cast<const SymbolT &>(*this) ==
            static_cast<const SymbolT &>(other);
   }
