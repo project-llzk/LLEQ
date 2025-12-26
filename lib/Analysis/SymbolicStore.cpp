@@ -12,6 +12,7 @@
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
+#include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Felt/IR/Dialect.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
@@ -95,6 +96,10 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
     return pool->index(value, {});
   }
 
+  if (valueStore.contains({.name = value, .indices = {}})) {
+    return valueStore[{.name = value, .indices = {}}];
+  }
+
   mlir::Operation *definingOp = value.getDefiningOp();
   return llvm::TypeSwitch<mlir::Operation *, Symbol>(definingOp)
       // A template parameter
@@ -172,14 +177,25 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
 
   llvm::TypeSwitch<mlir::Operation *>(op)
       .Case<mlir::scf::IfOp>([this](mlir::scf::IfOp cond) {
+        // TODO: This doesn't work if the blocks scf.yield a value
         SymbolicStore thenStore{*this};
         SymbolicStore elseStore{*this};
+        std::optional<mlir::Value> result =
+            cond->getNumResults() > 0 ? std::optional{cond->getResult(0)}
+                                      : std::nullopt;
         for (auto &block : cond.getThenRegion()) {
-          thenStore.process_block(&block);
+          thenStore.process_block(&block, result);
         }
         for (auto &block : cond.getElseRegion()) {
-          elseStore.process_block(&block);
+          elseStore.process_block(&block, result);
         }
+
+        LLVM_DEBUG({
+          llvm::dbgs() << "Then store:\n";
+          thenStore.dump(llvm::dbgs());
+          llvm::dbgs() << "Else store:\n";
+          elseStore.dump(llvm::dbgs());
+        });
         *this = SymbolicStore::join(thenStore, elseStore);
       })
       .Case<llzk::component::FieldReadOp>(
@@ -223,12 +239,33 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
       .Default([](auto) {});
 }
 
-void SymbolicStore::process_block(mlir::Block *block) {
+void SymbolicStore::process_block(mlir::Block *block,
+                                  std::optional<mlir::Value> yielded) {
   for (auto &op : block->getOperations()) {
+    if (auto yieldOp = llvm::dyn_cast<mlir::scf::YieldOp>(op)) {
+      if (!yielded.has_value() || yieldOp->getNumOperands() == 0)
+        continue;
+      LLVM_DEBUG(llvm::dbgs() << "Yielding a value\n");
+      // Copy `result` to `yielded`
+      auto result = yieldOp.getOperand(0);
+      if (llvm::isa<llzk::array::ArrayType>(result.getType())) {
+        // If its an array, copy all written indices
+        for (auto [ref, val] : valueStore) {
+          if (ref.name == result) {
+            valueStore[{.name = *yielded, .indices = ref.indices}] = val;
+          }
+        }
+      } else {
+        LLVM_DEBUG(llvm::dbgs() << "[scalar]\n");
+        // If its a scalar, do a write-through
+        valueStore[{.name = *yielded, .indices = {}}] = lookup(result);
+      }
+    }
     process_operation(&op);
   }
 }
 
+// Group written indices by array reference
 template <class T>
 auto _group_idx(const llvm::DenseMap<Ref<T>, Symbol> &store) {
   llvm::DenseMap<T, llvm::SmallVector<llvm::SmallVector<Symbol>>> grouped;
