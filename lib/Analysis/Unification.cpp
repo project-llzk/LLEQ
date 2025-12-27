@@ -132,15 +132,21 @@ Symbol substitute(Symbol original, const Substitutions &m) {
   return original->pool->copy(orig);
 }
 
+// "Erase" whatever's different between `a` and `b` and replace it with unknowns
+// Return the anti-unified symbol
 Symbol anti_unify(Symbol a, Symbol b) {
+  // If they're the same, or one of them is unknown, there's no work to do
   if (*a == *b || llvm::isa<Unknown>(a))
     return a;
   if (llvm::isa<Unknown>(b))
     return b;
+  // If the constructors don't match there's no hope of unifying anything
   if (a->kind != b->kind)
     return a->pool->fresh_unknown();
   return llvm::TypeSwitch<Symbol, Symbol>(a)
       .Case<OpCall>([b](OpCall *callA) -> Symbol {
+        // If its two calls to the same function, try anti-unifying each
+        // argument
         auto callB = llvm::dyn_cast<OpCall>(b);
         if (callA->opName != callB->opName ||
             callA->arguments.size() != callB->arguments.size())
@@ -154,6 +160,7 @@ Symbol anti_unify(Symbol a, Symbol b) {
         return callA->pool->func_call(callA->opName, anti_unified_args);
       })
       .Case<Index>([b](Index *indexA) -> Symbol {
+        // If its two indices into the same array, try anti-unifying each index
         auto indexB = llvm::dyn_cast<Index>(b);
         if (indexA->signal != indexB->signal ||
             indexA->indices.size() != indexB->indices.size()) {
@@ -170,6 +177,7 @@ Symbol anti_unify(Symbol a, Symbol b) {
       .Default([b](auto) { return b->pool->fresh_unknown(); });
 }
 
+// Computes `*a = anti_unify(a, b)` without allocating a temporary
 void anti_unify_inplace(Symbol a, SymbolConst b) {
   auto pool = a->pool;
   using enum impl::SymbolBase::SymbolKind;
