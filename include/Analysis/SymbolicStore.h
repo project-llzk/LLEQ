@@ -72,6 +72,10 @@ struct DenseMapInfo<lleq::SignalRef> : public RefInfo<llvm::StringRef> {};
 
 namespace lleq {
 
+template <class T> using Store = llvm::DenseMap<Ref<T>, Symbol>;
+using SignalStore = Store<llvm::StringRef>;
+using ValueStore = Store<mlir::Value>;
+
 /// @brief Represents a mapping between circuit signals and symbolic
 /// expressions. Each entry in the store is keyed by both the signal, which is
 /// assumed to be a (possibly multidimensional) array, and a vector of symbolic
@@ -79,8 +83,8 @@ namespace lleq {
 /// prove equivalence between pairs of witness/constraint signals.
 class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
-  llvm::DenseMap<SignalRef, Symbol> signalStore;
-  llvm::DenseMap<ValueRef, Symbol> valueStore;
+  SignalStore signalStore;
+  ValueStore valueStore;
 
 public:
   SymbolicStore() {}

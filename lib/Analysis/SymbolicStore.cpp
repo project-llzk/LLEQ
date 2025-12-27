@@ -176,15 +176,14 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
   // TODO: handle constraint ops
 
   llvm::TypeSwitch<mlir::Operation *>(op)
-      .Case<mlir::scf::IfOp>([this](mlir::scf::IfOp cond) {
-        // TODO: This doesn't work if the blocks scf.yield a value
+      .Case<mlir::scf::IfOp>([this](mlir::scf::IfOp ifOp) {
         SymbolicStore thenStore{*this};
         SymbolicStore elseStore{*this};
-        llvm::SmallVector<mlir::Value> results{cond.getResults()};
-        for (auto &block : cond.getThenRegion()) {
+        llvm::SmallVector<mlir::Value> results{ifOp.getResults()};
+        for (auto &block : ifOp.getThenRegion()) {
           thenStore.process_block(&block, results);
         }
-        for (auto &block : cond.getElseRegion()) {
+        for (auto &block : ifOp.getElseRegion()) {
           elseStore.process_block(&block, results);
         }
 
@@ -195,6 +194,10 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
           elseStore.dump(llvm::dbgs());
         });
         *this = SymbolicStore::join(thenStore, elseStore);
+      })
+      .Case<mlir::scf::ForOp>([this](mlir::scf::ForOp forOp) {
+        // Start by initializing any loop-carried deps
+        SymbolicStore bodyStore{*this};
       })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {
@@ -241,6 +244,7 @@ void SymbolicStore::process_block(mlir::Block *block,
                                   llvm::ArrayRef<mlir::Value> yielded) {
   for (auto &op : block->getOperations()) {
     if (auto yieldOp = llvm::dyn_cast<mlir::scf::YieldOp>(op)) {
+      // If the block yields any values, explicitly copy them into the captures
       assert(yieldOp->getNumOperands() == yielded.size() &&
              "wrong number of values captured");
       for (auto [result, yielded] : llvm::zip(yieldOp.getOperands(), yielded)) {
@@ -264,8 +268,7 @@ void SymbolicStore::process_block(mlir::Block *block,
 }
 
 // Group written indices by array reference
-template <class T>
-auto _group_idx(const llvm::DenseMap<Ref<T>, Symbol> &store) {
+template <class T> auto _group_idx(const Store<T> &store) {
   llvm::DenseMap<T, llvm::SmallVector<llvm::SmallVector<Symbol>>> grouped;
 
   for (auto [k, _] : store) {
@@ -275,13 +278,12 @@ auto _group_idx(const llvm::DenseMap<Ref<T>, Symbol> &store) {
   return grouped;
 }
 
-template <class T>
-auto _join_stores(const llvm::DenseMap<Ref<T>, Symbol> &a,
-                  const llvm::DenseMap<Ref<T>, Symbol> &b) {
+// TODO: Rewrite all the joins to be in-place to avoid allocating
+template <class T> auto _join_stores(const Store<T> &a, const Store<T> &b) {
   // For every pair of entries (arr, phi_1) :- x; (arr, phi_2) :- y from `a` and
   // `b`, add an entry (arr, AU(phi_1, phi_2)) :- AU(x, y) to the result, where
   // AU represents antiunification
-  llvm::DenseMap<Ref<T>, Symbol> result;
+  Store<T> result;
   auto groupedA = _group_idx(a);
   auto groupedB = _group_idx(b);
 
