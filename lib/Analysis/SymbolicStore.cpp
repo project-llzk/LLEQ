@@ -180,14 +180,12 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         // TODO: This doesn't work if the blocks scf.yield a value
         SymbolicStore thenStore{*this};
         SymbolicStore elseStore{*this};
-        std::optional<mlir::Value> result =
-            cond->getNumResults() > 0 ? std::optional{cond->getResult(0)}
-                                      : std::nullopt;
+        llvm::SmallVector<mlir::Value> results{cond.getResults()};
         for (auto &block : cond.getThenRegion()) {
-          thenStore.process_block(&block, result);
+          thenStore.process_block(&block, results);
         }
         for (auto &block : cond.getElseRegion()) {
-          elseStore.process_block(&block, result);
+          elseStore.process_block(&block, results);
         }
 
         LLVM_DEBUG({
@@ -240,25 +238,25 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
 }
 
 void SymbolicStore::process_block(mlir::Block *block,
-                                  std::optional<mlir::Value> yielded) {
+                                  llvm::ArrayRef<mlir::Value> yielded) {
   for (auto &op : block->getOperations()) {
     if (auto yieldOp = llvm::dyn_cast<mlir::scf::YieldOp>(op)) {
-      if (!yielded.has_value() || yieldOp->getNumOperands() == 0)
-        continue;
-      LLVM_DEBUG(llvm::dbgs() << "Yielding a value\n");
-      // Copy `result` to `yielded`
-      auto result = yieldOp.getOperand(0);
-      if (llvm::isa<llzk::array::ArrayType>(result.getType())) {
-        // If its an array, copy all written indices
-        for (auto [ref, val] : valueStore) {
-          if (ref.name == result) {
-            valueStore[{.name = *yielded, .indices = ref.indices}] = val;
+      assert(yieldOp->getNumOperands() == yielded.size() &&
+             "wrong number of values captured");
+      for (auto [result, yielded] : llvm::zip(yieldOp.getOperands(), yielded)) {
+        // Copy `result` to `yielded`
+        if (llvm::isa<llzk::array::ArrayType>(result.getType())) {
+          // If its an array, copy all written indices
+          for (auto [ref, val] : valueStore) {
+            if (ref.name == result) {
+              valueStore[{.name = yielded, .indices = ref.indices}] = val;
+            }
           }
+        } else {
+          LLVM_DEBUG(llvm::dbgs() << "[scalar]\n");
+          // If its a scalar, do a write-through
+          valueStore[{.name = yielded, .indices = {}}] = lookup(result);
         }
-      } else {
-        LLVM_DEBUG(llvm::dbgs() << "[scalar]\n");
-        // If its a scalar, do a write-through
-        valueStore[{.name = *yielded, .indices = {}}] = lookup(result);
       }
     }
     process_operation(&op);

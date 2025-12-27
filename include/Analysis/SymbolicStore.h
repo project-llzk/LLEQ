@@ -96,10 +96,12 @@ public:
   void process_operation(mlir::Operation *op);
 
   /// @brief Update the signalStore and valueStore based on the operations in a
-  /// block. If the block yields a value, returns the corresponding symbol.
+  /// block. Optionally takes a vector of values that capture any values yielded
+  /// by the block
   /// @param block
+  /// @param yielded
   void process_block(mlir::Block *block,
-                     std::optional<mlir::Value> yielded = std::nullopt);
+                     llvm::ArrayRef<mlir::Value> yielded = {});
 
   /// @brief Generate a symbolic expression corresponding to an MLIR SSA value,
   /// possibly looking up values in the store to do so
