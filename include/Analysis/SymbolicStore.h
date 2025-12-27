@@ -85,6 +85,17 @@ class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
   SignalStore signalStore;
   ValueStore valueStore;
+  llzk::component::StructDefOp component;
+
+  // Utilities for metaprogramming
+  template <class S, class T> void copy_value(S dest, T src);
+  template <class T> mlir::Type _lookup_type(T val);
+  template <class T> Store<T> &_get();
+  Symbol lookup(llvm::StringRef sig) {
+    if (!signalStore.contains({sig, {}}))
+      signalStore[{sig, {}}] = pool->fresh_unknown();
+    return signalStore[{sig, {}}];
+  }
 
 public:
   SymbolicStore() {}
@@ -122,4 +133,6 @@ public:
   static SymbolicStore join(const SymbolicStore &a, const SymbolicStore &b);
 };
 
+// Helpful utilities
+template <class T> Store<T> _join_stores(const Store<T> &a, const Store<T> &b);
 } // namespace lleq

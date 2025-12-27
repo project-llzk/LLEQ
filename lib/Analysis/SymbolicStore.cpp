@@ -79,6 +79,7 @@ void SymbolicStore::dump(llvm::raw_ostream &os) const {
 }
 
 void SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
+  component = structDef;
   auto computeFunc = structDef.getComputeFuncOp();
   // TODO: this doesn't work if there's any control flow in the blocks lol
   for (auto &block : computeFunc.getFunctionBody().getBlocks()) {
@@ -201,23 +202,11 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
       })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {
-            // Copy every written index from signalStore to valueStore
-            for (const auto &[signalRef, value] : signalStore) {
-              if (signalRef.name == read.getFieldName()) {
-                valueStore[ValueRef{.name = read.getResult(),
-                                    .indices = signalRef.indices}] = value;
-              }
-            }
+            copy_value(read.getResult(), read.getFieldName());
           })
       .Case<llzk::component::FieldWriteOp>(
           [this](llzk::component::FieldWriteOp write) {
-            // Copy every written index from valueStore to signalStore
-            for (const auto &[valueRef, value] : valueStore) {
-              if (valueRef.name == write.getVal()) {
-                signalStore[SignalRef{.name = write.getFieldName(),
-                                      .indices = valueRef.indices}] = value;
-              }
-            }
+            copy_value(write.getFieldName(), write.getVal());
           })
       .Case<llzk::array::WriteArrayOp>([this](llzk::array::WriteArrayOp write) {
         // Havoc every possible array index that could be clobbered
@@ -248,84 +237,11 @@ void SymbolicStore::process_block(mlir::Block *block,
       assert(yieldOp->getNumOperands() == yielded.size() &&
              "wrong number of values captured");
       for (auto [result, yielded] : llvm::zip(yieldOp.getOperands(), yielded)) {
-        // Copy `result` to `yielded`
-        if (llvm::isa<llzk::array::ArrayType>(result.getType())) {
-          // If its an array, copy all written indices
-          for (auto [ref, val] : valueStore) {
-            if (ref.name == result) {
-              valueStore[{.name = yielded, .indices = ref.indices}] = val;
-            }
-          }
-        } else {
-          LLVM_DEBUG(llvm::dbgs() << "[scalar]\n");
-          // If its a scalar, do a write-through
-          valueStore[{.name = yielded, .indices = {}}] = lookup(result);
-        }
+        copy_value(yielded, result);
       }
     }
     process_operation(&op);
   }
-}
-
-// Group written indices by array reference
-template <class T> auto _group_idx(const Store<T> &store) {
-  llvm::DenseMap<T, llvm::SmallVector<llvm::SmallVector<Symbol>>> grouped;
-
-  for (auto [k, _] : store) {
-    grouped[k.name].push_back(k.indices);
-  }
-
-  return grouped;
-}
-
-// TODO: Rewrite all the joins to be in-place to avoid allocating
-template <class T> auto _join_stores(const Store<T> &a, const Store<T> &b) {
-  // For every pair of entries (arr, phi_1) :- x; (arr, phi_2) :- y from `a` and
-  // `b`, add an entry (arr, AU(phi_1, phi_2)) :- AU(x, y) to the result, where
-  // AU represents antiunification
-  Store<T> result;
-  auto groupedA = _group_idx(a);
-  auto groupedB = _group_idx(b);
-
-  for (auto [arrA, idxAs] : groupedA) {
-    if (!groupedB.contains(arrA)) {
-      // If `arrA` is only written to in `a`, then just copy all the entries
-      for (auto idxA : idxAs) {
-        Ref<T> ref{.name = arrA, .indices = idxA};
-        result[ref] = a.at(ref);
-      }
-      continue;
-    }
-
-    // If `arrA` is written to in both `a` and `b`, pairwise anti-unify the
-    // written indices
-    auto idxBs = groupedB[arrA];
-    for (auto idxA : idxAs) {
-      for (auto idxB : idxBs) {
-        anti_unify_all_inplace(idxA, idxB);
-        Ref<T> ref{arrA, idxA};
-        // and anti-unify all values written to these anti-unified indices
-        if (result.contains(ref)) {
-          anti_unify_inplace(result[ref], a.at({arrA, idxA}));
-          anti_unify_inplace(result[ref], b.at({arrA, idxB}));
-        } else {
-          result[ref] = anti_unify(a.at({arrA, idxA}), b.at({arrA, idxB}));
-        }
-      }
-    }
-  }
-
-  // Finally, just copy over all entries only written to in `b`
-  for (auto [arrB, idxBs] : groupedB) {
-    if (!groupedA.contains(arrB)) {
-      for (auto idxB : idxBs) {
-        Ref<T> ref{arrB, idxB};
-        result[ref] = b.at(ref);
-      }
-    }
-  }
-
-  return result;
 }
 
 SymbolicStore SymbolicStore::join(const SymbolicStore &a,
