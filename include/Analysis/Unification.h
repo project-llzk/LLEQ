@@ -29,13 +29,4 @@ Symbol substitute(Symbol original, const Substitutions &m);
 // Compute the universal symbol that can be substituted to reach both `a` and
 // `b` (i.e., compute the "anti-unification") of `a` and `b`
 Symbol anti_unify(Symbol a, Symbol b);
-
-// Compute the anti-unification of `a` and `b` and store the result in the
-// symbol pointed to by `a` (avoids allocating temporaries when anti-unifying
-// multiple symbols)
-void anti_unify_inplace(Symbol a, SymbolConst b);
-
-void anti_unify_all_inplace(llvm::ArrayRef<Symbol> as,
-                            llvm::ArrayRef<Symbol> bs);
-
 } // namespace lleq

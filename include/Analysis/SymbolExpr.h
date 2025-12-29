@@ -24,7 +24,7 @@ struct SymbolBase {
   };
   SymbolKind kind;
 
-  SymbolBase(SymbolPool *pool, SymbolKind k) : pool{pool}, kind{k} {}
+  SymbolBase(SymbolPool &pool, SymbolKind k) : pool{pool}, kind{k} {}
   virtual llvm::raw_ostream &print(llvm::raw_ostream &os) const = 0;
   virtual unsigned hash_value() const = 0;
 
@@ -35,12 +35,12 @@ struct SymbolBase {
     return eq(other);
   }
 
-  SymbolPool *pool;
+  SymbolPool &pool;
   virtual bool eq(const SymbolBase &other) const = 0;
 };
 
 template <class SymbolT> struct SymbolEq : public SymbolBase {
-  SymbolEq(SymbolPool *pool, SymbolKind k) : SymbolBase{pool, k} {}
+  SymbolEq(SymbolPool &pool, SymbolKind k) : SymbolBase{pool, k} {}
   bool eq(const SymbolBase &other) const override {
     assert(kind == other.kind);
     return static_cast<const SymbolT &>(*this) ==

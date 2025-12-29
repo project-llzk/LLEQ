@@ -10,6 +10,7 @@
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/ADT/iterator_range.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
@@ -23,46 +24,46 @@ using namespace lleq;
 Symbol SymbolPool::copy(Symbol s) {
   return llvm::TypeSwitch<Symbol, Symbol>(s)
       .Case<Unknown>(
-          [this](Unknown *s) { return alloc.new_object<Unknown>(this, s->n); })
+          [this](Unknown *s) { return alloc.new_object<Unknown>(*this, s->n); })
       .Case<Constant>([this](Constant *s) {
-        return alloc.new_object<Constant>(this, s->value);
+        return alloc.new_object<Constant>(*this, s->value);
       })
       .Case<TemplParam>([this](TemplParam *s) {
-        return alloc.new_object<TemplParam>(this, s->name);
+        return alloc.new_object<TemplParam>(*this, s->name);
       })
       .Case<OpCall>([this](OpCall *s) {
         llvm::SmallVector<Symbol> copiedArgs;
         for (auto arg : s->arguments) {
           copiedArgs.push_back(copy(arg));
         }
-        return alloc.new_object<OpCall>(this, s->opName, copiedArgs);
+        return alloc.new_object<OpCall>(*this, s->opName, copiedArgs);
       })
       .Case<Index>([this](Index *s) {
         llvm::SmallVector<Symbol> copiedIdx;
         for (auto idx : s->indices) {
           copiedIdx.push_back(copy(idx));
         }
-        return alloc.new_object<Index>(this, s->signal, copiedIdx);
+        return alloc.new_object<Index>(*this, s->signal, copiedIdx);
       });
 }
 
 Symbol SymbolPool::fresh_unknown() {
   static std::size_t n;
-  return alloc.new_object<Unknown>(this, n++);
+  return alloc.new_object<Unknown>(*this, n++);
 }
 
 Symbol SymbolPool::constant(mlir::APInt value) {
-  return alloc.new_object<Constant>(this, value);
+  return alloc.new_object<Constant>(*this, value);
 }
 Symbol SymbolPool::templ_param(llvm::StringRef name) {
-  return alloc.new_object<TemplParam>(this, name);
+  return alloc.new_object<TemplParam>(*this, name);
 }
 Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
-  return alloc.new_object<Index>(this, signal, ns);
+  return alloc.new_object<Index>(*this, signal, ns);
 }
 Symbol SymbolPool::func_call(llvm::StringRef name,
                              llvm::ArrayRef<Symbol> args) {
-  return alloc.new_object<OpCall>(this, name, args);
+  return alloc.new_object<OpCall>(*this, name, args);
 }
 
 std::string SymbolPool::_gen_name(mlir::Value value) const {

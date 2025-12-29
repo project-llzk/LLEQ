@@ -9,6 +9,7 @@
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/Twine.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
@@ -31,24 +32,22 @@
 using namespace lleq;
 
 template <class T>
-llvm::DenseMap<Ref<T>, Symbol>
-_copy_store(const llvm::DenseMap<Ref<T>, Symbol> &store, SymbolPool &pool) {
-  llvm::DenseMap<Ref<T>, Symbol> copied;
+Store<T> _copy_store(const Store<T> &store, SymbolPool &pool) {
+  Store<T> copied{pool};
   for (const auto [ref, val] : store) {
     Ref<T> copiedRef{ref.name, {}};
     for (auto idx : ref.indices) {
       copiedRef.indices.push_back(pool.copy(idx));
     }
-    copied[copiedRef] = pool.copy(val);
+    copied.write(copiedRef, val);
   }
   return copied;
 }
 
-SymbolicStore::SymbolicStore(const SymbolicStore &other) {
-  pool = std::make_unique<SymbolPool>();
-  signalStore = _copy_store(other.signalStore, *pool);
-  valueStore = _copy_store(other.valueStore, *pool);
-}
+SymbolicStore::SymbolicStore(const SymbolicStore &other)
+    : pool{std::make_unique<SymbolPool>()},
+      signalStore{_copy_store(other.signalStore, *pool)},
+      valueStore{_copy_store(other.valueStore, *pool)} {}
 
 SymbolicStore &SymbolicStore::operator=(const SymbolicStore &other) {
   auto new_pool = std::make_unique<SymbolPool>();
@@ -91,14 +90,13 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
   if (llvm::isa<mlir::TypedValue<llzk::array::ArrayType>>(value)) {
     llvm::report_fatal_error("cannot generate a symbol for a non-scalar value");
   }
+  if (valueStore.contains({.name = value, .indices = {}})) {
+    return valueStore.at({.name = value, .indices = {}});
+  }
 
   // Input signal
   if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(value)) {
     return pool->index(value, {});
-  }
-
-  if (valueStore.contains({.name = value, .indices = {}})) {
-    return valueStore[{.name = value, .indices = {}}];
   }
 
   mlir::Operation *definingOp = value.getDefiningOp();
@@ -125,9 +123,9 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 
         // If the index hasn't been written to before, mark it
         if (!valueStore.contains(ref)) {
-          valueStore[ref] = pool->fresh_unknown();
+          valueStore.write(ref, pool->fresh_unknown());
         }
-        return valueStore[ref];
+        return valueStore.at(ref);
       })
       .Case<llzk::felt::FeltBinaryOpInterface>(
           [this](llzk::felt::FeltBinaryOpInterface binop) {
@@ -147,9 +145,9 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
             // Reading from a scalar field should copy from the symbol store
             SignalRef ref{.name = read.getFieldName(), .indices = {}};
             if (!signalStore.contains(ref)) {
-              signalStore[ref] = pool->fresh_unknown();
+              signalStore.write(ref, pool->fresh_unknown());
             }
-            return signalStore[ref];
+            return signalStore.at(ref);
           })
       .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
         llvm::SmallVector<Symbol> args;
@@ -198,16 +196,33 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
       })
       .Case<mlir::scf::ForOp>([this](mlir::scf::ForOp forOp) {
         SymbolicStore bodyStore{*this};
+
         // Start by initializing any loop-carried deps
         for (auto [arg, val] :
              llvm::zip(llvm::drop_begin(forOp.getBody()->getArguments()),
                        forOp.getInits())) {
-          bodyStore.copy_value(llvm::dyn_cast<mlir::Value>(arg), val);
+          bodyStore.copy_value(llvm::dyn_cast<mlir::Value>(arg), val,
+                               WriteMode::AntiUnify);
         }
 
         // Run the bodyStore on the loop body, capturing the yielded values
+        llvm::SmallVector<mlir::Value> loopCarriedDeps{
+            llvm::drop_begin(forOp.getBody()->getArguments())};
+        bodyStore.process_block(forOp.getBody(), loopCarriedDeps);
+
         // If the store changes, run it again (up to N times)
-        // Otherwise, we've hit a fixpoint so breaks
+        // Otherwise, we've hit a fixpoint so break
+
+        // Finally, save the results of the loop:
+        // 1. Widen signalStore to accomodate bodyStore.signalStore
+        // 2. Copy the loop args into the forOp's results
+        signalStore.widen(bodyStore.signalStore);
+        for (auto [result, arg] :
+             llvm::zip(forOp.getResults(),
+                       llvm::drop_begin(forOp.getBody()->getArguments()))) {
+          bodyStore.copy_value<mlir::Value, mlir::Value>(valueStore, result,
+                                                         arg);
+        }
       })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {
@@ -223,7 +238,7 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         for (const auto &[valueRef, value] : valueStore) {
           // TODO: actually check if the index could be clobbered
           if (valueRef.name == array) {
-            valueStore[valueRef] = pool->fresh_unknown();
+            valueStore.write(valueRef, pool->fresh_unknown());
           }
         }
 
@@ -233,7 +248,7 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
           indices.push_back(lookup(index));
         }
 
-        valueStore[ValueRef{array, indices}] = lookup(write.getRvalue());
+        valueStore.write(ValueRef{array, indices}, lookup(write.getRvalue()));
       })
       .Default([](auto) {});
 }
@@ -246,7 +261,7 @@ void SymbolicStore::process_block(mlir::Block *block,
       assert(yieldOp->getNumOperands() == yielded.size() &&
              "wrong number of values captured");
       for (auto [result, yielded] : llvm::zip(yieldOp.getOperands(), yielded)) {
-        copy_value(yielded, result);
+        copy_value(yielded, result, WriteMode::AntiUnify);
       }
     }
     process_operation(&op);
@@ -256,7 +271,7 @@ void SymbolicStore::process_block(mlir::Block *block,
 SymbolicStore SymbolicStore::join(const SymbolicStore &a,
                                   const SymbolicStore &b) {
   SymbolicStore result;
-  result.signalStore = _join_stores(a.signalStore, b.signalStore);
-  result.valueStore = _join_stores(a.valueStore, b.valueStore);
+  result.signalStore = _join_stores(a.signalStore, b.signalStore, *result.pool);
+  result.valueStore = _join_stores(a.valueStore, b.valueStore, *result.pool);
   return result;
 }

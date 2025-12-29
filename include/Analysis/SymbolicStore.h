@@ -6,8 +6,10 @@
 #pragma once
 
 #include "Analysis/SymbolExpr.h"
+#include "Analysis/Unification.h"
 
 #include <algorithm>
+#include <cassert>
 #include <concepts>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
@@ -72,9 +74,49 @@ struct DenseMapInfo<lleq::SignalRef> : public RefInfo<llvm::StringRef> {};
 
 namespace lleq {
 
-template <class T> using Store = llvm::DenseMap<Ref<T>, Symbol>;
+enum class WriteMode { Overwrite, AntiUnify };
+template <class T> struct Store {
+  auto begin() const { return _store.begin(); }
+  auto end() const { return _store.end(); }
+  decltype(auto) at(Ref<T> ref) const { return _store.at(ref); }
+  bool contains(Ref<T> ref) const { return _store.contains(ref); }
+  auto size() const { return _store.size(); }
+
+  void write(Ref<T> ref, Symbol val, WriteMode mode = WriteMode::Overwrite) {
+    if (&val->pool != &_pool)
+      val = _pool.copy(val);
+    if (!contains(ref) || mode == WriteMode::Overwrite)
+      _store[ref] = val;
+    _store[ref] = anti_unify(_store[ref], val);
+  }
+
+  Store(llvm::DenseMap<Ref<T>, Symbol> entries, SymbolPool &pool)
+      : _store{entries}, _pool{pool} {}
+  Store(SymbolPool &pool) : _store{}, _pool{pool} {}
+  Store(const Store<T> &other) : _pool{other._pool}, _store{other._store} {}
+  Store &operator=(const Store<T> &other) {
+    assert(&_pool == &other._pool &&
+           "cannot assign to store backed by different SymbolPool");
+    _store = other._store;
+    return *this;
+  }
+
+  void widen(const Store<T> &other) {
+    // TODO: update when _join_stores works in-place
+    *this = _join_stores(*this, other, _pool);
+  }
+
+private:
+  llvm::DenseMap<Ref<T>, Symbol> _store;
+  SymbolPool &_pool;
+};
+
+// template <class T> using Store = llvm::DenseMap<Ref<T>, Symbol>;
 using SignalStore = Store<llvm::StringRef>;
 using ValueStore = Store<mlir::Value>;
+
+// template struct Store<llvm::StringRef>;
+// template struct Store<mlir::Value>;
 
 /// @brief Represents a mapping between circuit signals and symbolic
 /// expressions. Each entry in the store is keyed by both the signal, which is
@@ -87,23 +129,26 @@ class SymbolicStore {
   ValueStore valueStore;
   llzk::component::StructDefOp component;
 
-  enum class WriteMode { Overwrite, AntiUnify };
-
   // Utilities for metaprogramming
   template <class S, class T>
-  void copy_value(S dest, T src, WriteMode mode = WriteMode::Overwrite);
+  void copy_value(S dest, T src, WriteMode mode = WriteMode::Overwrite) {
+    copy_value(_get<S>(), dest, src, mode);
+  }
+  template <class S, class T>
+  void copy_value(Store<S> &destStore, S dest, T src,
+                  WriteMode mode = WriteMode::Overwrite);
   template <class T>
   void write_value(Store<T> &store, Ref<T> ref, Symbol value, WriteMode mode);
   template <class T> mlir::Type _lookup_type(T val);
   template <class T> Store<T> &_get();
   Symbol lookup(llvm::StringRef sig) {
     if (!signalStore.contains({sig, {}}))
-      signalStore[{sig, {}}] = pool->fresh_unknown();
-    return signalStore[{sig, {}}];
+      signalStore.write({sig, {}}, pool->fresh_unknown());
+    return signalStore.at({sig, {}});
   }
 
 public:
-  SymbolicStore() {}
+  SymbolicStore() : signalStore{*pool.get()}, valueStore{*pool.get()} {}
   SymbolicStore(const SymbolicStore &other);
   SymbolicStore &operator=(const SymbolicStore &other);
 
@@ -139,5 +184,6 @@ public:
 };
 
 // Helpful utilities
-template <class T> Store<T> _join_stores(const Store<T> &a, const Store<T> &b);
+template <class T>
+Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &);
 } // namespace lleq

@@ -6,7 +6,7 @@ namespace lleq {
 struct SymbolPool;
 struct Unknown : public impl::SymbolEq<Unknown> {
   unsigned n;
-  Unknown(SymbolPool *pool, unsigned n)
+  Unknown(SymbolPool &pool, unsigned n)
       : impl::SymbolEq<Unknown>{pool, SymbolKind::SK_Unknown}, n{n} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     os << '?' << n;
@@ -23,7 +23,7 @@ struct Unknown : public impl::SymbolEq<Unknown> {
 
 struct Constant : public impl::SymbolEq<Constant> {
   mlir::APInt value;
-  Constant(SymbolPool *pool, mlir::APInt value)
+  Constant(SymbolPool &pool, mlir::APInt value)
       : impl::SymbolEq<Constant>{pool, SymbolKind::SK_Const}, value{value} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // Print it as signed
@@ -44,7 +44,7 @@ struct Constant : public impl::SymbolEq<Constant> {
 
 struct TemplParam : public impl::SymbolEq<TemplParam> {
   std::string name;
-  TemplParam(SymbolPool *pool, llvm::StringRef name)
+  TemplParam(SymbolPool &pool, llvm::StringRef name)
       : impl::SymbolEq<TemplParam>{pool, SymbolKind::SK_TemplParam},
         name{name} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
@@ -64,12 +64,12 @@ struct Index : public impl::SymbolEq<Index> {
   mlir::Value signal;
   llvm::SmallVector<Symbol> indices;
 
-  Index(SymbolPool *pool, mlir::Value signal, llvm::ArrayRef<Symbol> ns)
+  Index(SymbolPool &pool, mlir::Value signal, llvm::ArrayRef<Symbol> ns)
       : impl::SymbolEq<Index>{pool, SymbolKind::SK_Index}, signal{signal},
         indices{ns} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
     // TODO: print the MLIR value too
-    os << pool->getNameForValue(signal);
+    os << pool.getNameForValue(signal);
     for (auto n : indices) {
       os << '[';
       n->print(os) << ']';
@@ -95,7 +95,7 @@ struct OpCall : public impl::SymbolEq<OpCall> {
   llvm::SmallVector<Symbol> arguments;
   std::string opName;
 
-  OpCall(SymbolPool *pool, llvm::StringRef opName,
+  OpCall(SymbolPool &pool, llvm::StringRef opName,
          llvm::ArrayRef<Symbol> arguments)
       : impl::SymbolEq<OpCall>{pool, SymbolKind::SK_Call}, arguments{arguments},
         opName{opName} {}

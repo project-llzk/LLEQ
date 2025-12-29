@@ -8,6 +8,7 @@
 #include "SymbolImpls.h"
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Debug.h>
 #include <mlir/IR/MLIRContext.h>
 #include <mlir/Support/LLVM.h>
 
@@ -105,14 +106,14 @@ Symbol _single_subst(Symbol original, unsigned k, Symbol v) {
         for (auto arg : c->arguments) {
           substArgs.push_back(_single_subst(arg, k, v));
         }
-        return c->pool->func_call(c->opName, substArgs);
+        return c->pool.func_call(c->opName, substArgs);
       })
       .Case<Index>([k, v](Index *i) -> Symbol {
         llvm::SmallVector<Symbol> indices;
         for (auto idx : i->indices) {
           indices.push_back(_single_subst(idx, k, v));
         }
-        return i->pool->index(i->signal, indices);
+        return i->pool.index(i->signal, indices);
       })
       .Default([original](auto) { return original; });
 }
@@ -129,7 +130,7 @@ Symbol substitute(Symbol original, const Substitutions &m) {
   }
   // Finally copy the result back into the original pool. When `local_pool` goes
   // out of scope, all the temporaries are automatically freed
-  return original->pool->copy(orig);
+  return original->pool.copy(orig);
 }
 
 // "Erase" whatever's different between `a` and `b` and replace it with unknowns
@@ -142,7 +143,7 @@ Symbol anti_unify(Symbol a, Symbol b) {
     return b;
   // If the constructors don't match there's no hope of unifying anything
   if (a->kind != b->kind)
-    return a->pool->fresh_unknown();
+    return a->pool.fresh_unknown();
   return llvm::TypeSwitch<Symbol, Symbol>(a)
       .Case<OpCall>([b](OpCall *callA) -> Symbol {
         // If its two calls to the same function, try anti-unifying each
@@ -150,21 +151,21 @@ Symbol anti_unify(Symbol a, Symbol b) {
         auto callB = llvm::dyn_cast<OpCall>(b);
         if (callA->opName != callB->opName ||
             callA->arguments.size() != callB->arguments.size())
-          return callA->pool->fresh_unknown();
+          return callA->pool.fresh_unknown();
 
         llvm::SmallVector<Symbol> anti_unified_args;
         for (unsigned i = 0; i < callA->arguments.size(); i++) {
           anti_unified_args.push_back(
               anti_unify(callA->arguments[i], callB->arguments[i]));
         }
-        return callA->pool->func_call(callA->opName, anti_unified_args);
+        return callA->pool.func_call(callA->opName, anti_unified_args);
       })
       .Case<Index>([b](Index *indexA) -> Symbol {
         // If its two indices into the same array, try anti-unifying each index
         auto indexB = llvm::dyn_cast<Index>(b);
         if (indexA->signal != indexB->signal ||
             indexA->indices.size() != indexB->indices.size()) {
-          return indexA->pool->fresh_unknown();
+          return indexA->pool.fresh_unknown();
         }
 
         llvm::SmallVector<Symbol> anti_unified_idx;
@@ -172,52 +173,10 @@ Symbol anti_unify(Symbol a, Symbol b) {
           anti_unified_idx.push_back(
               anti_unify(indexA->indices[i], indexB->indices[i]));
         }
-        return indexA->pool->index(indexA->signal, anti_unified_idx);
+        return indexA->pool.index(indexA->signal, anti_unified_idx);
       })
-      .Default([b](auto) { return b->pool->fresh_unknown(); });
+      .Default([b](auto) { return b->pool.fresh_unknown(); });
 }
 
-// Computes `*a = anti_unify(a, b)` without allocating a temporary
-void anti_unify_inplace(Symbol a, SymbolConst b) {
-  auto pool = a->pool;
-  using enum impl::SymbolBase::SymbolKind;
-  if (*a == *b || llvm::isa<Unknown>(a))
-    return;
-  if (llvm::isa<Unknown>(b)) {
-    *a = *b;
-    return;
-  }
-  if (a->kind != b->kind) {
-    *a = *a->pool->fresh_unknown();
-  }
-
-  llvm::TypeSwitch<Symbol, void>(a)
-      .Case<OpCall>([a, b, pool](OpCall *callA) {
-        auto callB = llvm::dyn_cast<OpCall>(b);
-        if (callA->opName != callB->opName ||
-            callA->arguments.size() != callB->arguments.size()) {
-          *a = *pool->fresh_unknown();
-        }
-        anti_unify_all_inplace(callA->arguments, callB->arguments);
-      })
-      .Case<Index>([a, b, pool](Index *indexA) {
-        auto indexB = llvm::dyn_cast<Index>(b);
-        if (indexA->signal != indexB->signal ||
-            indexA->indices.size() != indexB->indices.size()) {
-          *a = *pool->fresh_unknown();
-        }
-        anti_unify_all_inplace(indexA->indices, indexB->indices);
-      })
-      .Default([a, pool](auto) { *a = *pool->fresh_unknown(); });
-}
-
-void anti_unify_all_inplace(llvm::ArrayRef<Symbol> as,
-                            llvm::ArrayRef<Symbol> bs) {
-  assert(as.size() == bs.size() &&
-         "cannot anti-unify arrays of different size");
-  for (unsigned i = 0; i < as.size(); i++) {
-    anti_unify_inplace(as[i], bs[i]);
-  }
-}
-
+// TODO: implement anti_unify_inplace
 } // namespace lleq
