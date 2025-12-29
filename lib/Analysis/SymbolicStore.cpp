@@ -5,8 +5,8 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Analysis/SymbolExpr.h"
-#include "Analysis/Unification.h"
 
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/Twine.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
@@ -197,8 +197,17 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         *this = SymbolicStore::join(thenStore, elseStore);
       })
       .Case<mlir::scf::ForOp>([this](mlir::scf::ForOp forOp) {
-        // Start by initializing any loop-carried deps
         SymbolicStore bodyStore{*this};
+        // Start by initializing any loop-carried deps
+        for (auto [arg, val] :
+             llvm::zip(llvm::drop_begin(forOp.getBody()->getArguments()),
+                       forOp.getInits())) {
+          bodyStore.copy_value(llvm::dyn_cast<mlir::Value>(arg), val);
+        }
+
+        // Run the bodyStore on the loop body, capturing the yielded values
+        // If the store changes, run it again (up to N times)
+        // Otherwise, we've hit a fixpoint so breaks
       })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {

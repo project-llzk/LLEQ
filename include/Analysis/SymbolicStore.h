@@ -87,8 +87,13 @@ class SymbolicStore {
   ValueStore valueStore;
   llzk::component::StructDefOp component;
 
+  enum class WriteMode { Overwrite, AntiUnify };
+
   // Utilities for metaprogramming
-  template <class S, class T> void copy_value(S dest, T src);
+  template <class S, class T>
+  void copy_value(S dest, T src, WriteMode mode = WriteMode::Overwrite);
+  template <class T>
+  void write_value(Store<T> &store, Ref<T> ref, Symbol value, WriteMode mode);
   template <class T> mlir::Type _lookup_type(T val);
   template <class T> Store<T> &_get();
   Symbol lookup(llvm::StringRef sig) {

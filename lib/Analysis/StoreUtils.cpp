@@ -1,3 +1,4 @@
+#include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStore.h"
 #include "Analysis/Unification.h"
 #include <llzk/Dialect/Array/IR/Types.h>
@@ -79,23 +80,43 @@ template <> mlir::Type SymbolicStore::_lookup_type(llvm::StringRef val) {
 template <> ValueStore &SymbolicStore::_get() { return valueStore; }
 template <> SignalStore &SymbolicStore::_get() { return signalStore; }
 
-template <class S, class T> void SymbolicStore::copy_value(S dest, T src) {
+template <class T>
+void SymbolicStore::write_value(Store<T> &store, Ref<T> ref, Symbol value,
+                                WriteMode mode) {
+  if (!store.contains(ref) || mode == WriteMode::Overwrite) {
+    store[ref] = value;
+    return;
+  }
+  anti_unify_inplace(store[ref], value);
+}
+template void SymbolicStore::write_value(ValueStore &, ValueRef, Symbol,
+                                         WriteMode);
+template void SymbolicStore::write_value(SignalStore &, SignalRef, Symbol,
+                                         WriteMode);
+
+// TODO: option to anti-unify if the value is present in the store
+template <class S, class T>
+void SymbolicStore::copy_value(S dest, T src, WriteMode mode) {
   auto &destStore = _get<S>();
   if (llvm::isa<llzk::array::ArrayType>(_lookup_type(src))) {
     // Copy all written indices
     for (auto [ref, val] : _get<T>()) {
       if (ref.name == src) {
-        destStore[{.name = dest, .indices = ref.indices}] = val;
+        write_value(destStore, {.name = dest, .indices = ref.indices}, val,
+                    mode);
       }
     }
   } else {
-    destStore[{.name = dest, .indices = {}}] = lookup(src);
+    write_value(destStore, {.name = dest, .indices = {}}, lookup(src), mode);
   }
 }
 
-template void SymbolicStore::copy_value(mlir::Value, mlir::Value);
-template void SymbolicStore::copy_value(mlir::Value, llvm::StringRef);
-template void SymbolicStore::copy_value(llvm::StringRef, mlir::Value);
-template void SymbolicStore::copy_value(llvm::StringRef, llvm::StringRef);
+template void SymbolicStore::copy_value(mlir::Value, mlir::Value, WriteMode);
+template void SymbolicStore::copy_value(mlir::Value, llvm::StringRef,
+                                        WriteMode);
+template void SymbolicStore::copy_value(llvm::StringRef, mlir::Value,
+                                        WriteMode);
+template void SymbolicStore::copy_value(llvm::StringRef, llvm::StringRef,
+                                        WriteMode);
 
 } // namespace lleq
