@@ -31,28 +31,15 @@
 
 using namespace lleq;
 
-template <class T>
-Store<T> _copy_store(const Store<T> &store, SymbolPool &pool) {
-  Store<T> copied{pool};
-  for (const auto [ref, val] : store) {
-    Ref<T> copiedRef{ref.name, {}};
-    for (auto idx : ref.indices) {
-      copiedRef.indices.push_back(pool.copy(idx));
-    }
-    copied.write(copiedRef, val);
-  }
-  return copied;
-}
-
 SymbolicStore::SymbolicStore(const SymbolicStore &other)
     : pool{std::make_unique<SymbolPool>()},
-      signalStore{_copy_store(other.signalStore, *pool)},
-      valueStore{_copy_store(other.valueStore, *pool)} {}
+      signalStore{other.signalStore.clone(*pool)},
+      valueStore{other.valueStore.clone(*pool)} {}
 
 SymbolicStore &SymbolicStore::operator=(const SymbolicStore &other) {
   auto new_pool = std::make_unique<SymbolPool>();
-  signalStore = _copy_store(other.signalStore, *new_pool);
-  valueStore = _copy_store(other.valueStore, *new_pool);
+  signalStore = other.signalStore.clone(*new_pool);
+  valueStore = other.valueStore.clone(*new_pool);
   pool.reset(new_pool.release());
   return *this;
 }

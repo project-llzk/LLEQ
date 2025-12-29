@@ -4,6 +4,10 @@
 #include <llzk/Dialect/Array/IR/Types.h>
 
 namespace lleq {
+
+template struct Store<llvm::StringRef>;
+template struct Store<mlir::Value>;
+
 // Group written indices by array reference
 template <class T> auto _group_idx(const Store<T> &store) {
   llvm::DenseMap<T, llvm::SmallVector<llvm::SmallVector<Symbol>>> grouped;
@@ -18,9 +22,6 @@ template <class T> auto _group_idx(const Store<T> &store) {
 // TODO: Rewrite all the joins to be in-place to avoid allocating
 template <class T>
 Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &pool) {
-  // For every pair of entries (arr, phi_1) :- x; (arr, phi_2) :- y from `a` and
-  // `b`, add an entry (arr, AU(phi_1, phi_2)) :- AU(x, y) to the result, where
-  // AU represents antiunification
   Store<T> result{pool};
   auto groupedA = _group_idx(a);
   auto groupedB = _group_idx(b);
@@ -64,11 +65,6 @@ Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &pool) {
 
   return result;
 }
-
-template ValueStore _join_stores(const ValueStore &a, const ValueStore &b,
-                                 SymbolPool &);
-template SignalStore _join_stores(const SignalStore &a, const SignalStore &b,
-                                  SymbolPool &);
 
 template <> mlir::Type SymbolicStore::_lookup_type(mlir::Value val) {
   return val.getType();
