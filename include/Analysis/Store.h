@@ -62,7 +62,7 @@ template <class T> struct Store;
 // `b`, add an entry (arr, AU(phi_1, phi_2)) :- AU(x, y) to the result, where
 // AU represents antiunification
 template <class T>
-Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &);
+Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool *);
 
 enum class WriteMode { Overwrite, AntiUnify };
 
@@ -80,32 +80,24 @@ template <class T> struct Store {
   // Configure behavior when writing to a name that is already present
   // (overwrite vs. anti-unify)
   void write(Ref<T> ref, Symbol val, WriteMode mode = WriteMode::Overwrite) {
-    if (&val->pool != &_pool)
-      val = _pool.copy(val);
+    if (&val->pool != _pool)
+      val = _pool->copy(val);
     if (!contains(ref) || mode == WriteMode::Overwrite)
       _store[ref] = val;
     _store[ref] = anti_unify(_store[ref], val);
   }
 
-  Store(llvm::DenseMap<Ref<T>, Symbol> entries, SymbolPool &pool)
+  Store(llvm::DenseMap<Ref<T>, Symbol> entries, SymbolPool *pool)
       : _store{entries}, _pool{pool} {}
-  Store(SymbolPool &pool) : _store{}, _pool{pool} {}
-  // Creates a shallow copy. For a deep copy, use `.clone()`
-  Store(const Store<T> &other) : _pool{other._pool}, _store{other._store} {}
-  Store &operator=(const Store<T> &other) {
-    assert(&_pool == &other._pool &&
-           "cannot assign to store backed by different SymbolPool");
-    _store = other._store;
-    return *this;
-  }
+  Store(SymbolPool *pool) : _store{}, _pool{pool} {}
 
   // Create a deep copy backed by `pool`
-  Store<T> clone(SymbolPool &pool) const {
+  Store<T> clone(SymbolPool *pool) const {
     Store<T> cloned{pool};
     for (const auto [ref, val] : _store) {
       Ref<T> clonedRef{ref.name, {}};
       for (auto idx : ref.indices) {
-        clonedRef.indices.push_back(pool.copy(idx));
+        clonedRef.indices.push_back(pool->copy(idx));
       }
       cloned.write(clonedRef, val);
     }
@@ -136,7 +128,7 @@ template <class T> struct Store {
 
 private:
   llvm::DenseMap<Ref<T>, Symbol> _store;
-  SymbolPool &_pool;
+  SymbolPool *_pool;
 };
 
 using SignalStore = Store<llvm::StringRef>;

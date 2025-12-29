@@ -54,7 +54,7 @@ class SymbolicStore {
   }
 
 public:
-  SymbolicStore() : signalStore{*pool.get()}, valueStore{*pool.get()} {}
+  SymbolicStore() : signalStore{pool.get()}, valueStore{pool.get()} {}
   SymbolicStore(const SymbolicStore &other);
   SymbolicStore &operator=(const SymbolicStore &other);
   bool operator==(const SymbolicStore &other) const = default;

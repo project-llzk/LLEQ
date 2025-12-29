@@ -33,13 +33,13 @@ using namespace lleq;
 
 SymbolicStore::SymbolicStore(const SymbolicStore &other)
     : pool{std::make_unique<SymbolPool>()},
-      signalStore{other.signalStore.clone(*pool)},
-      valueStore{other.valueStore.clone(*pool)} {}
+      signalStore{other.signalStore.clone(pool.get())},
+      valueStore{other.valueStore.clone(pool.get())} {}
 
 SymbolicStore &SymbolicStore::operator=(const SymbolicStore &other) {
   auto new_pool = std::make_unique<SymbolPool>();
-  signalStore = other.signalStore.clone(*new_pool);
-  valueStore = other.valueStore.clone(*new_pool);
+  signalStore = other.signalStore.clone(new_pool.get());
+  valueStore = other.valueStore.clone(new_pool.get());
   pool.reset(new_pool.release());
   return *this;
 }
@@ -258,7 +258,9 @@ void SymbolicStore::process_block(mlir::Block *block,
 SymbolicStore SymbolicStore::join(const SymbolicStore &a,
                                   const SymbolicStore &b) {
   SymbolicStore result;
-  result.signalStore = _join_stores(a.signalStore, b.signalStore, *result.pool);
-  result.valueStore = _join_stores(a.valueStore, b.valueStore, *result.pool);
+  result.signalStore =
+      _join_stores(a.signalStore, b.signalStore, result.pool.get());
+  result.valueStore =
+      _join_stores(a.valueStore, b.valueStore, result.pool.get());
   return result;
 }
