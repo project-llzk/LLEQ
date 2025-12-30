@@ -2,6 +2,7 @@
 
 #include "Analysis/SymbolExpr.h"
 #include <llvm/ADT/DynamicAPInt.h>
+#include <llvm/ADT/StringExtras.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/Support/LLVM.h>
 
@@ -100,11 +101,11 @@ struct OpCall : public impl::SymbolEq<OpCall> {
         opName{opName} {}
 
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
+    llvm::ListSeparator sep;
     os << opName << '(';
-    for (unsigned i = 0; i < arguments.size() - 1; i++) {
-      os << arguments[i] << ", ";
+    for (unsigned i = 0; i < arguments.size(); i++) {
+      os << sep << arguments[i];
     }
-    os << arguments[arguments.size() - 1];
     os << ')';
     return os;
   }
