@@ -68,10 +68,11 @@ Symbol SymbolPool::func_call(llvm::StringRef name,
 
 std::string SymbolPool::_gen_name(mlir::Value value) const {
   static unsigned value_number = 0u;
+  static unsigned block_arg_number = 0u;
   std::string result;
   llvm::raw_string_ostream ss(result);
   if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(value)) {
-    ss << llvm::format("%%arg%u", blockArg.getArgNumber());
+    ss << llvm::format("%%arg%u", block_arg_number++);
   } else {
     ss << llvm::format("%%val%u", value_number++);
   }

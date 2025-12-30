@@ -11,6 +11,7 @@
 #include <cassert>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
@@ -57,7 +58,9 @@ public:
   SymbolicStore() : signalStore{pool.get()}, valueStore{pool.get()} {}
   SymbolicStore(const SymbolicStore &other);
   SymbolicStore &operator=(const SymbolicStore &other);
-  bool operator==(const SymbolicStore &other) const = default;
+  bool operator==(const SymbolicStore &other) const {
+    return signalStore == other.signalStore && valueStore == other.valueStore;
+  }
 
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef

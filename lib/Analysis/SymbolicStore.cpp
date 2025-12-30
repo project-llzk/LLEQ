@@ -185,25 +185,48 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         SymbolicStore bodyStore{*this};
 
         // Start by initializing any loop-carried deps
-        for (auto [arg, val] :
-             llvm::zip(llvm::drop_begin(forOp.getBody()->getArguments()),
-                       forOp.getInits())) {
+        bodyStore.copy_value(forOp.getInductionVar(),
+                             llvm::dyn_cast<mlir::Value>(forOp.getLowerBound()),
+                             WriteMode::AntiUnify);
+        llvm::SmallVector<mlir::Value> loopCarriedDeps{
+            llvm::drop_begin(forOp.getBody()->getArguments())};
+        for (auto [arg, val] : llvm::zip(loopCarriedDeps, forOp.getInits())) {
           bodyStore.copy_value(llvm::dyn_cast<mlir::Value>(arg), val,
                                WriteMode::AntiUnify);
         }
 
         // Run the bodyStore on the loop body, capturing the yielded values
-        llvm::SmallVector<mlir::Value> loopCarriedDeps{
-            llvm::drop_begin(forOp.getBody()->getArguments())};
-        bodyStore.process_block(forOp.getBody(), loopCarriedDeps);
-
         // If the store changes, run it again (up to N times)
         // Otherwise, we've hit a fixpoint so break
+        constexpr unsigned MAX_ITERS = 4;
+        SymbolicStore oldBody;
+        for (unsigned i = 0; i < MAX_ITERS; i++) {
+          // Execute one iteration
+          oldBody = bodyStore;
+          bodyStore.process_block(forOp.getBody(), loopCarriedDeps);
+
+          // Update the loop induction var
+          Symbol newIVar = pool->func_call(
+              "felt.add", {bodyStore.lookup(forOp.getInductionVar()),
+                           bodyStore.lookup(forOp.getLowerBound())});
+          bodyStore.valueStore.write({forOp.getInductionVar(), {}}, newIVar,
+                                     WriteMode::AntiUnify);
+
+          // If we hit a fixpoint, break early
+          if (bodyStore == oldBody) {
+            LLVM_DEBUG(llvm::dbgs()
+                       << "Fixpoint reached after " << i << " iterations\n");
+            break;
+          }
+        }
 
         // Finally, save the results of the loop:
         // 1. Widen signalStore to accomodate bodyStore.signalStore
         // 2. Copy the loop args into the forOp's results
-        signalStore.widen(bodyStore.signalStore);
+        // TODO: calling `widen` twice fails (use-after-free)
+        // signalStore.widen(bodyStore.signalStore);
+        // valueStore.widen(bodyStore.valueStore);
+        *this = SymbolicStore::join(*this, bodyStore);
         for (auto [result, arg] :
              llvm::zip(forOp.getResults(),
                        llvm::drop_begin(forOp.getBody()->getArguments()))) {

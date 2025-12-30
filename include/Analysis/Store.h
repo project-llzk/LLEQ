@@ -3,6 +3,7 @@
 #include "Analysis/Unification.h"
 #include <algorithm>
 #include <concepts>
+#include <llvm/Support/Debug.h>
 
 namespace lleq {
 
