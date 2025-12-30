@@ -11,6 +11,7 @@
 
 namespace lleq {
 
+// Maps `n` to the inferred substitution for Unknown symbol `?n`
 using Substitutions = llvm::SmallVector<std::pair<unsigned, Symbol>>;
 
 // Attempt to unify a single pair of symbols, updating `s` with the

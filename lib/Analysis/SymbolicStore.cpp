@@ -6,6 +6,7 @@
 #include "Analysis/SymbolicStore.h"
 #include "Analysis/SymbolExpr.h"
 
+#include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/Twine.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -67,7 +68,6 @@ void SymbolicStore::dump(llvm::raw_ostream &os) const {
 void SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   component = structDef;
   auto computeFunc = structDef.getComputeFuncOp();
-  // TODO: this doesn't work if there's any control flow in the blocks lol
   for (auto &block : computeFunc.getFunctionBody().getBlocks()) {
     process_block(&block);
   }
@@ -121,11 +121,11 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
                 {lookup(binop.getLhs()), lookup(binop.getRhs())});
           })
       .Case<llzk::felt::FeltConstantOp>([this](llzk::felt::FeltConstantOp op) {
-        return pool->constant(op.getValue());
+        return pool->constant(mlir::DynamicAPInt{op.getValue().getSExtValue()});
       })
       .Case<mlir::arith::ConstantOp>([this](mlir::arith::ConstantOp op) {
-        return pool->constant(
-            llvm::dyn_cast<mlir::IntegerAttr>(op.getValue()).getValue());
+        return pool->constant(mlir::DynamicAPInt{
+            llvm::dyn_cast<mlir::IntegerAttr>(op.getValue()).getInt()});
       })
       .Case<llzk::component::FieldReadOp>(
           [this](llzk::component::FieldReadOp read) {
@@ -158,7 +158,6 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 
 void SymbolicStore::process_operation(mlir::Operation *op) {
   LLVM_DEBUG(llvm::dbgs() << "Processing op: " << *op << "\n");
-  // TODO: handle control flow ops
   // TODO: handle constraint ops
 
   llvm::TypeSwitch<mlir::Operation *>(op)

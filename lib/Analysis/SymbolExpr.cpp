@@ -6,6 +6,7 @@
 #include "Analysis/SymbolExpr.h"
 
 #include "SymbolImpls.h"
+#include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -52,7 +53,7 @@ Symbol SymbolPool::fresh_unknown() {
   return alloc.new_object<Unknown>(*this, n++);
 }
 
-Symbol SymbolPool::constant(mlir::APInt value) {
+Symbol SymbolPool::constant(mlir::DynamicAPInt value) {
   return alloc.new_object<Constant>(*this, value);
 }
 Symbol SymbolPool::templ_param(llvm::StringRef name) {

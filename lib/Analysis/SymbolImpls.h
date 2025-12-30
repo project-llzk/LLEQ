@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Analysis/SymbolExpr.h"
+#include <llvm/ADT/DynamicAPInt.h>
+#include <mlir/IR/BuiltinAttributes.h>
+#include <mlir/Support/LLVM.h>
 
 namespace lleq {
 struct SymbolPool;
@@ -22,21 +25,17 @@ struct Unknown : public impl::SymbolEq<Unknown> {
 };
 
 struct Constant : public impl::SymbolEq<Constant> {
-  mlir::APInt value;
-  Constant(SymbolPool &pool, mlir::APInt value)
+  mlir::DynamicAPInt value;
+  Constant(SymbolPool &pool, mlir::DynamicAPInt value)
       : impl::SymbolEq<Constant>{pool, SymbolKind::SK_Const}, value{value} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    // Print it as signed
-    value.print(os, true);
+    value.print(os);
     return os;
   }
   unsigned hash_value() const override {
     return llvm::hash_combine("constant", value);
   }
-  bool operator==(const Constant &other) const {
-    return value.getBitWidth() == other.value.getBitWidth() &&
-           value.eq(other.value);
-  }
+  bool operator==(const Constant &other) const { return value == other.value; }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Const;
   }

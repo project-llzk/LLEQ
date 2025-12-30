@@ -10,6 +10,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/IR/Value.h>
+#include <mlir/Support/LLVM.h>
 
 namespace lleq {
 class SymbolPool;
@@ -72,7 +73,7 @@ public:
   // A fresh symbolic variable
   Symbol fresh_unknown();
   // Arbitrary-precision felt
-  Symbol constant(mlir::APInt value);
+  Symbol constant(mlir::DynamicAPInt value);
   // Struct template parameter
   Symbol templ_param(llvm::StringRef name);
   // Indexing expression into an N-dimensional array
