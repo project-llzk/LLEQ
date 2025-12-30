@@ -49,8 +49,9 @@ class SymbolicStore {
   template <class T> Store<T> &_get();
 
   Symbol lookup(llvm::StringRef sig) {
-    if (!signalStore.contains({sig, {}}))
+    if (!signalStore.contains({sig, {}})) {
       signalStore.write({sig, {}}, pool->fresh_unknown());
+    }
     return signalStore.at({sig, {}});
   }
 

@@ -4,8 +4,10 @@
  */
 
 #include "Analysis/Unification.h"
+
 #include "Analysis/SymbolExpr.h"
 #include "SymbolImpls.h"
+
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
@@ -20,15 +22,17 @@ bool _occurs(unsigned u, Symbol s) {
       .Case<Unknown>([u](Unknown *s) { return s->n == u; })
       .Case<OpCall>([u](OpCall *s) {
         for (auto arg : s->arguments) {
-          if (_occurs(u, arg))
+          if (_occurs(u, arg)) {
             return true;
+          }
         }
         return false;
       })
       .Case<Index>([u](Index *s) {
         for (auto idx : s->indices) {
-          if (_occurs(u, idx))
+          if (_occurs(u, idx)) {
             return true;
+          }
         }
         return false;
       })
@@ -37,13 +41,15 @@ bool _occurs(unsigned u, Symbol s) {
 
 llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
   // Check the easy case first
-  if (*a == *b)
+  if (*a == *b) {
     return llvm::success();
+  }
 
   // Different constructors can't be unified
   using SymbolKind = impl::SymbolBase::SymbolKind;
-  if (!llvm::isa<Unknown>(a) && !llvm::isa<Unknown>(b) && a->kind != b->kind)
+  if (!llvm::isa<Unknown>(a) && !llvm::isa<Unknown>(b) && a->kind != b->kind) {
     return llvm::failure();
+  }
 
   // Here we know that either at least one of them is unknown, or they have the
   // same constructor and we'll have to recurse
@@ -51,8 +57,9 @@ llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
   // If one of them is unknown, make sure its not coinductive, update the
   // mapping, and succeed
   if (llvm::isa<Unknown>(a)) {
-    if (_occurs(llvm::dyn_cast<Unknown>(a)->n, b))
+    if (_occurs(llvm::dyn_cast<Unknown>(a)->n, b)) {
       return llvm::failure();
+    }
     s.push_back({llvm::dyn_cast<Unknown>(a)->n, b});
     return llvm::success();
   }
@@ -65,14 +72,16 @@ llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
   return llvm::TypeSwitch<Symbol, llvm::LogicalResult>(a)
       .Case<OpCall>([b, &s](OpCall *callA) {
         auto callB = llvm::dyn_cast<OpCall>(b);
-        if (callA->opName != callB->opName)
+        if (callA->opName != callB->opName) {
           return llvm::failure();
+        }
         return unify_all(callA->arguments, callB->arguments, s);
       })
       .Case<Index>([b, &s](Index *idxA) {
         auto idxB = llvm::dyn_cast<Index>(b);
-        if (idxA->signal != idxB->signal)
+        if (idxA->signal != idxB->signal) {
           return llvm::failure();
+        }
         return unify_all(idxA->indices, idxB->indices, s);
       })
       .Default([](auto) { return llvm::failure(); });
@@ -81,8 +90,9 @@ llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
 llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
                               llvm::ArrayRef<Symbol> bs, Substitutions &s) {
 
-  if (as.size() != bs.size())
+  if (as.size() != bs.size()) {
     return llvm::failure();
+  }
 
   for (auto [a, b] : llvm::zip(as, bs)) {
     if (llvm::failed(unify(substitute(a, s), substitute(b, s), s))) {
@@ -97,8 +107,9 @@ llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
 Symbol _single_subst(Symbol original, unsigned k, Symbol v) {
   return llvm::TypeSwitch<Symbol, Symbol>(original)
       .Case<Unknown>([k, v](Unknown *u) -> Symbol {
-        if (u->n == k)
+        if (u->n == k) {
           return v;
+        }
         return u;
       })
       .Case<OpCall>([k, v](OpCall *c) -> Symbol {
@@ -137,21 +148,25 @@ Symbol substitute(Symbol original, const Substitutions &m) {
 // Return the anti-unified symbol
 Symbol anti_unify(Symbol a, Symbol b) {
   // If they're the same, or one of them is unknown, there's no work to do
-  if (*a == *b || llvm::isa<Unknown>(a))
+  if (*a == *b || llvm::isa<Unknown>(a)) {
     return a;
-  if (llvm::isa<Unknown>(b))
+  }
+  if (llvm::isa<Unknown>(b)) {
     return b;
+  }
   // If the constructors don't match there's no hope of unifying anything
-  if (a->kind != b->kind)
+  if (a->kind != b->kind) {
     return a->pool.fresh_unknown();
+  }
   return llvm::TypeSwitch<Symbol, Symbol>(a)
       .Case<OpCall>([b](OpCall *callA) -> Symbol {
         // If its two calls to the same function, try anti-unifying each
         // argument
         auto callB = llvm::dyn_cast<OpCall>(b);
         if (callA->opName != callB->opName ||
-            callA->arguments.size() != callB->arguments.size())
+            callA->arguments.size() != callB->arguments.size()) {
           return callA->pool.fresh_unknown();
+        }
 
         llvm::SmallVector<Symbol> anti_unified_args;
         for (unsigned i = 0; i < callA->arguments.size(); i++) {
