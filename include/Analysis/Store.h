@@ -81,10 +81,12 @@ template <class T> struct Store {
   // Configure behavior when writing to a name that is already present
   // (overwrite vs. anti-unify)
   void write(Ref<T> ref, Symbol val, WriteMode mode = WriteMode::Overwrite) {
-    if (&val->pool != _pool)
+    if (&val->pool != _pool) {
       val = _pool->copy(val);
-    if (!contains(ref) || mode == WriteMode::Overwrite)
+    }
+    if (!contains(ref) || mode == WriteMode::Overwrite) {
       _store[ref] = val;
+    }
     _store[ref] = anti_unify(_store[ref], val);
   }
 
