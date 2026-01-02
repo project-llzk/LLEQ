@@ -13,7 +13,12 @@ project(
 
 
 set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+
+if (CMAKE_BUILD_TYPE STREQUAL "DebWithSans")
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+endif()
 
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Using LLVM in: ${LLVM_DIR}")
@@ -27,3 +32,4 @@ message(STATUS "Using LLZK in: ${LLZK_DIR}")
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
+add_subdirectory(tests)
