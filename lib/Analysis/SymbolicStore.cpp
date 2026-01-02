@@ -27,18 +27,8 @@
 using namespace lleq;
 
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
-  os << "Signal store: (" << signalStore.size() << " entries)\n";
   for (const auto &[sig, sym] : signalStore) {
     os << "* " << sig.name;
-    for (auto idx : sig.indices) {
-      os << "[" << idx << "]";
-    }
-    os << " -> " << sym << "\n";
-  }
-
-  os << "Value store: (" << valueStore.size() << " entries)\n";
-  for (const auto &[sig, sym] : valueStore) {
-    os << "+ " << pool.getNameForValue(sig.name);
     for (auto idx : sig.indices) {
       os << "[" << idx << "]";
     }

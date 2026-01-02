@@ -29,7 +29,7 @@
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
   lleq::SymbolicStore store;
   store.build_store(structDef);
-  store.dump(llvm::dbgs());
+  store.dump(llvm::outs());
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 
   if (lleq::cli::dumpStore()) {
     mod.walk([](llzk::component::StructDefOp structDef) {
-      llvm::dbgs() << "[For struct " << structDef.getSymName() << "]\n";
+      llvm::outs() << "[For struct " << structDef.getSymName() << "]\n";
       dumpStore(structDef);
     });
   }
