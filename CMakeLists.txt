@@ -29,6 +29,11 @@ message(STATUS "Using MLIR in: ${MLIR_DIR}")
 find_package(LLZK REQUIRED CONFIG)
 message(STATUS "Using LLZK in: ${LLZK_DIR}")
 
+list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
+include(AddLLVM)
+include(AddMLIR)
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
