@@ -44,7 +44,7 @@ config.excludes = ['CMakeLists.txt']
 
 # test_exec_root: The root path where tests should be run.
 config.test_exec_root = os.path.join(config.lleq_obj_root, 'test')
-config.lleq_tools_dir = os.path.join(config.lleq_obj_root, 'bin')
+config.lleq_tools_dir = os.path.join(config.lleq_obj_root, 'tools/lleq')
 
 # Tweak the PATH to include the tools dir.
 llvm_config.with_environment('PATH', config.lleq_tools_dir, append_path=True)
