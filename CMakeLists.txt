@@ -34,6 +34,8 @@ list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
 include(AddLLVM)
 include(AddMLIR)
 
+add_custom_target(check DEPENDS $<$<BOOL:BUILD_TESTING>:check-lit>)
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
