@@ -21,7 +21,7 @@ template <class T> auto _group_idx(const Store<T> &store) {
 
 // TODO: Rewrite all the joins to be in-place to avoid allocating
 template <class T>
-Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool *pool) {
+Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &pool) {
   Store<T> result{pool};
   auto groupedA = _group_idx(a);
   auto groupedB = _group_idx(b);
