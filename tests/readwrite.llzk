@@ -1,0 +1,37 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
+module attributes {veridise.lang = "llzk"} {
+    struct.def @A {
+        struct.field @arr1 : !array.type<2 x !felt.type>
+        struct.field @arr2 : !array.type<1 x !felt.type>
+        function.def @compute(%a: !felt.type, %b: !felt.type, %c: !felt.type) -> !struct.type<@A> {
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+
+            %self = struct.new : <@A>
+            %arr1 = struct.readf %self[@arr1] : !struct.type<@A>, !array.type<2 x !felt.type>
+            %arr2 = struct.readf %self[@arr2] : !struct.type<@A>, !array.type<1 x !felt.type>
+            
+            %0 = felt.add %a, %b
+            %1 = felt.sub %a, %b
+            array.write %arr1[%c0] = %0 : !array.type<2 x !felt.type>, !felt.type
+            array.write %arr1[%c1] = %1 : !array.type<2 x !felt.type>, !felt.type
+
+            %2 = array.read %arr1[%c0] : !array.type<2 x !felt.type>, !felt.type
+            %3 = felt.mul %2, %c
+            array.write %arr2[%c0] = %3 : !array.type<1 x !felt.type>, !felt.type
+
+            struct.writef %self[@arr1] = %arr1 : <@A>, !array.type<2 x !felt.type>
+            struct.writef %self[@arr2] = %arr2 : <@A>, !array.type<1 x !felt.type>
+
+            function.return %self : !struct.type<@A>
+        }
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type, %c: !felt.type) {
+            function.return
+        }
+    }
+}
+
+// CHECK-DAG: arr1[0]: ?0
+// CHECK-DAG: arr1[1]: felt.sub(%arg0, %arg1)
+// CHECK-DAG: arr2[0]: felt.mul(?0, %arg2)

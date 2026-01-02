@@ -20,6 +20,7 @@
 #include <mlir/IR/Block.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LLVM.h>
 
 #define DEBUG_TYPE "symbolic-store"
@@ -28,11 +29,11 @@ using namespace lleq;
 
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
   for (const auto &[sig, sym] : signalStore) {
-    os << "* " << sig.name;
+    os << sig.name;
     for (auto idx : sig.indices) {
       os << "[" << idx << "]";
     }
-    os << " -> " << sym << "\n";
+    os << ": " << sym << "\n";
   }
 }
 

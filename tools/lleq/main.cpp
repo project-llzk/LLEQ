@@ -6,6 +6,7 @@
 #include "Analysis/SymbolicStore.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
+#include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
@@ -13,6 +14,7 @@
 #include <llvm/Support/WithColor.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/IR/AsmState.h>
@@ -22,6 +24,7 @@
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
 #include <mlir/Parser/Parser.h>
+#include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LogicalResult.h>
 
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
@@ -89,10 +92,8 @@ int main(int argc, char **argv) {
   }
 
   if (lleq::cli::dumpStore()) {
-    mod.walk([](llzk::component::StructDefOp structDef) {
-      llvm::outs() << "[For struct " << structDef.getSymName() << "]\n";
-      dumpStore(structDef);
-    });
+    mod.walk(
+        [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
   }
 
   return EXIT_SUCCESS;
