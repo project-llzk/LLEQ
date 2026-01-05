@@ -13,7 +13,12 @@ project(
 
 
 set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+
+if (CMAKE_BUILD_TYPE STREQUAL "DebWithSans")
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+endif()
 
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Using LLVM in: ${LLVM_DIR}")
@@ -24,6 +29,14 @@ message(STATUS "Using MLIR in: ${MLIR_DIR}")
 find_package(LLZK REQUIRED CONFIG)
 message(STATUS "Using LLZK in: ${LLZK_DIR}")
 
+list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
+include(AddLLVM)
+include(AddMLIR)
+
+add_custom_target(check DEPENDS $<$<BOOL:BUILD_TESTING>:check-lit>)
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
+add_subdirectory(tests)
