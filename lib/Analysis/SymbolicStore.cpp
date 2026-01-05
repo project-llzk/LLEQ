@@ -26,6 +26,7 @@
 #include <mlir/IR/Block.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LLVM.h>
 
 #define DEBUG_TYPE "symbolic-store"
@@ -34,34 +35,24 @@ using namespace lleq;
 
 SymbolicStore::SymbolicStore(const SymbolicStore &other)
     : pool{std::make_unique<SymbolPool>()},
-      signalStore{other.signalStore.clone(pool.get())},
-      valueStore{other.valueStore.clone(pool.get())} {}
+      signalStore{other.signalStore.clone(*pool.get())},
+      valueStore{other.valueStore.clone(*pool.get())} {}
 
 SymbolicStore &SymbolicStore::operator=(const SymbolicStore &other) {
   auto new_pool = std::make_unique<SymbolPool>();
-  signalStore = other.signalStore.clone(new_pool.get());
-  valueStore = other.valueStore.clone(new_pool.get());
+  signalStore = other.signalStore.clone(*new_pool.get());
+  valueStore = other.valueStore.clone(*new_pool.get());
   pool.reset(new_pool.release());
   return *this;
 }
 
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
-  os << "Signal store: (" << signalStore.size() << " entries)\n";
   for (const auto &[sig, sym] : signalStore) {
-    os << "* " << sig.name;
+    os << sig.name;
     for (auto idx : sig.indices) {
       os << "[" << idx << "]";
     }
-    os << " -> " << sym << "\n";
-  }
-
-  os << "Value store: (" << valueStore.size() << " entries)\n";
-  for (const auto &[sig, sym] : valueStore) {
-    os << "+ " << pool->getNameForValue(sig.name);
-    for (auto idx : sig.indices) {
-      os << "[" << idx << "]";
-    }
-    os << " -> " << sym << "\n";
+    os << ": " << sym << "\n";
   }
 }
 
@@ -199,7 +190,8 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
         // Otherwise, we've hit a fixpoint so break
         constexpr unsigned MAX_ITERS = 4;
         SymbolicStore oldBody;
-        for (unsigned i = 0; i < MAX_ITERS; i++) {
+        unsigned num_iters = 0;
+        for (; num_iters < MAX_ITERS; num_iters++) {
           // Execute one iteration
           oldBody = bodyStore;
           bodyStore.process_block(forOp.getBody(), loopCarriedDeps);
@@ -213,11 +205,13 @@ void SymbolicStore::process_operation(mlir::Operation *op) {
 
           // If we hit a fixpoint, break early
           if (bodyStore == oldBody) {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Fixpoint reached after " << i << " iterations\n");
+            LLVM_DEBUG(llvm::dbgs() << "Fixpoint reached after " << num_iters
+                                    << " iterations\n");
             break;
           }
         }
+        LLVM_DEBUG(if (num_iters == MAX_ITERS) llvm::dbgs()
+                   << "No fixpoint reached\n");
 
         // Finally, save the results of the loop:
         // 1. Widen signalStore to accomodate bodyStore.signalStore
@@ -281,8 +275,8 @@ SymbolicStore SymbolicStore::join(const SymbolicStore &a,
                                   const SymbolicStore &b) {
   SymbolicStore result;
   result.signalStore =
-      _join_stores(a.signalStore, b.signalStore, result.pool.get());
+      _join_stores(a.signalStore, b.signalStore, *result.pool.get());
   result.valueStore =
-      _join_stores(a.valueStore, b.valueStore, result.pool.get());
+      _join_stores(a.valueStore, b.valueStore, *result.pool.get());
   return result;
 }

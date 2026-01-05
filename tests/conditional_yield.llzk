@@ -1,0 +1,31 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
+module attributes {veridise.lang = "llzk"} {
+    struct.def @A {
+        struct.field @sums : !array.type<1 x !felt.type>
+        function.def @compute(%a: !felt.type, %b: !felt.type, %c: i1) -> !struct.type<@A> {
+            %c0 = arith.constant 0 : index
+            %self = struct.new : !struct.type<@A>
+            %sums = struct.readf %self[@sums] : !struct.type<@A>, !array.type<1 x !felt.type>
+            
+            %ans = scf.if %c -> !felt.type {
+                %sum = felt.add %a, %b
+                scf.yield %sum : !felt.type
+            } else {
+                %diff = felt.add %a, %a
+                scf.yield %diff : !felt.type
+            }
+            %to_write = felt.sub %ans, %b
+            array.write %sums[%c0] = %to_write : !array.type<1 x !felt.type>, !felt.type
+            
+            struct.writef %self[@sums] = %sums : !struct.type<@A>, !array.type<1 x !felt.type>
+            function.return %self : !struct.type<@A>
+        }
+
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type, %c: i1) {
+            function.return
+        }
+    }
+}
+
+// CHECK: sums[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
