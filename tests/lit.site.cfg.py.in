@@ -1,0 +1,25 @@
+# Modified version of
+# https://github.com/llvm/llvm-project/blob/main/mlir/examples/standalone/test/lit.site.cfg.py.in
+# from LLVM, which is licensed under Apache 2.0 with LLVM Exceptions.
+
+
+@LIT_SITE_CFG_IN_HEADER@
+
+config.llvm_tools_dir = "@LLVM_TOOLS_DIR@"
+config.lit_tools_dir = "@LLVM_LIT_TOOLS_DIR@"
+config.mlir_obj_dir = "@MLIR_BINARY_DIR@"
+config.python_executable = "@Python3_EXECUTABLE@"
+# config.enable_bindings_python = @LLEQ_ENABLE_BINDINGS_PYTHON_STRING@
+config.lleq_src_root = "@CMAKE_SOURCE_DIR@"
+config.lleq_obj_root = "@CMAKE_BINARY_DIR@"
+# config.per_test_coverage = @LLEQ_LIT_COMPATIBLE_COVERAGE_STRING@
+
+
+config.extra_suffixes = [@lleq_lit_extra_suffixes@]
+
+import lit.llvm
+
+lit.llvm.initialize(lit_config, config)
+
+# Let the main config do the real work.
+lit_config.load_config(config, "@CMAKE_SOURCE_DIR@/tests/lit.cfg.py")

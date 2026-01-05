@@ -48,6 +48,10 @@ stdenv.mkDerivation {
     fi
   '';
 
+  doCheck = true;
+  checkTarget = "check";
+  checkInputs = [clang python3 lit];
+
   # Currently LLEQ doesn't have anything to install, but the
   # derivation wants an install phase anyway with an output directory.
   # Once something in the project needs to be installed, this can be removed.
