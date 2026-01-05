@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "Analysis/SignalValueAnalysis.h"
+#include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStore.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
@@ -17,6 +19,9 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
@@ -33,6 +38,23 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   lleq::SymbolicStore store;
   store.build_store(structDef);
   store.dump(llvm::outs());
+
+  mlir::DataFlowSolver solver;
+  lleq::SymbolPool pool;
+  solver.load<mlir::dataflow::DeadCodeAnalysis>();
+  solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+  auto computeFunc = structDef.getComputeFuncOp();
+  if (mlir::failed(solver.initializeAndRun(structDef.getComputeFuncOp()))) {
+    llvm::dbgs() << "Analysis failed\n";
+  }
+  computeFunc.getBody().walk([&solver](mlir::Operation *op) {
+    auto *state = solver.lookupState<lleq::SVALattice>(op->getResult(0));
+    llvm::dbgs() << "Visiting op: " << *op << "\n";
+    if (state) {
+      llvm::dbgs() << "\t" << static_cast<lleq::Symbol>(state->getValue())
+                   << "\n";
+    }
+  });
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {
