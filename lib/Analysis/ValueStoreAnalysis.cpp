@@ -30,7 +30,7 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
           auto changed = lat->join(newSym);
           llvm::dbgs() << "new lat: " << lat->getValue()
                        << ", changed: " << static_cast<int>(changed) << "\n";
-          propagateIfChanged(lat, lat->join(newSym));
+          propagateIfChanged(lat, changed);
         }
       })
 

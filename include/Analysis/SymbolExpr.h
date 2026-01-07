@@ -44,6 +44,7 @@ struct SymbolBase {
   SymbolPool &pool;
   virtual bool eq(const SymbolBase &other) const = 0;
 };
+
 inline bool equal(SymbolBase *a, SymbolBase *b) {
   if (!a || !b) {
     return a == b;
