@@ -18,6 +18,7 @@ class SymbolPool;
 namespace impl {
 struct SymbolBase {
   enum class SymbolKind {
+    SK_Uninitialized,
     SK_Unknown,
     SK_Const,
     SK_TemplParam,
@@ -82,6 +83,8 @@ public:
   Symbol copy(Symbol s);
   // Generate a pretty-printable name corresponding to the SSA value
   std::string getNameForValue(mlir::Value value) const;
+  // An uninitialized symbol, useful for abstract interpretation
+  Symbol uninitialized();
   // A fresh symbolic variable
   Symbol fresh_unknown();
   // Arbitrary-precision felt

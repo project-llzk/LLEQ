@@ -4,11 +4,28 @@
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/StringExtras.h>
+#include <llvm/Support/raw_ostream.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/Support/LLVM.h>
 
 namespace lleq {
 struct SymbolPool;
+
+struct Uninitialized : public impl::SymbolEq<Uninitialized> {
+  Uninitialized(SymbolPool &pool)
+      : impl::SymbolEq<Uninitialized>{pool, SymbolKind::SK_Uninitialized} {}
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
+    os << '*';
+    return os;
+  }
+  unsigned hash_value() const override {
+    return llvm::hash_value("uninitialized");
+  }
+  bool operator==(const Uninitialized &other) const { return true; }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Uninitialized;
+  }
+};
 struct Unknown : public impl::SymbolEq<Unknown> {
   unsigned n;
   Unknown(SymbolPool &pool, unsigned n)

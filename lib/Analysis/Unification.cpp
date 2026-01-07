@@ -147,6 +147,13 @@ Symbol substitute(Symbol original, const Substitutions &m) {
 // "Erase" whatever's different between `a` and `b` and replace it with unknowns
 // Return the anti-unified symbol
 Symbol anti_unify(Symbol a, Symbol b) {
+  // If either is uninitialized, return the other
+  if (llvm::isa<Uninitialized>(a)) {
+    return b;
+  }
+  if (llvm::isa<Uninitialized>(b)) {
+    return a;
+  }
   // If they're the same, or one of them is unknown, there's no work to do
   if (impl::equal(a, b) || llvm::isa<Unknown>(a)) {
     return a;
