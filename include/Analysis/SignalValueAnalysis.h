@@ -30,7 +30,11 @@ public:
     if (!b.sym) {
       return a;
     }
-    return {anti_unify(a.sym, b.sym)};
+    auto joined = anti_unify(a.sym, b.sym);
+    llvm::dbgs() << "Joining " << a.sym << " with " << b.sym
+                 << ", result = " << joined << "\n";
+
+    return {joined};
   }
 
   bool operator==(const SymbolValue &other) const {
@@ -47,6 +51,10 @@ public:
 
   friend llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
                                        const SymbolValue &sym) {
+    if (!sym.sym) {
+      os << "(null)";
+      return os;
+    }
     sym.sym->print(os);
     return os;
   }

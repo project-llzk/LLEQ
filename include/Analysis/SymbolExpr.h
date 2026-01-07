@@ -35,8 +35,6 @@ struct SymbolBase {
   virtual unsigned hash_value() const = 0;
 
   bool operator==(const SymbolBase &other) const {
-    // dump();
-    // other.dump();
     if (kind != other.kind) {
       return false;
     }
@@ -46,6 +44,12 @@ struct SymbolBase {
   SymbolPool &pool;
   virtual bool eq(const SymbolBase &other) const = 0;
 };
+inline bool equal(SymbolBase *a, SymbolBase *b) {
+  if (!a || !b) {
+    return a == b;
+  }
+  return *a == *b;
+}
 
 template <class SymbolT> struct SymbolEq : public SymbolBase {
   SymbolEq(SymbolPool &pool, SymbolKind k) : SymbolBase{pool, k} {}

@@ -1,5 +1,4 @@
 #include "Analysis/SignalValueAnalysis.h"
-#include "Analysis/ValueStoreAnalysis.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -87,9 +86,7 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
                     call.getCallee().getLeafReference(), args)};
               })
           .Case<llzk::component::FieldReadOp>(
-              [this](auto) -> llvm::SmallVector<Symbol> {
-                return {pool.get().fresh_unknown()};
-              })
+              [this](auto) -> llvm::SmallVector<Symbol> { return {nullptr}; })
           // .Case<llzk::component::FieldReadOp>(
           //     [this](llzk::component::FieldReadOp read)
           //         -> llvm::SmallVector<Symbol> {

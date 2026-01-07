@@ -85,7 +85,7 @@ struct Index : public impl::SymbolEq<Index> {
   bool operator==(const Index &other) const {
     return signal == other.signal && indices.size() == other.indices.size() &&
            std::equal(indices.begin(), indices.end(), other.indices.begin(),
-                      [](auto *a, auto *b) { return *a == *b; });
+                      [](auto *a, auto *b) { return impl::equal(a, b); });
   }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Index;
@@ -120,7 +120,7 @@ struct OpCall : public impl::SymbolEq<OpCall> {
            arguments.size() == other.arguments.size() &&
            std::equal(arguments.begin(), arguments.end(),
                       other.arguments.begin(),
-                      [](auto *a, auto *b) { return *a == *b; });
+                      [](auto *a, auto *b) { return impl::equal(a, b); });
   }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Call;
