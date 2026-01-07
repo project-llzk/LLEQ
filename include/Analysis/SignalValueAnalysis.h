@@ -82,7 +82,8 @@ public:
   visitOperation(mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
                  llvm::ArrayRef<Lattice *> results) override;
   void setToEntryState(Lattice *lattice) override {
-    pool.get().index(lattice->getAnchor(), {});
+    propagateIfChanged(
+        lattice, lattice->join(pool.get().index(lattice->getAnchor(), {})));
   }
 };
 

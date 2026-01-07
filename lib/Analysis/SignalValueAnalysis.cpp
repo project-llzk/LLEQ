@@ -1,4 +1,5 @@
 #include "Analysis/SignalValueAnalysis.h"
+#include "Analysis/ValueStoreAnalysis.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -40,7 +41,11 @@ namespace lleq {
 mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
     mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
     llvm::ArrayRef<Lattice *> results) {
-
+  // llvm::dbgs() << "Visiting op: " << *op << "\n";
+  // for (const auto *operand : operands) {
+  //   llvm::dbgs() << " * " << *operand << "\n";
+  // }
+  llvm::dbgs() << "SVA visiting " << *op << "\n";
   if (operands.empty() && results.empty()) {
     return mlir::success();
   }
@@ -81,6 +86,17 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
                 return {pool.get().func_call(
                     call.getCallee().getLeafReference(), args)};
               })
+          .Case<llzk::component::FieldReadOp>(
+              [this](auto) -> llvm::SmallVector<Symbol> {
+                return {pool.get().fresh_unknown()};
+              })
+          // .Case<llzk::component::FieldReadOp>(
+          //     [this](llzk::component::FieldReadOp read)
+          //         -> llvm::SmallVector<Symbol> {
+          //       ValueStoreLattice *state =
+          //           getOrCreate<ValueStoreLattice>(getProgramPointBefore(read));
+          //       return {state->lookup(read.getFieldName())};
+          //     })
           .Default([this, operands](
                        mlir::Operation *op) -> llvm::SmallVector<Symbol> {
             llvm::SmallVector<Symbol> args;

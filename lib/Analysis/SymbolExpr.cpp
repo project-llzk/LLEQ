@@ -88,5 +88,9 @@ std::string SymbolPool::getNameForValue(mlir::Value value) const {
 }
 
 llvm::raw_ostream &operator<<(llvm::raw_ostream &os, Symbol s) {
+  if (s == nullptr) {
+    os << "(null)";
+    return os;
+  }
   return s->print(os);
 }

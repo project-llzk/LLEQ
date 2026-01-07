@@ -6,6 +6,7 @@
 #include "Analysis/SignalValueAnalysis.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStore.h"
+#include "Analysis/ValueStoreAnalysis.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
@@ -28,6 +29,7 @@
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LogicalResult.h>
@@ -35,25 +37,38 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
-  lleq::SymbolicStore store;
-  store.build_store(structDef);
-  store.dump(llvm::outs());
+  // lleq::SymbolicStore store;
+  // store.build_store(structDef);
+  // store.dump(llvm::outs());
 
   mlir::DataFlowSolver solver;
   lleq::SymbolPool pool;
   solver.load<mlir::dataflow::DeadCodeAnalysis>();
   solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+  solver.load<lleq::ValueStoreAnalysis>(pool);
+
   auto computeFunc = structDef.getComputeFuncOp();
   if (mlir::failed(solver.initializeAndRun(structDef.getComputeFuncOp()))) {
     llvm::dbgs() << "Analysis failed\n";
   }
   computeFunc.getBody().walk([&solver](mlir::Operation *op) {
-    auto *state = solver.lookupState<lleq::SVALattice>(op->getResult(0));
-    llvm::dbgs() << "Visiting op: " << *op << "\n";
-    if (state) {
-      llvm::dbgs() << "\t" << static_cast<lleq::Symbol>(state->getValue())
-                   << "\n";
+    // if (op->getNumResults() == 0) {
+    //   return mlir::WalkResult::advance();
+    // }
+    llvm::dbgs() << "After op " << *op << "\n";
+    // auto *svaState = solver.lookupState<lleq::SVALattice>(op->getResult(0));
+    auto *vsState = solver.lookupState<lleq::ValueStoreLattice>(
+        solver.getProgramPointAfter(op));
+    // if (svaState) {
+    //   llvm::dbgs() << "\t+" <<
+    //   static_cast<lleq::Symbol>(svaState->getValue())
+    //                << "\n";
+    // }
+    if (vsState) {
+      vsState->print(llvm::dbgs());
+      llvm::dbgs() << "\n";
     }
+    return mlir::WalkResult::advance();
   });
 }
 

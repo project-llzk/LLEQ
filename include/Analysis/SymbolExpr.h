@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <llvm/ADT/APInt.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/IR/Value.h>
@@ -27,9 +28,15 @@ struct SymbolBase {
 
   SymbolBase(SymbolPool &pool, SymbolKind k) : pool{pool}, kind{k} {}
   virtual llvm::raw_ostream &print(llvm::raw_ostream &os) const = 0;
+  void dump() const {
+    print(llvm::dbgs());
+    llvm::dbgs() << "\n";
+  }
   virtual unsigned hash_value() const = 0;
 
   bool operator==(const SymbolBase &other) const {
+    // dump();
+    // other.dump();
     if (kind != other.kind) {
       return false;
     }
