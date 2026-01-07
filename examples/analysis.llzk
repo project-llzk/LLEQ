@@ -10,9 +10,9 @@ module attributes {veridise.lang = "llzk"} {
             struct.writef %self[@x] = %1 : !struct.type<@A>, !felt.type
             
             // y = x * x
-            %x = struct.readf %self[@x] : !struct.type<@A>, !felt.type
-            %2 = felt.mul %x, %x
-            struct.writef %self[@y] = %2 : !struct.type<@A>, !felt.type
+            %2 = struct.readf %self[@x] : !struct.type<@A>, !felt.type
+            %3 = felt.mul %2, %2
+            struct.writef %self[@y] = %3 : !struct.type<@A>, !felt.type
             function.return %self : !struct.type<@A>
         }
 

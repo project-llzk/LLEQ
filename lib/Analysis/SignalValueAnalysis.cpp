@@ -86,7 +86,9 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
                     call.getCallee().getLeafReference(), args)};
               })
           .Case<llzk::component::FieldReadOp>(
-              [this](auto) -> llvm::SmallVector<Symbol> { return {nullptr}; })
+              [this](auto) -> llvm::SmallVector<Symbol> {
+                return {pool.get().uninitialized()};
+              })
           // .Case<llzk::component::FieldReadOp>(
           //     [this](llzk::component::FieldReadOp read)
           //         -> llvm::SmallVector<Symbol> {

@@ -5,7 +5,6 @@
 
 #include "Analysis/SignalValueAnalysis.h"
 #include "Analysis/SymbolExpr.h"
-#include "Analysis/SymbolicStore.h"
 #include "Analysis/ValueStoreAnalysis.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
@@ -17,6 +16,7 @@
 #include <llvm/Support/WithColor.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Analysis/AnalysisUtil.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
@@ -41,14 +41,16 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   // store.build_store(structDef);
   // store.dump(llvm::outs());
 
-  mlir::DataFlowSolver solver;
+  mlir::DataFlowSolver solver{mlir::DataFlowConfig{}.setInterprocedural(false)};
   lleq::SymbolPool pool;
   solver.load<mlir::dataflow::DeadCodeAnalysis>();
-  solver.load<lleq::SignalValueDataflowAnalysis>(pool);
-  solver.load<lleq::ValueStoreAnalysis>(pool);
+  auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
 
   auto computeFunc = structDef.getComputeFuncOp();
-  if (mlir::failed(solver.initializeAndRun(structDef.getComputeFuncOp()))) {
+  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
+
+  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
     llvm::dbgs() << "Analysis failed\n";
   }
   computeFunc.getBody().walk([&solver](mlir::Operation *op) {
@@ -69,6 +71,17 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
       llvm::dbgs() << "\n";
     }
     return mlir::WalkResult::advance();
+  });
+
+  computeFunc.getBody().walk([&solver](mlir::Operation *op) {
+    if (op->getNumResults() > 0) {
+      llvm::dbgs() << "Result of " << *op << ": "
+                   << static_cast<lleq::Symbol>(
+                          solver
+                              .lookupState<lleq::SVALattice>(op->getResult(0))
+                              ->getValue())
+                   << "\n";
+    }
   });
 }
 

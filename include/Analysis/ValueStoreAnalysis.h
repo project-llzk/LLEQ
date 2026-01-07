@@ -35,6 +35,7 @@ public:
   mlir::ChangeResult
   join(const mlir::dataflow::AbstractDenseLattice &other) override {
     const auto *rhs = dynamic_cast<const ValueStoreLattice *>(&other);
+    pool = rhs->pool;
     if (!rhs) {
       llvm::report_fatal_error("cannot join incomparable lattices");
     }
@@ -52,9 +53,10 @@ public:
     }
 
     for (auto [key, val] : valueStore) {
-      if (!rhs->valueStore.contains(key)) {
+      if (!rhs->valueStore.contains(key) &&
+          val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
         valueStore[key] = pool->fresh_unknown();
-      } else {
+      } else if (rhs->valueStore.contains(key)) {
         valueStore[key] = anti_unify(val, rhs->valueStore.at(key));
       }
     }

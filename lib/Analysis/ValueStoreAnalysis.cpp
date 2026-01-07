@@ -12,12 +12,20 @@ mlir::LogicalResult
 ValueStoreAnalysis::visitOperation(mlir::Operation *op,
                                    const ValueStoreLattice &before,
                                    ValueStoreLattice *after) {
-  llvm::dbgs() << "VSA visiting " << *op << "\n";
+  llvm::dbgs() << "VSA visiting " << *op << ", " << after << "\n";
+  before.print(llvm::dbgs());
+  after->print(llvm::dbgs());
+  llvm::dbgs() << "\n";
   mlir::ChangeResult result = after->join(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<FieldWriteOp>([this, after, &result](FieldWriteOp write) {
+        // llvm::dbgs() << "Creating dependency of " << write << " on "
+        //              << write.getVal() << "\n";
         mlir::Value src = write.getVal();
         SVALattice *symbol = getOrCreate<SVALattice>(write.getVal());
+        llvm::dbgs() << "Writing " << static_cast<Symbol>(symbol->getValue())
+                     << " to @" << write.getFieldName() << "\n";
+        symbol->useDefSubscribe(this);
         result |= after->write(write.getFieldName(), symbol->getValue());
       })
       .Case<FieldReadOp>([this, before](FieldReadOp read) {
@@ -32,9 +40,12 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
                        << ", changed: " << static_cast<int>(changed) << "\n";
           propagateIfChanged(lat, changed);
         }
-      })
+      });
 
-      ;
+  after->print(llvm::dbgs());
+  llvm::dbgs() << "\n";
+  llvm::dbgs() << "VSA changed: " << static_cast<int>(result) << "\n";
+  propagateIfChanged(after, result);
   return mlir::success();
 }
 
