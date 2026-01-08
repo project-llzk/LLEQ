@@ -17,51 +17,10 @@ class ValueStoreLattice : public mlir::dataflow::AbstractDenseLattice {
 
 public:
   using AbstractDenseLattice::AbstractDenseLattice;
-
-  mlir::ChangeResult write(llvm::StringRef ref, Symbol sym) {
-    initialized = true;
-    if (valueStore.contains(ref) && *valueStore.at(ref) == *sym) {
-      return mlir::ChangeResult::NoChange;
-    } else if (valueStore.contains(ref)) {
-      valueStore[ref] = anti_unify(valueStore[ref], sym);
-    } else {
-      valueStore[ref] = sym;
+  void setPool(SymbolPool *pool) {
+    if (!this->pool) {
+      this->pool = pool;
     }
-    return mlir::ChangeResult::Change;
-  }
-
-  void setPool(SymbolPool *pool) { this->pool = pool; }
-
-  mlir::ChangeResult
-  join(const mlir::dataflow::AbstractDenseLattice &other) override {
-    const auto *rhs = dynamic_cast<const ValueStoreLattice *>(&other);
-    pool = rhs->pool;
-    if (!rhs) {
-      llvm::report_fatal_error("cannot join incomparable lattices");
-    }
-    if (!rhs->initialized) {
-      return mlir::ChangeResult::NoChange;
-    }
-    if (!initialized) {
-      valueStore = rhs->valueStore;
-      initialized = true;
-      return mlir::ChangeResult::Change;
-    }
-
-    if (*this == *rhs) {
-      return mlir::ChangeResult::NoChange;
-    }
-
-    for (auto [key, val] : valueStore) {
-      if (!rhs->valueStore.contains(key) &&
-          val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
-        valueStore[key] = pool->fresh_unknown();
-      } else if (rhs->valueStore.contains(key)) {
-        valueStore[key] = anti_unify(val, rhs->valueStore.at(key));
-      }
-    }
-
-    return mlir::ChangeResult::Change;
   }
 
   Symbol lookup(llvm::StringRef ref) {
@@ -77,6 +36,11 @@ public:
     }
     return valueStore.at(ref);
   }
+
+  mlir::ChangeResult write(llvm::StringRef ref, Symbol sym);
+
+  mlir::ChangeResult
+  join(const mlir::dataflow::AbstractDenseLattice &other) override;
 
   bool operator==(const ValueStoreLattice &other) const {
     for (auto [key, val] : valueStore) {

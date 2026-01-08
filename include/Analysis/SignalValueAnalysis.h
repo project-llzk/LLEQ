@@ -20,11 +20,6 @@ public:
   SymbolValue() : sym{nullptr}, pool{nullptr} {}
   SymbolValue(Symbol sym) : sym{sym} {}
 
-  SymbolValue &join(const SymbolValue &other) {
-    sym = anti_unify(sym, other.sym);
-    return *this;
-  }
-
   void setPool(SymbolPool *pool) {
     if (this->pool == nullptr) {
       this->pool = pool;
@@ -40,9 +35,6 @@ public:
       return a;
     }
     auto joined = anti_unify(a.sym, b.sym);
-    // llvm::dbgs() << "Joining " << a.sym << " with " << b.sym
-    //              << ", result = " << joined << "\n";
-
     return {joined};
   }
 
@@ -71,25 +63,11 @@ public:
   operator Symbol() const { return sym; }
 };
 
-// class SVALatticeValue
-//     : public mlir::dataflow::AbstractLatticeValue<SVALatticeValue,
-//                                                   SymbolValue> {
-// public:
-//   using AbstractLatticeValue::AbstractLatticeValue;
-// };
-
 class SignalValueDataflowAnalysis;
 
 class SVALattice : public mlir::dataflow::Lattice<SymbolValue> {
 public:
   using Lattice::Lattice;
-  // void onUpdate(mlir::DataFlowSolver *solver) const override {
-  //   for (auto user : getAnchor().getUsers()) {
-  //     if (llvm::isa<llzk::component::FieldWriteOp>(user)) {
-  //       solver->enqueue({solver->getProgramPointBefore(user), solver->})
-  //     }
-  //   }
-  // }
 };
 
 class SignalValueDataflowAnalysis

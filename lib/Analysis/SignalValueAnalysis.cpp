@@ -13,38 +13,9 @@
 
 namespace lleq {
 
-// mlir::ChangeResult SVALattice::join(const AbstractSparseLattice &other) {
-//   const auto *rhs = dynamic_cast<const SVALattice *>(&other);
-//   if (!rhs) {
-//     llvm::report_fatal_error("invalid join lattice type");
-//   }
-//   return val.update(rhs->getValue());
-// }
-
-// void SVALattice::print(llvm::raw_ostream &os) const {
-//   os << "SignalValueAnalysisLattice {" << val << "}";
-// }
-
-// mlir::ChangeResult SVALattice::setValue(const LatticeValue &newVal) {
-//   if (val == newVal) {
-//     return mlir::ChangeResult::NoChange;
-//   }
-//   val = newVal;
-//   return mlir::ChangeResult::Change;
-// }
-
-// mlir::ChangeResult SVALattice::setValue(SymbolValue v) {
-//   return setValue(LatticeValue{v});
-// }
-
 mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
     mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
     llvm::ArrayRef<Lattice *> results) {
-  // llvm::dbgs() << "Visiting op: " << *op << "\n";
-  // for (const auto *operand : operands) {
-  //   llvm::dbgs() << " * " << *operand << "\n";
-  // }
-  llvm::dbgs() << "SVA visiting " << *op << "\n";
   if (operands.empty() && results.empty()) {
     return mlir::success();
   }
@@ -89,13 +60,6 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
               [this](auto) -> llvm::SmallVector<Symbol> {
                 return {pool.get().uninitialized()};
               })
-          // .Case<llzk::component::FieldReadOp>(
-          //     [this](llzk::component::FieldReadOp read)
-          //         -> llvm::SmallVector<Symbol> {
-          //       ValueStoreLattice *state =
-          //           getOrCreate<ValueStoreLattice>(getProgramPointBefore(read));
-          //       return {state->lookup(read.getFieldName())};
-          //     })
           .Default([this, operands](
                        mlir::Operation *op) -> llvm::SmallVector<Symbol> {
             llvm::SmallVector<Symbol> args;

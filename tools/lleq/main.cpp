@@ -53,36 +53,10 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   if (mlir::failed(solver.initializeAndRun(computeFunc))) {
     llvm::dbgs() << "Analysis failed\n";
   }
-  computeFunc.getBody().walk([&solver](mlir::Operation *op) {
-    // if (op->getNumResults() == 0) {
-    //   return mlir::WalkResult::advance();
-    // }
-    llvm::dbgs() << "After op " << *op << "\n";
-    // auto *svaState = solver.lookupState<lleq::SVALattice>(op->getResult(0));
-    auto *vsState = solver.lookupState<lleq::ValueStoreLattice>(
-        solver.getProgramPointAfter(op));
-    // if (svaState) {
-    //   llvm::dbgs() << "\t+" <<
-    //   static_cast<lleq::Symbol>(svaState->getValue())
-    //                << "\n";
-    // }
-    if (vsState) {
-      vsState->print(llvm::dbgs());
-      llvm::dbgs() << "\n";
-    }
-    return mlir::WalkResult::advance();
-  });
-
-  computeFunc.getBody().walk([&solver](mlir::Operation *op) {
-    if (op->getNumResults() > 0) {
-      llvm::dbgs() << "Result of " << *op << ": "
-                   << static_cast<lleq::Symbol>(
-                          solver
-                              .lookupState<lleq::SVALattice>(op->getResult(0))
-                              ->getValue())
-                   << "\n";
-    }
-  });
+  auto *state =
+      solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
+          computeFunc.getBody().getBlocks().begin()->getTerminator()));
+  state->print(llvm::dbgs());
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {
