@@ -45,7 +45,7 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   lleq::SymbolPool pool;
   solver.load<mlir::dataflow::DeadCodeAnalysis>();
   auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
-  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
+  // auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
 
   auto computeFunc = structDef.getComputeFuncOp();
   llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
@@ -53,10 +53,15 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   if (mlir::failed(solver.initializeAndRun(computeFunc))) {
     llvm::dbgs() << "Analysis failed\n";
   }
-  auto *state =
-      solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
-          computeFunc.getBody().getBlocks().begin()->getTerminator()));
-  state->print(llvm::dbgs());
+  computeFunc.walk([&solver](mlir::scf::IfOp op) {
+    auto *state = solver.lookupState<lleq::SVALattice>(op->getResult(0));
+    // state->dump();
+  });
+
+  // auto *state =
+  //     solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
+  //         computeFunc.getBody().getBlocks().begin()->getTerminator()));
+  // state->print(llvm::dbgs());
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {

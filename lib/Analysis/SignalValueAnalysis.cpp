@@ -16,6 +16,7 @@ namespace lleq {
 mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
     mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
     llvm::ArrayRef<Lattice *> results) {
+  llvm::dbgs() << "Operation: " << *op << "\n";
   if (operands.empty() && results.empty()) {
     return mlir::success();
   }

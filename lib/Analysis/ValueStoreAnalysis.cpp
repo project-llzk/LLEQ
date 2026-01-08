@@ -23,7 +23,12 @@ mlir::ChangeResult ValueStoreLattice::write(llvm::StringRef ref, Symbol sym) {
 mlir::ChangeResult
 ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
   const auto *rhs = dynamic_cast<const ValueStoreLattice *>(&other);
-  pool = rhs->pool;
+  // llvm::dbgs() << "Joining: \n";
+  // dump();
+  // llvm::dbgs() << "--\n";
+  // rhs->dump();
+  // llvm::dbgs() << "==\n";
+  // pool = rhs->pool;
   if (!rhs) {
     llvm::report_fatal_error("cannot join incomparable lattices");
   }
@@ -48,7 +53,8 @@ ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
       valueStore[key] = anti_unify(val, rhs->valueStore.at(key));
     }
   }
-
+  // dump();
+  // llvm::dbgs() << "**\n";
   return mlir::ChangeResult::Change;
 }
 

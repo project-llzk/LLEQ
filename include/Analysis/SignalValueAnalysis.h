@@ -8,6 +8,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
 #include <mlir/Analysis/DataFlowFramework.h>
+#include <mlir/Interfaces/ControlFlowInterfaces.h>
 
 namespace lleq {
 
