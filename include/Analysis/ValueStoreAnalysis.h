@@ -12,7 +12,9 @@
 #include <mlir/Support/TypeID.h>
 
 namespace lleq {
+class ValueStoreAnalysis;
 class ValueStoreLattice : public mlir::dataflow::AbstractDenseLattice {
+  friend class ValueStoreAnalysis;
   std::unique_ptr<ValueStore> valueStore;
   std::unique_ptr<SignalStore> signalStore;
 
@@ -49,7 +51,7 @@ public:
   }
 
   template <class T> Symbol lookupOrNull(Ref<T> ref) const {
-    if (!store<T>().contains(ref)) {
+    if (!initialized || !store<T>().contains(ref)) {
       return nullptr;
     }
     return store<T>().at(ref);
@@ -107,16 +109,21 @@ public:
       os << "(null)\n";
       return;
     }
+    llvm::dbgs() << "--\n";
+    if (valueStore->size() == 0) {
+      os << "(empty)\n";
+    }
+    for (auto [key, val] : *valueStore) {
+      os << key << ": " << val << "\n";
+    }
+    llvm::dbgs() << "--\n";
     if (signalStore->size() == 0) {
       os << "(empty)\n";
-      return;
     }
-    // for (auto [key, val] : *valueStore) {
-    //   os << key << ": " << val << "\n";
-    // }
     for (auto [key, val] : *signalStore) {
       os << key << ": " << static_cast<Symbol>(val) << "\n";
     }
+    llvm::dbgs() << "--\n";
   }
 };
 class ValueStoreAnalysis
@@ -133,5 +140,9 @@ public:
   void setToEntryState(ValueStoreLattice *lattice) override {
     lattice->setPool(&pool);
   }
+
+  // Looks up the symbol SignalValueAnalysis computed for the given SSA value,
+  // and subscribes to any updates to the symbol
+  Symbol getBoundSymbol(mlir::Value value);
 };
 } // namespace lleq

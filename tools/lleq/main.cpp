@@ -60,6 +60,8 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   //   state->dump();
   // });
 
+  auto op = computeFunc.getBody().getBlocks().begin()->getTerminator();
+  llvm::dbgs() << "Printing store after op:\n" << *op << "\n";
   auto *state =
       solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
           computeFunc.getBody().getBlocks().begin()->getTerminator()));

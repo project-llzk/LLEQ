@@ -4,6 +4,7 @@
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
+#include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
@@ -58,7 +59,7 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
                 return {pool.get().func_call(
                     call.getCallee().getLeafReference(), args)};
               })
-          .Case<llzk::component::FieldReadOp>(
+          .Case<llzk::component::FieldReadOp, llzk::array::ReadArrayOp>(
               [this](auto) -> llvm::SmallVector<Symbol> {
                 return {pool.get().uninitialized()};
               })

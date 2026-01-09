@@ -1,9 +1,12 @@
 #include "Analysis/ValueStoreAnalysis.h"
 #include "Analysis/SignalValueAnalysis.h"
 #include "Analysis/SymbolicStore.h"
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
+#include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
 
 #define DEBUG_TYPE "value-store-analysis"
@@ -11,6 +14,13 @@
 namespace lleq {
 
 using namespace llzk::component;
+using namespace llzk::array;
+
+Symbol ValueStoreAnalysis::getBoundSymbol(mlir::Value value) {
+  SVALattice *lattice = getOrCreate<SVALattice>(value);
+  lattice->useDefSubscribe(this);
+  return lattice->getValue();
+}
 
 template <class T>
 mlir::ChangeResult ValueStoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
@@ -18,9 +28,9 @@ mlir::ChangeResult ValueStoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
   auto &st = store<T>();
   if (st.contains(ref) && *st.at(ref) == *sym) {
     return mlir::ChangeResult::NoChange;
-  } else {
-    st.write(ref, sym, WriteMode::AntiUnify);
   }
+  // TODO: is `Clobber` the correct mode to use here?
+  st.write(ref, sym, WriteMode::Clobber);
   return mlir::ChangeResult::Change;
 }
 
@@ -39,6 +49,7 @@ ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
   if (!initialized) {
+    setPool(rhs->pool);
     *valueStore = *rhs->valueStore;
     *signalStore = *rhs->signalStore;
     initialized = true;
@@ -69,14 +80,61 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
   });
   mlir::ChangeResult result = after->join(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
-      .Case<FieldWriteOp>([this, after, &result](FieldWriteOp write) {
-        SVALattice *symbol = getOrCreate<SVALattice>(write.getVal());
-        symbol->useDefSubscribe(this);
-        result |= after->write(write.getFieldName(), symbol->getValue());
+      .Case<FieldWriteOp>([this, after, &result, &before](FieldWriteOp write) {
+        if (llvm::dyn_cast<llzk::array::ArrayType>(
+                write.getOperandTypes()[1])) {
+          // Its an array so copy from valueStore to signalStore
+          for (auto [ref, sym] : *before.valueStore) {
+            if (ref.name == write.getVal()) {
+              // `after->write` will correctly clobber any entries signalStore
+              // already has for this signal
+              result |= after->write(
+                  SignalRef{write.getFieldName(), ref.indices}, sym);
+            }
+          }
+          return;
+        }
+        // Otherwise, its a scalar, so lookup the symbol from
+        // SignalValueAnalysis and write it to the store
+        Symbol written = getBoundSymbol(write.getVal());
+        result |= after->write(write.getFieldName(), written);
       })
-      .Case<FieldReadOp>([this, &before](FieldReadOp read) {
+      .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
+        if (llvm::dyn_cast<llzk::array::ArrayType>(read.getType())) {
+          // Its an array so copy from signalStore to valueStore
+          for (auto [ref, sym] : *before.signalStore) {
+            if (ref.name == read.getFieldName()) {
+              // Technically, `after->write` attempts to clobber here, but since
+              // `read.getVal()` should be a fresh SSA value, it doesn't matter
+              result |= after->write(ValueRef{read.getVal(), ref.indices}, sym);
+            }
+          }
+          return;
+        }
+        // Otherwise, its a scalar, so inject into SignalValueAnalysis
         SVALattice *lat = getOrCreate<SVALattice>(read.getVal());
         Symbol newSym = before.lookupOrNull(read.getFieldName());
+        if (newSym) {
+          propagateIfChanged(lat, lat->join(newSym));
+        }
+      })
+      .Case<WriteArrayOp>([this, after, &result](WriteArrayOp write) {
+        Symbol rval = getBoundSymbol(write.getRvalue());
+        llvm::SmallVector<Symbol> indices;
+        for (auto idx : write.getIndices()) {
+          indices.push_back(getBoundSymbol(idx));
+        }
+        // `after->write` will automatically clobber
+        result |= after->write(ValueRef{write.getArrRef(), indices}, rval);
+      })
+      .Case<ReadArrayOp>([this, &before](ReadArrayOp read) {
+        SVALattice *lat = getOrCreate<SVALattice>(read.getResult());
+        llvm::SmallVector<Symbol> indices;
+        for (auto idx : read.getIndices()) {
+          indices.push_back(getBoundSymbol(idx));
+        }
+        Symbol newSym =
+            before.lookupOrNull(ValueRef{read.getArrRef(), indices});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
