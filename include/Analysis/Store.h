@@ -19,6 +19,15 @@ static inline bool operator==(const Ref<T> &a, const Ref<T> &b) {
                     impl::equal);
 }
 
+template <class T>
+llvm::raw_ostream &operator<<(llvm::raw_ostream &os, const Ref<T> &ref) {
+  os << ref.name;
+  for (auto idx : ref.indices) {
+    os << '[' << idx << ']';
+  }
+  return os;
+}
+
 // Indexing into an ordinary MLIR value
 using ValueRef = Ref<mlir::Value>;
 // Indexing into a struct signal (either fieldName or blockArgIndex)
@@ -80,7 +89,7 @@ template <class T> struct Store {
 
   // Configure behavior when writing to a name that is already present
   // (overwrite vs. anti-unify)
-  void write(Ref<T> ref, Symbol val, WriteMode mode = WriteMode::Overwrite) {
+  Symbol write(Ref<T> ref, Symbol val, WriteMode mode = WriteMode::Overwrite) {
     if (&val->pool != &_pool.get()) {
       val = _pool.get().copy(val);
     }
@@ -88,6 +97,7 @@ template <class T> struct Store {
       _store[ref] = val;
     }
     _store[ref] = anti_unify(_store[ref], val);
+    return _store[ref];
   }
 
   Store(llvm::DenseMap<Ref<T>, Symbol> entries, SymbolPool &pool)
@@ -129,6 +139,17 @@ template <class T> struct Store {
     return true;
   }
 
+  void join_with(const Store<T> &other) {
+    for (auto [key, val] : _store) {
+      if (!other.contains(key) &&
+          val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
+        write(key, _pool.get().fresh_unknown());
+      } else if (other.contains(key)) {
+        write(key, other.at(key), WriteMode::AntiUnify);
+      }
+    }
+  }
+
 private:
   llvm::DenseMap<Ref<T>, Symbol> _store;
   std::reference_wrapper<SymbolPool> _pool;
@@ -136,5 +157,17 @@ private:
 
 using SignalStore = Store<llvm::StringRef>;
 using ValueStore = Store<mlir::Value>;
+
+template <class T>
+void _join_stores_simple(Store<T> &a, const Store<T> &b, SymbolPool &pool) {
+  for (auto [key, val] : a) {
+    if (!b.contains(key) &&
+        val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
+      a.write(key, pool.fresh_unknown());
+    } else if (b.contains(key)) {
+      a.write(key, b.at(key), WriteMode::AntiUnify);
+    }
+  }
+}
 
 } // namespace lleq

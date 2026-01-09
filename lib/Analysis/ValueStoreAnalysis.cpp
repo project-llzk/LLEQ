@@ -1,34 +1,37 @@
 #include "Analysis/ValueStoreAnalysis.h"
 #include "Analysis/SignalValueAnalysis.h"
+#include "Analysis/SymbolicStore.h"
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Debug.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+
+#define DEBUG_TYPE "value-store-analysis"
 
 namespace lleq {
 
 using namespace llzk::component;
 
-mlir::ChangeResult ValueStoreLattice::write(llvm::StringRef ref, Symbol sym) {
+template <class T>
+mlir::ChangeResult ValueStoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
   initialized = true;
-  if (valueStore.contains(ref) && *valueStore.at(ref) == *sym) {
+  auto &st = store<T>();
+  if (st.contains(ref) && *st.at(ref) == *sym) {
     return mlir::ChangeResult::NoChange;
-  } else if (valueStore.contains(ref)) {
-    valueStore[ref] = anti_unify(valueStore[ref], sym);
   } else {
-    valueStore[ref] = sym;
+    st.write(ref, sym, WriteMode::AntiUnify);
   }
   return mlir::ChangeResult::Change;
 }
 
+template mlir::ChangeResult
+    ValueStoreLattice::_write_impl<mlir::Value>(ValueRef, Symbol);
+template mlir::ChangeResult
+    ValueStoreLattice::_write_impl<llvm::StringRef>(SignalRef, Symbol);
+
 mlir::ChangeResult
 ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
   const auto *rhs = dynamic_cast<const ValueStoreLattice *>(&other);
-  // llvm::dbgs() << "Joining: \n";
-  // dump();
-  // llvm::dbgs() << "--\n";
-  // rhs->dump();
-  // llvm::dbgs() << "==\n";
-  // pool = rhs->pool;
   if (!rhs) {
     llvm::report_fatal_error("cannot join incomparable lattices");
   }
@@ -36,7 +39,8 @@ ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
   if (!initialized) {
-    valueStore = rhs->valueStore;
+    *valueStore = *rhs->valueStore;
+    *signalStore = *rhs->signalStore;
     initialized = true;
     return mlir::ChangeResult::Change;
   }
@@ -45,16 +49,9 @@ ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
-  for (auto [key, val] : valueStore) {
-    if (!rhs->valueStore.contains(key) &&
-        val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
-      valueStore[key] = pool->fresh_unknown();
-    } else if (rhs->valueStore.contains(key)) {
-      valueStore[key] = anti_unify(val, rhs->valueStore.at(key));
-    }
-  }
-  // dump();
-  // llvm::dbgs() << "**\n";
+  valueStore->join_with(*rhs->valueStore);
+  signalStore->join_with(*rhs->signalStore);
+
   return mlir::ChangeResult::Change;
 }
 
@@ -63,6 +60,13 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
                                    const ValueStoreLattice &before,
                                    ValueStoreLattice *after) {
   after->setPool(&pool);
+  LLVM_DEBUG({
+    llvm::dbgs() << "Operation: " << *op << "\n";
+    llvm::dbgs() << "Before:\n";
+    before.print(llvm::dbgs());
+    llvm::dbgs() << "Start:\n";
+    after->print(llvm::dbgs());
+  });
   mlir::ChangeResult result = after->join(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<FieldWriteOp>([this, after, &result](FieldWriteOp write) {
@@ -70,14 +74,17 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
         symbol->useDefSubscribe(this);
         result |= after->write(write.getFieldName(), symbol->getValue());
       })
-      .Case<FieldReadOp>([this, before](FieldReadOp read) {
+      .Case<FieldReadOp>([this, &before](FieldReadOp read) {
         SVALattice *lat = getOrCreate<SVALattice>(read.getVal());
         Symbol newSym = before.lookupOrNull(read.getFieldName());
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
       });
-
+  LLVM_DEBUG({
+    llvm::dbgs() << "After:\n";
+    after->print(llvm::dbgs());
+  });
   propagateIfChanged(after, result);
   return mlir::success();
 }

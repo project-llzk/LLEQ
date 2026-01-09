@@ -99,7 +99,7 @@ std::string SymbolPool::getNameForValue(mlir::Value value) const {
   return valueNameMap[value];
 }
 
-llvm::raw_ostream &operator<<(llvm::raw_ostream &os, Symbol s) {
+llvm::raw_ostream &lleq::operator<<(llvm::raw_ostream &os, Symbol s) {
   if (s == nullptr) {
     os << "(null)";
     return os;
