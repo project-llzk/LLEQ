@@ -10,13 +10,14 @@
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 
 namespace lleq {
 
 mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
     mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
     llvm::ArrayRef<Lattice *> results) {
-  llvm::dbgs() << "Operation: " << *op << "\n";
+  // llvm::dbgs() << "Operation: " << *op << "\n";
   if (operands.empty() && results.empty()) {
     return mlir::success();
   }
@@ -61,8 +62,22 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
               [this](auto) -> llvm::SmallVector<Symbol> {
                 return {pool.get().uninitialized()};
               })
-          .Default([this, operands](
-                       mlir::Operation *op) -> llvm::SmallVector<Symbol> {
+          .Case<mlir::scf::YieldOp>([this, operands](mlir::scf::YieldOp yield)
+                                        -> llvm::SmallVector<Symbol> {
+            mlir::Operation *parent = yield->getParentOp();
+            for (auto [yielded, result] :
+                 llvm::zip(operands, parent->getResults())) {
+              auto *resultLattice = getLatticeElement(result);
+              propagateIfChanged(resultLattice,
+                                 resultLattice->join(yielded->getValue()));
+            }
+            return {};
+          })
+          .Default([this, operands,
+                    results](mlir::Operation *op) -> llvm::SmallVector<Symbol> {
+            if (results.empty()) {
+              return {};
+            }
             llvm::SmallVector<Symbol> args;
             for (auto *arg : operands) {
               args.push_back(arg->getValue());

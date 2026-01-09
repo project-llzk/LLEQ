@@ -5,10 +5,10 @@
 
 #include <functional>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Analysis/SparseAnalysis.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
-#include <mlir/Analysis/DataFlow/SparseAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
-#include <mlir/Interfaces/ControlFlowInterfaces.h>
+#include <mlir/IR/Value.h>
 
 namespace lleq {
 
@@ -72,7 +72,7 @@ public:
 };
 
 class SignalValueDataflowAnalysis
-    : public mlir::dataflow::SparseForwardDataFlowAnalysis<SVALattice> {
+    : public llzk::dataflow::SparseForwardDataFlowAnalysis<SVALattice> {
   using Lattice = SVALattice;
   using Base = SparseForwardDataFlowAnalysis<Lattice>;
 
@@ -86,8 +86,16 @@ public:
                  llvm::ArrayRef<Lattice *> results) override;
   void setToEntryState(Lattice *lattice) override {
     lattice->getValue().setPool(&pool.get());
-    propagateIfChanged(
-        lattice, lattice->join(pool.get().index(lattice->getAnchor(), {})));
+    mlir::Value anchor = lattice->getAnchor();
+    if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(anchor)) {
+      if (llvm::isa<llzk::function::FuncDefOp>(
+              blockArg.getOwner()->getParentOp())) {
+        propagateIfChanged(
+            lattice, lattice->join(pool.get().index(lattice->getAnchor(), {})));
+        return;
+      }
+    }
+    propagateIfChanged(lattice, lattice->join(pool.get().uninitialized()));
   }
 };
 
