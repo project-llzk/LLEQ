@@ -84,6 +84,11 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
         if (llvm::dyn_cast<llzk::array::ArrayType>(
                 write.getOperandTypes()[1])) {
           // Its an array so copy from valueStore to signalStore
+          if (!before.initialized) {
+            // This is weird but there's nothing to copy
+            // Hopefully we'll visit this state again when there is something
+            return;
+          }
           for (auto [ref, sym] : *before.valueStore) {
             if (ref.name == write.getVal()) {
               // `after->write` will correctly clobber any entries signalStore

@@ -46,7 +46,7 @@ struct SymbolBase {
   virtual bool eq(const SymbolBase &other) const = 0;
 
   // TODO: This is correct but imprecise. For more precision, ask solver
-  bool canEqual(const SymbolBase &other) const { return true; }
+  virtual bool canEqual(const SymbolBase &other) const { return true; }
 };
 
 inline bool equal(SymbolBase *a, SymbolBase *b) {

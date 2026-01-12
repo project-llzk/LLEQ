@@ -112,7 +112,7 @@ template <class T> struct Store {
 
     if (mode == WriteMode::Clobber) {
       // Start by clobbering any possible aliases
-      for (auto [key, _] : _store) {
+      for (auto [key, old] : _store) {
         if (ref.canEqual(key)) {
           _store[key] = _pool.get().fresh_unknown();
         }

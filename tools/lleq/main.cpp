@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
@@ -37,12 +38,6 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
-  // lleq::SymbolicStore store;
-  // store.build_store(structDef);
-  // store.dump(llvm::outs());
-
-  // mlir::DataFlowSolver
-  // solver{mlir::DataFlowConfig{}.setInterprocedural(false)};
   mlir::DataFlowSolver solver;
   lleq::SymbolPool pool;
   solver.load<mlir::dataflow::DeadCodeAnalysis>();
@@ -53,19 +48,14 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
 
   if (mlir::failed(solver.initializeAndRun(computeFunc))) {
-    llvm::dbgs() << "Analysis failed\n";
+    llvm::report_fatal_error("Analysis failed");
   }
-  // computeFunc.walk([&solver](mlir::scf::IfOp op) {
-  //   auto *state = solver.lookupState<lleq::SVALattice>(op->getResult(0));
-  //   state->dump();
-  // });
 
   auto op = computeFunc.getBody().getBlocks().begin()->getTerminator();
-  llvm::dbgs() << "Printing store after op:\n" << *op << "\n";
   auto *state =
       solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
           computeFunc.getBody().getBlocks().begin()->getTerminator()));
-  state->print(llvm::dbgs());
+  state->print(llvm::outs());
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {

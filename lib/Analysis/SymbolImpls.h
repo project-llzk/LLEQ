@@ -58,6 +58,12 @@ struct Constant : public impl::SymbolEq<Constant> {
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Const;
   }
+  bool canEqual(const impl::SymbolBase &other) const override {
+    if (auto *constOther = llvm::dyn_cast<Constant>(&other)) {
+      return constOther->value == value;
+    }
+    return true;
+  }
 };
 
 struct TemplParam : public impl::SymbolEq<TemplParam> {
@@ -75,6 +81,12 @@ struct TemplParam : public impl::SymbolEq<TemplParam> {
   bool operator==(const TemplParam &other) const { return name == other.name; }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_TemplParam;
+  }
+  bool canEqual(const impl::SymbolBase &other) const override {
+    if (auto *constOther = llvm::dyn_cast<TemplParam>(&other)) {
+      return constOther->name == name;
+    }
+    return true;
   }
 };
 

@@ -11,6 +11,8 @@
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Support/TypeID.h>
 
+#define DEBUG_TYPE "value-store-analysis"
+
 namespace lleq {
 class ValueStoreAnalysis;
 class ValueStoreLattice : public mlir::dataflow::AbstractDenseLattice {
@@ -101,29 +103,31 @@ public:
   }
 
   void print(llvm::raw_ostream &os) const override {
-    if (!initialized) {
-      os << "(uninit)\n";
-      return;
-    }
-    if (valueStore == nullptr || signalStore == nullptr) {
-      os << "(null)\n";
-      return;
-    }
-    llvm::dbgs() << "--\n";
-    if (valueStore->size() == 0) {
-      os << "(empty)\n";
-    }
-    for (auto [key, val] : *valueStore) {
-      os << key << ": " << val << "\n";
-    }
-    llvm::dbgs() << "--\n";
-    if (signalStore->size() == 0) {
-      os << "(empty)\n";
-    }
+    LLVM_DEBUG({
+      if (!initialized) {
+        os << "(uninit)\n";
+        return;
+      }
+      if (valueStore == nullptr || signalStore == nullptr) {
+        os << "(null)\n";
+        return;
+      }
+      os << "--\n";
+      if (valueStore->size() == 0) {
+        os << "(empty)\n";
+      }
+      for (auto [key, val] : *valueStore) {
+        os << key << ": " << val << "\n";
+      }
+      os << "--\n";
+      if (signalStore->size() == 0) {
+        os << "(empty)\n";
+      }
+    });
     for (auto [key, val] : *signalStore) {
       os << key << ": " << static_cast<Symbol>(val) << "\n";
     }
-    llvm::dbgs() << "--\n";
+    // os << "--\n";
   }
 };
 class ValueStoreAnalysis
