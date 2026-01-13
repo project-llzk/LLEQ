@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:Veridise/llzk-lib?ref=main";
+      url = "github:project-llzk/llzk-lib?ref=main";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";
@@ -26,7 +26,7 @@
   };
 
   # Custom colored bash prompt
-  nixConfig.bash-prompt = ''\[\e[0;32m\][LLZK]\[\e[m\] \[\e[38;5;244m\]\w\[\e[m\] % '';
+  nixConfig.bash-prompt = ''\[\e[0;32m\][LLEQ]\[\e[m\] \[\e[38;5;244m\]\w\[\e[m\] % '';
 
   outputs = { self, nixpkgs, flake-utils, llzk-pkgs, release-helpers, llzk }:
     {
@@ -35,6 +35,12 @@
 
         # Default lleq build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
         lleq = final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk; };
+        lleq-debug = final.callPackage ./nix/lleq.nix { 
+          clang = final.clang_20;
+          llzk = final.llzk-debug;
+          # mlir_pkg = final.mlir-debug;
+          # cmakeBuildType = "Debug";
+        };
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.
         # Mostly useful for development and CI
         lleqClang = (final.lleq.override { stdenv = final.clangStdenv; }).overrideAttrs(attrs: {
@@ -62,7 +68,7 @@
         # Now, we can define the actual outputs of the flake
         packages = flake-utils.lib.flattenTree {
           # Copy the packages from the overlay.
-          inherit (pkgs) lleq;
+          inherit (pkgs) lleq-debug lleq;
 
           # For debug purposes, expose the MLIR/LLVM packages.
           inherit (pkgs) mlir llzk clang gtest python3 lit z3 cvc5;
@@ -70,13 +76,13 @@
           # versions than the mlir from llzk-pkgs.
           inherit (pkgs.llzk-llvmPackages) libllvm llvm;
 
-          default = pkgs.lleq;
+          default = pkgs.lleq-debug;
           withClang = pkgs.lleqClang;
           withGCC = pkgs.lleqGCC;
         };
 
         devShells = flake-utils.lib.flattenTree {
-          default =  pkgs.lleq.overrideAttrs (old: {
+          default =  pkgs.lleq-debug.overrideAttrs (old: {
             nativeBuildInputs = (with pkgs; [
               doxygen
               git
