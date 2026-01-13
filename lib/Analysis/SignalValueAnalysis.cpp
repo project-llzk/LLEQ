@@ -18,7 +18,10 @@ namespace lleq {
 mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
     mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
     llvm::ArrayRef<Lattice *> results) {
-  // llvm::dbgs() << "Operation: " << *op << "\n";
+  llvm::dbgs() << "Operation: " << *op << "\n";
+  for (auto operand : operands) {
+    llvm::dbgs() << "* operand: " << operand->getValue() << "\n";
+  }
   if (operands.empty() && results.empty()) {
     return mlir::success();
   }
@@ -88,6 +91,7 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
   llzk::ensure(results.size() == symbols.size(),
                "unsupported: expression with multiple results");
   for (auto [result, sym] : llvm::zip(results, symbols)) {
+    llvm::dbgs() << "Symbol: " << sym << "\n";
     propagateIfChanged(result, result->join(sym));
   }
   return mlir::success();

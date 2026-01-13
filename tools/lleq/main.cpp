@@ -58,6 +58,32 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   state->print(llvm::outs());
 }
 
+static inline void dumpSignalValues(llzk::component::StructDefOp structDef) {
+  mlir::DataFlowSolver solver;
+  lleq::SymbolPool pool;
+  solver.load<mlir::dataflow::DeadCodeAnalysis>();
+  auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+
+  auto computeFunc = structDef.getComputeFuncOp();
+  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
+
+  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
+    llvm::report_fatal_error("Analysis failed");
+  }
+
+  computeFunc->walk([&solver](mlir::Operation *op) {
+    if (op->getNumResults() > 0) {
+      using lleq::operator<<;
+      llvm::dbgs() << "Op: " << *op << ", expr: "
+                   << static_cast<lleq::Symbol>(
+                          solver
+                              .lookupState<lleq::SVALattice>(op->getResult(0))
+                              ->getValue())
+                   << "\n";
+    }
+  });
+}
+
 static inline void printDiag(mlir::Diagnostic &d) {
   switch (d.getSeverity()) {
   case mlir::DiagnosticSeverity::Error:
@@ -115,8 +141,9 @@ int main(int argc, char **argv) {
   }
 
   if (lleq::cli::dumpStore()) {
-    mod.walk(
-        [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
+    mod.walk([](llzk::component::StructDefOp structDef) {
+      dumpSignalValues(structDef);
+    });
   }
 
   return EXIT_SUCCESS;
