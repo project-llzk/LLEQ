@@ -28,7 +28,6 @@ message(STATUS "Using MLIR in: ${MLIR_DIR}")
   
 find_package(LLZK REQUIRED CONFIG)
 message(STATUS "Using LLZK in: ${LLZK_DIR}")
-message(STATUS "LLZK config: ${LLZK_CONFIG}")
 
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
