@@ -13,11 +13,21 @@ project(
 
 
 set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
-if (CMAKE_BUILD_TYPE STREQUAL "DebWithSans")
-    add_compile_options(-fsanitize=address)
-    add_link_options(-fsanitize=address)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DebWithSans")
+  if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    message(STATUS "Adding coverage flags")
+    add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+    add_link_options(-fprofile-instr-generate -fcoverage-mapping)
+  endif()
+  add_compile_options(-O0 -g)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "DebWithSans")
+  # NOTE: undefined behavior sanitizer ("undefined") has been removed due to its
+  # poor interaction with gtest fixtures and other standard MLIR/LLVM operations.
+  add_compile_options(-fsanitize=address)
+  add_link_options(-fsanitize=address)
 endif()
 
 find_package(LLVM REQUIRED CONFIG)
