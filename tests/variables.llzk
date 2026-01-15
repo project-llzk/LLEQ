@@ -1,3 +1,5 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
 module attributes {veridise.lang = "llzk"} {
     struct.def @A {
         struct.field @x : !felt.type
@@ -21,3 +23,6 @@ module attributes {veridise.lang = "llzk"} {
         }
     }
 }
+
+// CHECK-DAG: x: felt.mul(%arg0, felt.add(%arg0, %arg1))
+// CHECK-DAG: y: felt.mul(felt.mul(%arg0, felt.add(%arg0, %arg1)), felt.mul(%arg0, felt.add(%arg0, %arg1)))

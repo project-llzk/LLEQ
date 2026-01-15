@@ -89,18 +89,8 @@ public:
   join(const mlir::dataflow::AbstractDenseLattice &other) override;
 
   bool operator==(const ValueStoreLattice &other) const {
-    for (auto [key, val] : *valueStore) {
-      if (!other.valueStore->contains(key) ||
-          *other.valueStore->at(key) != *val) {
-        return false;
-      }
-    }
-    for (auto [key, val] : *other.valueStore) {
-      if (!valueStore->contains(key) || *valueStore->at(key) != *val) {
-        return false;
-      }
-    }
-    return true;
+    return *valueStore == *other.valueStore &&
+           *signalStore == *other.signalStore;
   }
 
   void print(llvm::raw_ostream &os) const override {
