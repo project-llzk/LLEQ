@@ -86,7 +86,7 @@ Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &);
 // overwrites the entry, `AntiUnify` performs anti-unification with the existing
 // entry and the new value, and `HavocEquivalent` overwrites the existing entry
 // and sets all other entries that could alias it to Unknown
-enum class WriteMode { OverwriteExact, AntiUnify, HavocEquivalent };
+enum class WriteMode { OverwriteExact, AntiUnify, HavocAliases };
 
 /// Represents a single mapping of refs (names + indices) to symbols.
 /// Lightweight wrapper around a DenseMap<Ref<T>, Symbol> that provides some
@@ -115,7 +115,7 @@ template <class T> struct Store {
       val = _pool.get().copy(val);
     }
 
-    if (mode == WriteMode::HavocEquivalent) {
+    if (mode == WriteMode::HavocAliases) {
       // Start by clobbering any possible aliases
       for (auto [key, old] : _store) {
         if (ref.canEqual(key)) {
