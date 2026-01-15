@@ -63,6 +63,7 @@ static inline void dumpSignalValues(llzk::component::StructDefOp structDef) {
   lleq::SymbolPool pool;
   solver.load<mlir::dataflow::DeadCodeAnalysis>();
   auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
 
   auto computeFunc = structDef.getComputeFuncOp();
   llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
@@ -141,9 +142,8 @@ int main(int argc, char **argv) {
   }
 
   if (lleq::cli::dumpStore()) {
-    mod.walk([](llzk::component::StructDefOp structDef) {
-      dumpSignalValues(structDef);
-    });
+    mod.walk(
+        [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
   }
 
   return EXIT_SUCCESS;

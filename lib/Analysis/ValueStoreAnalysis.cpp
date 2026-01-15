@@ -8,6 +8,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+#include <mlir/IR/Value.h>
 
 #define DEBUG_TYPE "value-store-analysis"
 
@@ -132,14 +133,17 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
         // `after->write` will automatically clobber
         result |= after->write(ValueRef{write.getArrRef(), indices}, rval);
       })
-      .Case<ReadArrayOp>([this, &before](ReadArrayOp read) {
+      .Case<ReadArrayOp>([this, &before, after](ReadArrayOp read) {
+        // If the array is a block arg, there's nothing to propagate
+        if (llvm::isa<mlir::BlockArgument>(read.getArrRef())) {
+          return;
+        }
         SVALattice *lat = getOrCreate<SVALattice>(read.getResult());
         llvm::SmallVector<Symbol> indices;
         for (auto idx : read.getIndices()) {
           indices.push_back(getBoundSymbol(idx));
         }
-        Symbol newSym =
-            before.lookupOrNull(ValueRef{read.getArrRef(), indices});
+        Symbol newSym = after->lookup(ValueRef{read.getArrRef(), indices});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }

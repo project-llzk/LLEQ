@@ -60,6 +60,7 @@ public:
   }
 
   template <class T> Symbol lookup(Ref<T> ref) {
+    initialized = true;
     auto symbol = lookupOrNull<T>(ref);
     if (!symbol) {
       return store<T>().write(ref, pool->fresh_unknown(), WriteMode::Overwrite);

@@ -8,6 +8,7 @@
 #include <llzk/Analysis/SparseAnalysis.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
@@ -93,6 +94,11 @@ public:
         propagateIfChanged(
             lattice, lattice->join(pool.get().index(lattice->getAnchor(), {})));
         return;
+      }
+      // Apparently setToEntryState gets called on loop induction vars too, but
+      // these should just be set to Unknown
+      if (llvm::isa<mlir::scf::ForOp>(blockArg.getOwner()->getParentOp())) {
+        propagateIfChanged(lattice, lattice->join(pool.get().fresh_unknown()));
       }
     }
     propagateIfChanged(lattice, lattice->join(pool.get().uninitialized()));

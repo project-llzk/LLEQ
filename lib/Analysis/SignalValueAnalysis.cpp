@@ -12,16 +12,21 @@
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/IR/Value.h>
+
+#define DEBUG_TYPE "signal-value-analysis"
 
 namespace lleq {
 
 mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
     mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
     llvm::ArrayRef<Lattice *> results) {
-  llvm::dbgs() << "Operation: " << *op << "\n";
-  for (auto operand : operands) {
-    llvm::dbgs() << "* operand: " << operand->getValue() << "\n";
-  }
+  LLVM_DEBUG({
+    llvm::dbgs() << "SVA Operation: " << *op << "\n";
+    for (auto operand : operands) {
+      llvm::dbgs() << "* operand: " << operand->getValue() << "\n";
+    }
+  });
   if (operands.empty() && results.empty()) {
     return mlir::success();
   }
@@ -62,8 +67,20 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
                 return {pool.get().func_call(
                     call.getCallee().getLeafReference(), args)};
               })
-          .Case<llzk::component::FieldReadOp, llzk::array::ReadArrayOp>(
+          .Case<llzk::component::FieldReadOp>(
               [this](auto) -> llvm::SmallVector<Symbol> {
+                return {pool.get().uninitialized()};
+              })
+          .Case<llzk::array::ReadArrayOp>(
+              [this, operands](llzk::array::ReadArrayOp readArr)
+                  -> llvm::SmallVector<Symbol> {
+                if (llvm::isa<mlir::BlockArgument>(readArr.getArrRef())) {
+                  llvm::SmallVector<Symbol> indices;
+                  for (auto *arg : llvm::drop_begin(operands)) {
+                    indices.push_back(arg->getValue());
+                  }
+                  return {pool.get().index(readArr.getArrRef(), indices)};
+                }
                 return {pool.get().uninitialized()};
               })
           .Case<mlir::scf::YieldOp>([this, operands](mlir::scf::YieldOp yield)
@@ -74,6 +91,14 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
               auto *resultLattice = getLatticeElement(result);
               propagateIfChanged(resultLattice,
                                  resultLattice->join(yielded->getValue()));
+            }
+            if (auto forOp = llvm::dyn_cast<mlir::scf::ForOp>(parent)) {
+              for (auto [yielded, iterArg] :
+                   llvm::zip(operands, forOp.getRegionIterArgs())) {
+                auto *argLattice = getLatticeElement(iterArg);
+                propagateIfChanged(argLattice,
+                                   argLattice->join(yielded->getValue()));
+              }
             }
             return {};
           })
@@ -91,7 +116,7 @@ mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
   llzk::ensure(results.size() == symbols.size(),
                "unsupported: expression with multiple results");
   for (auto [result, sym] : llvm::zip(results, symbols)) {
-    llvm::dbgs() << "Symbol: " << sym << "\n";
+    LLVM_DEBUG(llvm::dbgs() << "Symbol: " << sym << "\n");
     propagateIfChanged(result, result->join(sym));
   }
   return mlir::success();
