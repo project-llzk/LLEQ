@@ -31,7 +31,7 @@ mlir::ChangeResult ValueStoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
     return mlir::ChangeResult::NoChange;
   }
   // TODO: is `Clobber` the correct mode to use here?
-  st.write(ref, sym, WriteMode::Clobber);
+  st.write(ref, sym, WriteMode::HavocEquivalent);
   return mlir::ChangeResult::Change;
 }
 

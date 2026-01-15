@@ -1,5 +1,6 @@
 
 #include "Analysis/SymbolExpr.h"
+#include "Analysis/SymbolImpls.h"
 #include "Analysis/Unification.h"
 #include <algorithm>
 #include <concepts>
@@ -81,7 +82,11 @@ template <class T> struct Store;
 template <class T>
 Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &);
 
-enum class WriteMode { Overwrite, AntiUnify, Clobber };
+// What action to take when writing to an existing entry: `OverwriteExact`
+// overwrites the entry, `AntiUnify` performs anti-unification with the existing
+// entry and the new value, and `HavocEquivalent` overwrites the existing entry
+// and sets all other entries that could alias it to Unknown
+enum class WriteMode { OverwriteExact, AntiUnify, HavocEquivalent };
 
 /// Represents a single mapping of refs (names + indices) to symbols.
 /// Lightweight wrapper around a DenseMap<Ref<T>, Symbol> that provides some
@@ -105,12 +110,12 @@ template <class T> struct Store {
   // Configure behavior when writing to a name that is already present
   // (overwrite vs. anti-unify)
   Symbol write(const Ref<T> &ref, Symbol val,
-               WriteMode mode = WriteMode::Overwrite) {
+               WriteMode mode = WriteMode::OverwriteExact) {
     if (&val->pool != &_pool.get()) {
       val = _pool.get().copy(val);
     }
 
-    if (mode == WriteMode::Clobber) {
+    if (mode == WriteMode::HavocEquivalent) {
       // Start by clobbering any possible aliases
       for (auto [key, old] : _store) {
         if (ref.canEqual(key)) {
@@ -118,7 +123,7 @@ template <class T> struct Store {
         }
       }
       _store[ref] = val;
-    } else if (!contains(ref) || mode == WriteMode::Overwrite) {
+    } else if (!contains(ref) || mode == WriteMode::OverwriteExact) {
       _store[ref] = val;
     } else if (mode == WriteMode::AntiUnify) {
       _store[ref] = anti_unify(_store[ref], val);
@@ -169,8 +174,7 @@ template <class T> struct Store {
 
   void join_with(const Store<T> &other) {
     for (auto [key, val] : _store) {
-      if (!other.contains(key) &&
-          val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
+      if (!other.contains(key) && !llvm::isa<Uninitialized>(val)) {
         write(key, _pool.get().fresh_unknown());
       } else if (other.canContain(key)) {
         auto aliasedEntries = llvm::filter_to_vector(
@@ -193,8 +197,7 @@ using ValueStore = Store<mlir::Value>;
 template <class T>
 void _join_stores_simple(Store<T> &a, const Store<T> &b, SymbolPool &pool) {
   for (auto [key, val] : a) {
-    if (!b.contains(key) &&
-        val->kind != impl::SymbolBase::SymbolKind::SK_Uninitialized) {
+    if (!b.contains(key) && !llvm::isa<Uninitialized>(val)) {
       a.write(key, pool.fresh_unknown());
     } else if (b.contains(key)) {
       a.write(key, b.at(key), WriteMode::AntiUnify);

@@ -6,7 +6,7 @@
 #include "Analysis/Unification.h"
 
 #include "Analysis/SymbolExpr.h"
-#include "SymbolImpls.h"
+#include "Analysis/SymbolImpls.h"
 
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>

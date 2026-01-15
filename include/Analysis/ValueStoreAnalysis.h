@@ -63,7 +63,8 @@ public:
     initialized = true;
     auto symbol = lookupOrNull<T>(ref);
     if (!symbol) {
-      return store<T>().write(ref, pool->fresh_unknown(), WriteMode::Overwrite);
+      return store<T>().write(ref, pool->fresh_unknown(),
+                              WriteMode::OverwriteExact);
     }
     return symbol;
   }
