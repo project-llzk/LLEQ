@@ -3,26 +3,34 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "Analysis/SymbolicStore.h"
+#include "Analysis/SignalValueAnalysis.h"
+#include "Analysis/SymbolExpr.h"
+#include "Analysis/ValueStoreAnalysis.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
 #include <llvm/Support/WithColor.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Analysis/AnalysisUtil.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LogicalResult.h>
@@ -30,9 +38,51 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
-  lleq::SymbolicStore store;
-  store.build_store(structDef);
-  store.dump(llvm::outs());
+  mlir::DataFlowSolver solver;
+  lleq::SymbolPool pool;
+  solver.load<mlir::dataflow::DeadCodeAnalysis>();
+  auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
+
+  auto computeFunc = structDef.getComputeFuncOp();
+  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
+
+  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
+    llvm::report_fatal_error("Analysis failed");
+  }
+
+  auto op = computeFunc.getBody().getBlocks().begin()->getTerminator();
+  auto *state =
+      solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
+          computeFunc.getBody().getBlocks().begin()->getTerminator()));
+  state->print(llvm::outs());
+}
+
+static inline void dumpSignalValues(llzk::component::StructDefOp structDef) {
+  mlir::DataFlowSolver solver;
+  lleq::SymbolPool pool;
+  solver.load<mlir::dataflow::DeadCodeAnalysis>();
+  auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
+  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
+
+  auto computeFunc = structDef.getComputeFuncOp();
+  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
+
+  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
+    llvm::report_fatal_error("Analysis failed");
+  }
+
+  computeFunc->walk([&solver](mlir::Operation *op) {
+    if (op->getNumResults() > 0) {
+      using lleq::operator<<;
+      llvm::dbgs() << "Op: " << *op << ", expr: "
+                   << static_cast<lleq::Symbol>(
+                          solver
+                              .lookupState<lleq::SVALattice>(op->getResult(0))
+                              ->getValue())
+                   << "\n";
+    }
+  });
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {

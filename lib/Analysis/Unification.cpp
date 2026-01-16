@@ -6,7 +6,7 @@
 #include "Analysis/Unification.h"
 
 #include "Analysis/SymbolExpr.h"
-#include "SymbolImpls.h"
+#include "Analysis/SymbolImpls.h"
 
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -146,9 +146,16 @@ Symbol substitute(Symbol original, const Substitutions &m) {
 
 // "Erase" whatever's different between `a` and `b` and replace it with unknowns
 // Return the anti-unified symbol
-Symbol anti_unify(Symbol a, Symbol b) {
+static Symbol _anti_unify_impl(Symbol a, Symbol b) {
+  // If either is uninitialized, return the other
+  if (llvm::isa<Uninitialized>(a)) {
+    return b;
+  }
+  if (llvm::isa<Uninitialized>(b)) {
+    return a;
+  }
   // If they're the same, or one of them is unknown, there's no work to do
-  if (*a == *b || llvm::isa<Unknown>(a)) {
+  if (impl::equal(a, b) || llvm::isa<Unknown>(a)) {
     return a;
   }
   if (llvm::isa<Unknown>(b)) {
@@ -191,6 +198,20 @@ Symbol anti_unify(Symbol a, Symbol b) {
         return indexA->pool.index(indexA->signal, anti_unified_idx);
       })
       .Default([b](auto) { return b->pool.fresh_unknown(); });
+}
+
+Symbol anti_unify(Symbol a, Symbol b) {
+  static llvm::DenseMap<std::pair<Symbol, Symbol>, Symbol> previousLookups;
+  if (previousLookups.contains({a, b})) {
+    return previousLookups.at({a, b});
+  }
+  if (previousLookups.contains({b, a})) {
+    return previousLookups.at({b, a});
+  }
+
+  auto ans = _anti_unify_impl(a, b);
+  previousLookups[{a, b}] = ans;
+  return ans;
 }
 
 // TODO: implement anti_unify_inplace

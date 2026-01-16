@@ -4,11 +4,28 @@
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/StringExtras.h>
+#include <llvm/Support/raw_ostream.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/Support/LLVM.h>
 
 namespace lleq {
 struct SymbolPool;
+
+struct Uninitialized : public impl::SymbolEq<Uninitialized> {
+  Uninitialized(SymbolPool &pool)
+      : impl::SymbolEq<Uninitialized>{pool, SymbolKind::SK_Uninitialized} {}
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
+    os << u'⊥';
+    return os;
+  }
+  unsigned hash_value() const override {
+    return llvm::hash_value("uninitialized");
+  }
+  bool operator==(const Uninitialized &other) const { return true; }
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Uninitialized;
+  }
+};
 struct Unknown : public impl::SymbolEq<Unknown> {
   unsigned n;
   Unknown(SymbolPool &pool, unsigned n)
@@ -41,6 +58,12 @@ struct Constant : public impl::SymbolEq<Constant> {
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Const;
   }
+  bool canEqual(const impl::SymbolBase &other) const override {
+    if (auto *constOther = llvm::dyn_cast<Constant>(&other)) {
+      return constOther->value == value;
+    }
+    return true;
+  }
 };
 
 struct TemplParam : public impl::SymbolEq<TemplParam> {
@@ -58,6 +81,12 @@ struct TemplParam : public impl::SymbolEq<TemplParam> {
   bool operator==(const TemplParam &other) const { return name == other.name; }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_TemplParam;
+  }
+  bool canEqual(const impl::SymbolBase &other) const override {
+    if (auto *constOther = llvm::dyn_cast<TemplParam>(&other)) {
+      return constOther->name == name;
+    }
+    return true;
   }
 };
 
@@ -85,7 +114,7 @@ struct Index : public impl::SymbolEq<Index> {
   bool operator==(const Index &other) const {
     return signal == other.signal && indices.size() == other.indices.size() &&
            std::equal(indices.begin(), indices.end(), other.indices.begin(),
-                      [](auto *a, auto *b) { return *a == *b; });
+                      impl::equal);
   }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Index;
@@ -119,8 +148,7 @@ struct OpCall : public impl::SymbolEq<OpCall> {
     return opName == other.opName &&
            arguments.size() == other.arguments.size() &&
            std::equal(arguments.begin(), arguments.end(),
-                      other.arguments.begin(),
-                      [](auto *a, auto *b) { return *a == *b; });
+                      other.arguments.begin(), impl::equal);
   }
   static bool classof(const impl::SymbolBase *sym) {
     return sym->kind == SymbolKind::SK_Call;

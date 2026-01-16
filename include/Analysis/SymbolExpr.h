@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <llvm/ADT/APInt.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/raw_ostream.h>
 #include <memory_resource>
 #include <mlir/IR/Value.h>
@@ -17,6 +18,7 @@ class SymbolPool;
 namespace impl {
 struct SymbolBase {
   enum class SymbolKind {
+    SK_Uninitialized,
     SK_Unknown,
     SK_Const,
     SK_TemplParam,
@@ -27,6 +29,10 @@ struct SymbolBase {
 
   SymbolBase(SymbolPool &pool, SymbolKind k) : pool{pool}, kind{k} {}
   virtual llvm::raw_ostream &print(llvm::raw_ostream &os) const = 0;
+  void dump() const {
+    print(llvm::dbgs());
+    llvm::dbgs() << "\n";
+  }
   virtual unsigned hash_value() const = 0;
 
   bool operator==(const SymbolBase &other) const {
@@ -38,7 +44,17 @@ struct SymbolBase {
 
   SymbolPool &pool;
   virtual bool eq(const SymbolBase &other) const = 0;
+
+  // TODO: This is correct but imprecise. For more precision, ask solver
+  virtual bool canEqual(const SymbolBase &other) const { return true; }
 };
+
+inline bool equal(SymbolBase *a, SymbolBase *b) {
+  if (!a || !b) {
+    return a == b;
+  }
+  return *a == *b;
+}
 
 template <class SymbolT> struct SymbolEq : public SymbolBase {
   SymbolEq(SymbolPool &pool, SymbolKind k) : SymbolBase{pool, k} {}
@@ -70,6 +86,8 @@ public:
   Symbol copy(Symbol s);
   // Generate a pretty-printable name corresponding to the SSA value
   std::string getNameForValue(mlir::Value value) const;
+  // An uninitialized symbol, useful for abstract interpretation
+  Symbol uninitialized();
   // A fresh symbolic variable
   Symbol fresh_unknown();
   // Arbitrary-precision felt
@@ -85,9 +103,9 @@ public:
   Symbol join(Symbol a, Symbol b);
 };
 
-}; // namespace lleq
-
 llvm::raw_ostream &operator<<(llvm::raw_ostream &os, lleq::Symbol s);
+
+}; // namespace lleq
 
 namespace llvm {
 inline unsigned hash_value(lleq::Symbol s) { return s->hash_value(); }

@@ -29,5 +29,7 @@ Symbol substitute(Symbol original, const Substitutions &m);
 
 // Compute the universal symbol that can be substituted to reach both `a` and
 // `b` (i.e., compute the "anti-unification") of `a` and `b`
+// TODO: when anti-unifying the same pair of symbols, return the same unknown
+// instead of a fresh one
 Symbol anti_unify(Symbol a, Symbol b);
 } // namespace lleq

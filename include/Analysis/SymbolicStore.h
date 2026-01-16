@@ -35,7 +35,7 @@ class SymbolicStore {
   // Copy (owned) symbol(s) named `src` to local name `dest`, while correctly
   // handling scalar and array values
   template <class S, class T>
-  void copy_value(S dest, T src, WriteMode mode = WriteMode::Overwrite) {
+  void copy_value(S dest, T src, WriteMode mode = WriteMode::OverwriteExact) {
     copy_value(_get<S>(), dest, src, mode);
   }
 
@@ -43,7 +43,7 @@ class SymbolicStore {
   // correctly handling scalar and array values
   template <class S, class T>
   void copy_value(Store<S> &destStore, S dest, T src,
-                  WriteMode mode = WriteMode::Overwrite);
+                  WriteMode mode = WriteMode::OverwriteExact);
 
   template <class T> mlir::Type _lookup_type(T val);
   template <class T> Store<T> &_get();

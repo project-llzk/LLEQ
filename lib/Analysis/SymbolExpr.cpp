@@ -5,9 +5,10 @@
 
 #include "Analysis/SymbolExpr.h"
 
-#include "SymbolImpls.h"
+#include "Analysis/SymbolImpls.h"
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/Hashing.h>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/ADT/iterator_range.h>
@@ -48,6 +49,10 @@ Symbol SymbolPool::copy(Symbol s) {
       });
 }
 
+Symbol SymbolPool::uninitialized() {
+  return alloc.new_object<Uninitialized>(*this);
+}
+
 Symbol SymbolPool::fresh_unknown() {
   static std::size_t n;
   return alloc.new_object<Unknown>(*this, n++);
@@ -60,10 +65,17 @@ Symbol SymbolPool::templ_param(llvm::StringRef name) {
   return alloc.new_object<TemplParam>(*this, name);
 }
 Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
+  if (llvm::any_of(ns, [](Symbol s) { return llvm::isa<Uninitialized>(s); })) {
+    return alloc.new_object<Uninitialized>(*this);
+  }
   return alloc.new_object<Index>(*this, signal, ns);
 }
 Symbol SymbolPool::func_call(llvm::StringRef name,
                              llvm::ArrayRef<Symbol> args) {
+  if (llvm::any_of(args,
+                   [](Symbol s) { return llvm::isa<Uninitialized>(s); })) {
+    return alloc.new_object<Uninitialized>(*this);
+  }
   return alloc.new_object<OpCall>(*this, name, args);
 }
 
@@ -87,6 +99,10 @@ std::string SymbolPool::getNameForValue(mlir::Value value) const {
   return valueNameMap[value];
 }
 
-llvm::raw_ostream &operator<<(llvm::raw_ostream &os, Symbol s) {
+llvm::raw_ostream &lleq::operator<<(llvm::raw_ostream &os, Symbol s) {
+  if (s == nullptr) {
+    os << "(null)";
+    return os;
+  }
   return s->print(os);
 }
