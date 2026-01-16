@@ -6,8 +6,7 @@ target_sources(LLEQ PRIVATE
     Analysis/SymbolExpr.cpp
     Analysis/SymbolicStore.cpp
     Analysis/Unification.cpp
-    Analysis/StoreUtils.cpp
-    Analysis/SignalValueAnalysis.cpp
-    Analysis/ValueStoreAnalysis.cpp)
+    Analysis/ScalarSymbolAnalysis.cpp
+    Analysis/SymbolicStoreAnalysis.cpp)
 target_link_libraries(LLEQ PUBLIC LLEQHeaders)
 install(TARGETS LLEQ)

@@ -1,4 +1,4 @@
-#include "Analysis/SignalValueAnalysis.h"
+#include "Analysis/ScalarSymbolAnalysis.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -14,15 +14,16 @@
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
 
-#define DEBUG_TYPE "signal-value-analysis"
+#define DEBUG_TYPE "scalar-symbol-analysis"
 
 namespace lleq {
 
-mlir::LogicalResult SignalValueDataflowAnalysis::visitOperation(
-    mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
-    llvm::ArrayRef<Lattice *> results) {
+mlir::LogicalResult
+ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
+                                     llvm::ArrayRef<const Lattice *> operands,
+                                     llvm::ArrayRef<Lattice *> results) {
   LLVM_DEBUG({
-    llvm::dbgs() << "SVA Operation: " << *op << "\n";
+    llvm::dbgs() << "Operation: " << *op << "\n";
     for (auto operand : operands) {
       llvm::dbgs() << "* operand: " << operand->getValue() << "\n";
     }

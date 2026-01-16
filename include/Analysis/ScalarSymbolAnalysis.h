@@ -65,22 +65,22 @@ public:
   operator Symbol() const { return sym; }
 };
 
-class SignalValueDataflowAnalysis;
+class ScalarSymbolAnalysis;
 
-class SVALattice : public mlir::dataflow::Lattice<SymbolValue> {
+class ScalarLattice : public mlir::dataflow::Lattice<SymbolValue> {
 public:
   using Lattice::Lattice;
 };
 
-class SignalValueDataflowAnalysis
-    : public llzk::dataflow::SparseForwardDataFlowAnalysis<SVALattice> {
-  using Lattice = SVALattice;
+class ScalarSymbolAnalysis
+    : public llzk::dataflow::SparseForwardDataFlowAnalysis<ScalarLattice> {
+  using Lattice = ScalarLattice;
   using Base = SparseForwardDataFlowAnalysis<Lattice>;
 
   std::reference_wrapper<SymbolPool> pool;
 
 public:
-  SignalValueDataflowAnalysis(mlir::DataFlowSolver &solver, SymbolPool &pool)
+  ScalarSymbolAnalysis(mlir::DataFlowSolver &solver, SymbolPool &pool)
       : SparseForwardDataFlowAnalysis{solver}, pool{pool} {}
   mlir::LogicalResult
   visitOperation(mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,

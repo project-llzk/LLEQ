@@ -1,3 +1,4 @@
+#pragma once
 
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolImpls.h"

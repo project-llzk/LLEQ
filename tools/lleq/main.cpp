@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "Analysis/SignalValueAnalysis.h"
-#include "Analysis/SymbolExpr.h"
-#include "Analysis/ValueStoreAnalysis.h"
+#include "Analysis/SymbolicStore.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
@@ -38,51 +36,11 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
-  mlir::DataFlowSolver solver;
-  lleq::SymbolPool pool;
-  solver.load<mlir::dataflow::DeadCodeAnalysis>();
-  auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
-  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
-
-  auto computeFunc = structDef.getComputeFuncOp();
-  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
-
-  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
-    llvm::report_fatal_error("Analysis failed");
+  lleq::SymbolicStore store;
+  if (mlir::failed(store.build_store(structDef))) {
+    llvm::report_fatal_error("symbolic store construction failed");
   }
-
-  auto op = computeFunc.getBody().getBlocks().begin()->getTerminator();
-  auto *state =
-      solver.lookupState<lleq::ValueStoreLattice>(solver.getProgramPointAfter(
-          computeFunc.getBody().getBlocks().begin()->getTerminator()));
-  state->print(llvm::outs());
-}
-
-static inline void dumpSignalValues(llzk::component::StructDefOp structDef) {
-  mlir::DataFlowSolver solver;
-  lleq::SymbolPool pool;
-  solver.load<mlir::dataflow::DeadCodeAnalysis>();
-  auto *sva = solver.load<lleq::SignalValueDataflowAnalysis>(pool);
-  auto *vsa = solver.load<lleq::ValueStoreAnalysis>(pool);
-
-  auto computeFunc = structDef.getComputeFuncOp();
-  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
-
-  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
-    llvm::report_fatal_error("Analysis failed");
-  }
-
-  computeFunc->walk([&solver](mlir::Operation *op) {
-    if (op->getNumResults() > 0) {
-      using lleq::operator<<;
-      llvm::dbgs() << "Op: " << *op << ", expr: "
-                   << static_cast<lleq::Symbol>(
-                          solver
-                              .lookupState<lleq::SVALattice>(op->getResult(0))
-                              ->getValue())
-                   << "\n";
-    }
-  });
+  store.dump(llvm::outs());
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {

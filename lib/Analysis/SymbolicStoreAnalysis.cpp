@@ -1,6 +1,5 @@
-#include "Analysis/ValueStoreAnalysis.h"
-#include "Analysis/SignalValueAnalysis.h"
-#include "Analysis/SymbolicStore.h"
+#include "Analysis/SymbolicStoreAnalysis.h"
+#include "Analysis/ScalarSymbolAnalysis.h"
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
@@ -10,21 +9,49 @@
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
 #include <mlir/IR/Value.h>
 
-#define DEBUG_TYPE "value-store-analysis"
+#define DEBUG_TYPE "symbolic-store-analysis"
 
 namespace lleq {
 
 using namespace llzk::component;
 using namespace llzk::array;
 
-Symbol ValueStoreAnalysis::getBoundSymbol(mlir::Value value) {
-  SVALattice *lattice = getOrCreate<SVALattice>(value);
+void StoreLattice::print(llvm::raw_ostream &os) const {
+  LLVM_DEBUG({
+    if (!initialized) {
+      os << "(uninit)\n";
+      return;
+    }
+    if (valueStore == nullptr || signalStore == nullptr) {
+      os << "(null)\n";
+      return;
+    }
+    os << "--\n";
+    if (valueStore->size() == 0) {
+      os << "(empty)\n";
+    }
+    for (auto [key, val] : *valueStore) {
+      os << key << ": " << val << "\n";
+    }
+    os << "--\n";
+    if (signalStore->size() == 0) {
+      os << "(empty)\n";
+    }
+  });
+  for (auto [key, val] : *signalStore) {
+    os << key << ": " << static_cast<Symbol>(val) << "\n";
+  }
+  // os << "--\n";
+}
+
+Symbol SymbolicStoreAnalysis::getBoundSymbol(mlir::Value value) {
+  ScalarLattice *lattice = getOrCreate<ScalarLattice>(value);
   lattice->useDefSubscribe(this);
   return lattice->getValue();
 }
 
 template <class T>
-mlir::ChangeResult ValueStoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
+mlir::ChangeResult StoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
   initialized = true;
   auto &st = store<T>();
   if (st.contains(ref) && *st.at(ref) == *sym) {
@@ -35,14 +62,14 @@ mlir::ChangeResult ValueStoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
   return mlir::ChangeResult::Change;
 }
 
+template mlir::ChangeResult StoreLattice::_write_impl<mlir::Value>(ValueRef,
+                                                                   Symbol);
 template mlir::ChangeResult
-    ValueStoreLattice::_write_impl<mlir::Value>(ValueRef, Symbol);
-template mlir::ChangeResult
-    ValueStoreLattice::_write_impl<llvm::StringRef>(SignalRef, Symbol);
+    StoreLattice::_write_impl<llvm::StringRef>(SignalRef, Symbol);
 
 mlir::ChangeResult
-ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
-  const auto *rhs = dynamic_cast<const ValueStoreLattice *>(&other);
+StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
+  const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
   if (!rhs) {
     llvm::report_fatal_error("cannot join incomparable lattices");
   }
@@ -67,10 +94,8 @@ ValueStoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
   return mlir::ChangeResult::Change;
 }
 
-mlir::LogicalResult
-ValueStoreAnalysis::visitOperation(mlir::Operation *op,
-                                   const ValueStoreLattice &before,
-                                   ValueStoreLattice *after) {
+mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
+    mlir::Operation *op, const StoreLattice &before, StoreLattice *after) {
   after->setPool(&pool);
   LLVM_DEBUG({
     llvm::dbgs() << "Operation: " << *op << "\n";
@@ -118,7 +143,7 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
           return;
         }
         // Otherwise, its a scalar, so inject into SignalValueAnalysis
-        SVALattice *lat = getOrCreate<SVALattice>(read.getVal());
+        ScalarLattice *lat = getOrCreate<ScalarLattice>(read.getVal());
         Symbol newSym = before.lookupOrNull(read.getFieldName());
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
@@ -138,7 +163,7 @@ ValueStoreAnalysis::visitOperation(mlir::Operation *op,
         if (llvm::isa<mlir::BlockArgument>(read.getArrRef())) {
           return;
         }
-        SVALattice *lat = getOrCreate<SVALattice>(read.getResult());
+        ScalarLattice *lat = getOrCreate<ScalarLattice>(read.getResult());
         llvm::SmallVector<Symbol> indices;
         for (auto idx : read.getIndices()) {
           indices.push_back(getBoundSymbol(idx));

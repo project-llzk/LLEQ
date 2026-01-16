@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include "Analysis/Store.h"
+#include "Analysis/ScalarSymbolAnalysis.h"
 #include "Analysis/SymbolExpr.h"
+#include "Analysis/SymbolicStoreAnalysis.h"
 
 #include <cassert>
 #include <llvm/ADT/Hashing.h>
@@ -16,6 +17,8 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Operation.h>
 #include <mlir/IR/Value.h>
@@ -28,56 +31,24 @@ namespace lleq {
 /// prove equivalence between pairs of witness/constraint signals.
 class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
-  SignalStore signalStore;
-  ValueStore valueStore;
+  mlir::DataFlowSolver solver;
+
+  // Marked mutable because for some reason looking up symbols in a StructDef is
+  // not const
   llzk::component::StructDefOp component;
-
-  // Copy (owned) symbol(s) named `src` to local name `dest`, while correctly
-  // handling scalar and array values
-  template <class S, class T>
-  void copy_value(S dest, T src, WriteMode mode = WriteMode::OverwriteExact) {
-    copy_value(_get<S>(), dest, src, mode);
-  }
-
-  // Copy (owned) symbol(s) named `src` to name `dest` inside `destStore`, while
-  // correctly handling scalar and array values
-  template <class S, class T>
-  void copy_value(Store<S> &destStore, S dest, T src,
-                  WriteMode mode = WriteMode::OverwriteExact);
-
-  template <class T> mlir::Type _lookup_type(T val);
-  template <class T> Store<T> &_get();
-
-  Symbol lookup(llvm::StringRef sig) {
-    if (!signalStore.contains({sig, {}})) {
-      signalStore.write({sig, {}}, pool->fresh_unknown());
-    }
-    return signalStore.at({sig, {}});
-  }
+  SignalStore *signalStore;
+  ValueStore *valueStore;
 
 public:
-  SymbolicStore() : signalStore{*pool.get()}, valueStore{*pool.get()} {}
-  SymbolicStore(const SymbolicStore &other);
-  SymbolicStore &operator=(const SymbolicStore &other);
-  bool operator==(const SymbolicStore &other) const {
-    return signalStore == other.signalStore && valueStore == other.valueStore;
+  SymbolicStore() {
+    solver.load<mlir::dataflow::DeadCodeAnalysis>();
+    solver.load<lleq::ScalarSymbolAnalysis>(*pool.get());
+    solver.load<lleq::SymbolicStoreAnalysis>(*pool.get());
   }
 
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef
-  void build_store(llzk::component::StructDefOp structDef);
-
-  /// @brief Update the signalStore and valueStore based on a single operation
-  /// @param op
-  void process_operation(mlir::Operation *op);
-
-  /// @brief Update the signalStore and valueStore based on the operations in a
-  /// block. Optionally takes a vector of values that capture any values yielded
-  /// by the block
-  /// @param block
-  /// @param yielded
-  void process_block(mlir::Block *block,
-                     llvm::ArrayRef<mlir::Value> yielded = {});
+  mlir::LogicalResult build_store(llzk::component::StructDefOp structDef);
 
   /// @brief Generate a symbolic expression corresponding to an MLIR SSA value,
   /// possibly looking up values in the store to do so
@@ -87,11 +58,6 @@ public:
   /// @brief Pretty-print the contents of the store
   /// @param os
   void dump(llvm::raw_ostream &os) const;
-
-  /// @brief Compute a store that represents entries from both `a` and `b`
-  /// @param a
-  /// @param b
-  static SymbolicStore join(const SymbolicStore &a, const SymbolicStore &b);
 };
 
 } // namespace lleq
