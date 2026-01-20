@@ -18,11 +18,19 @@ class SymbolPool;
 namespace impl {
 struct SymbolBase {
   enum class SymbolKind {
+    // Corresponds top the "bottom" element of the symbolic lattice
     SK_Uninitialized,
+    // Fresh unknown variables corresponding to the "top" element of
+    // the symbolic lattice
     SK_Unknown,
+    // A numberic constant, such as one produced by felt.const or arith.constant
     SK_Const,
+    // Struct template parameter
     SK_TemplParam,
+    // Indexing into a (concrete) multi-dimensional array with a sequence of
+    // (symbolic) indices
     SK_Index,
+    // Also encodes basic arithmetic, e.g. as "felt.add(sym1, sym2)"
     SK_Call
   };
   SymbolKind kind;
@@ -98,9 +106,6 @@ public:
   Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
   // Handles operations like function calls and arithmetic
   Symbol func_call(llvm::StringRef name, llvm::ArrayRef<Symbol> args);
-  // The "join" operation defined in Fig. 15 of
-  // https://www.cs.utexas.edu/~isil/zequal.pdf
-  Symbol join(Symbol a, Symbol b);
 };
 
 llvm::raw_ostream &operator<<(llvm::raw_ostream &os, lleq::Symbol s);

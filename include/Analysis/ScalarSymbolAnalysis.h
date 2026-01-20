@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #pragma once
 
 #include "Analysis/SymbolExpr.h"
@@ -8,6 +13,7 @@
 #include <llzk/Analysis/SparseAnalysis.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/ErrorHelper.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
 
@@ -15,16 +21,15 @@ namespace lleq {
 
 class SymbolValue {
   Symbol sym;
-  SymbolPool *pool;
 
 public:
   // Needs to be default-constructible
-  SymbolValue() : sym{nullptr}, pool{nullptr} {}
+  SymbolValue() : sym{nullptr} {}
   SymbolValue(Symbol sym) : sym{sym} {}
 
-  void setPool(SymbolPool *pool) {
-    if (this->pool == nullptr) {
-      this->pool = pool;
+  void initPool(SymbolPool *pool) {
+    llzk::ensure(pool != nullptr, "pool cannot be null");
+    if (sym == nullptr) {
       sym = pool->uninitialized();
     }
   }
@@ -86,7 +91,7 @@ public:
   visitOperation(mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
                  llvm::ArrayRef<Lattice *> results) override;
   void setToEntryState(Lattice *lattice) override {
-    lattice->getValue().setPool(&pool.get());
+    lattice->getValue().initPool(&pool.get());
     mlir::Value anchor = lattice->getAnchor();
     if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(anchor)) {
       if (llvm::isa<llzk::function::FuncDefOp>(

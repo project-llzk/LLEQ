@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #pragma once
 
 #include "Analysis/SymbolExpr.h"
@@ -11,10 +16,10 @@
 
 namespace lleq {
 
-template <std::equality_comparable NameT> struct Ref {
+template <std::equality_comparable NameT> struct IndexedLocation {
   NameT name;
   llvm::SmallVector<Symbol> indices;
-  bool canEqual(const Ref<NameT> &other) const {
+  bool canEqual(const IndexedLocation<NameT> &other) const {
     return name == other.name && indices.size() == other.indices.size() &&
            std::equal(indices.begin(), indices.end(), other.indices.begin(),
                       [](auto a, auto b) { return a->canEqual(*b); });
@@ -22,14 +27,16 @@ template <std::equality_comparable NameT> struct Ref {
 };
 
 template <std::equality_comparable T>
-static inline bool operator==(const Ref<T> &a, const Ref<T> &b) {
+static inline bool operator==(const IndexedLocation<T> &a,
+                              const IndexedLocation<T> &b) {
   return a.name == b.name && a.indices.size() == b.indices.size() &&
          std::equal(a.indices.begin(), a.indices.end(), b.indices.begin(),
                     impl::equal);
 }
 
 template <class T>
-llvm::raw_ostream &operator<<(llvm::raw_ostream &os, const Ref<T> &ref) {
+llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
+                              const IndexedLocation<T> &ref) {
   os << ref.name;
   for (auto idx : ref.indices) {
     os << '[' << idx << ']';
@@ -38,9 +45,9 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &os, const Ref<T> &ref) {
 }
 
 // Indexing into an ordinary MLIR value
-using ValueRef = Ref<mlir::Value>;
+using ValueRef = IndexedLocation<mlir::Value>;
 // Indexing into a struct signal (either fieldName or blockArgIndex)
-using SignalRef = Ref<llvm::StringRef>;
+using SignalRef = IndexedLocation<llvm::StringRef>;
 } // namespace lleq
 
 namespace llvm {
@@ -50,18 +57,19 @@ inline unsigned hash_value(mlir::Value val) {
 }
 
 template <std::equality_comparable T> struct RefInfo {
-  static inline lleq::Ref<T> getEmptyKey() {
+  static inline lleq::IndexedLocation<T> getEmptyKey() {
     return {llvm::DenseMapInfo<T>::getEmptyKey(), {}};
   }
 
-  static inline lleq::Ref<T> getTombstoneKey() {
+  static inline lleq::IndexedLocation<T> getTombstoneKey() {
     return {llvm::DenseMapInfo<T>::getTombstoneKey(), {}};
   }
 
-  static unsigned getHashValue(const lleq::Ref<T> &Val) {
+  static unsigned getHashValue(const lleq::IndexedLocation<T> &Val) {
     return llvm::hash_combine(Val.name, Val.indices.size());
   }
-  static bool isEqual(const lleq::Ref<T> &LHS, const lleq::Ref<T> &RHS) {
+  static bool isEqual(const lleq::IndexedLocation<T> &LHS,
+                      const lleq::IndexedLocation<T> &RHS) {
     return LHS == RHS;
   }
 };
@@ -96,9 +104,13 @@ template <class T> struct Store {
   // Support iterating over the underlying store
   auto begin() const { return _store.begin(); }
   auto end() const { return _store.end(); }
-  decltype(auto) at(const Ref<T> &ref) const { return _store.at(ref); }
-  bool contains(const Ref<T> &ref) const { return _store.contains(ref); }
-  bool canContain(Ref<T> ref) const {
+  decltype(auto) at(const IndexedLocation<T> &ref) const {
+    return _store.at(ref);
+  }
+  bool contains(const IndexedLocation<T> &ref) const {
+    return _store.contains(ref);
+  }
+  bool canContain(IndexedLocation<T> ref) const {
     for (auto [key, _] : _store) {
       if (key.canEqual(ref)) {
         return true;
@@ -110,7 +122,7 @@ template <class T> struct Store {
 
   // Configure behavior when writing to a name that is already present
   // (overwrite vs. anti-unify)
-  Symbol write(const Ref<T> &ref, Symbol val,
+  Symbol write(const IndexedLocation<T> &ref, Symbol val,
                WriteMode mode = WriteMode::OverwriteExact) {
     if (&val->pool != &_pool.get()) {
       val = _pool.get().copy(val);
@@ -134,7 +146,7 @@ template <class T> struct Store {
     return _store[ref];
   }
 
-  Store(llvm::DenseMap<Ref<T>, Symbol> entries, SymbolPool &pool)
+  Store(llvm::DenseMap<IndexedLocation<T>, Symbol> entries, SymbolPool &pool)
       : _store{entries}, _pool{pool} {}
   Store(SymbolPool &pool) : _store{}, _pool{pool} {}
 
@@ -142,7 +154,7 @@ template <class T> struct Store {
   Store<T> clone(SymbolPool &pool) const {
     Store<T> cloned{pool};
     for (const auto &[ref, val] : _store) {
-      Ref<T> clonedRef{ref.name, {}};
+      IndexedLocation<T> clonedRef{ref.name, {}};
       for (auto idx : ref.indices) {
         clonedRef.indices.push_back(pool.copy(idx));
       }
@@ -188,7 +200,7 @@ template <class T> struct Store {
   }
 
 private:
-  llvm::DenseMap<Ref<T>, Symbol> _store;
+  llvm::DenseMap<IndexedLocation<T>, Symbol> _store;
   std::reference_wrapper<SymbolPool> _pool;
 };
 

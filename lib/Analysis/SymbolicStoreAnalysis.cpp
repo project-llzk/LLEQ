@@ -51,7 +51,8 @@ Symbol SymbolicStoreAnalysis::getBoundSymbol(mlir::Value value) {
 }
 
 template <class T>
-mlir::ChangeResult StoreLattice::_write_impl(Ref<T> ref, Symbol sym) {
+mlir::ChangeResult StoreLattice::_write_impl(IndexedLocation<T> ref,
+                                             Symbol sym) {
   initialized = true;
   auto &st = store<T>();
   if (st.contains(ref) && *st.at(ref) == *sym) {

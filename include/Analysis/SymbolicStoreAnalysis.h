@@ -31,7 +31,8 @@ class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
     }
   }
 
-  template <class T> mlir::ChangeResult _write_impl(Ref<T> ref, Symbol sym);
+  template <class T>
+  mlir::ChangeResult _write_impl(IndexedLocation<T> ref, Symbol sym);
 
 public:
   using AbstractDenseLattice::AbstractDenseLattice;
@@ -43,14 +44,14 @@ public:
     }
   }
 
-  template <class T> Symbol lookupOrNull(Ref<T> ref) const {
+  template <class T> Symbol lookupOrNull(IndexedLocation<T> ref) const {
     if (!initialized || !store<T>().contains(ref)) {
       return nullptr;
     }
     return store<T>().at(ref);
   }
 
-  template <class T> Symbol lookup(Ref<T> ref) {
+  template <class T> Symbol lookup(IndexedLocation<T> ref) {
     initialized = true;
     auto symbol = lookupOrNull<T>(ref);
     if (!symbol) {
@@ -69,12 +70,14 @@ public:
   }
 
   template <class T> auto write(T val, Symbol sym) {
-    return _write_impl(Ref<T>{val, {}}, sym);
+    return _write_impl(IndexedLocation<T>{val, {}}, sym);
   }
 
-  template <class T> auto lookup(T ref) { return lookup(Ref<T>{ref, {}}); }
+  template <class T> auto lookup(T ref) {
+    return lookup(IndexedLocation<T>{ref, {}});
+  }
   template <class T> auto lookupOrNull(T ref) const {
-    return lookupOrNull(Ref<T>{ref, {}});
+    return lookupOrNull(IndexedLocation<T>{ref, {}});
   }
 
   mlir::ChangeResult
