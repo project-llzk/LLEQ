@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "Analysis/ScalarSymbolAnalysis.h"
 
 #include <llvm/ADT/DynamicAPInt.h>

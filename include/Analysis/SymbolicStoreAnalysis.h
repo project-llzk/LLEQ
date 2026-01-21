@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Veridise Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #pragma once
 
 #include "Analysis/Store.h"
