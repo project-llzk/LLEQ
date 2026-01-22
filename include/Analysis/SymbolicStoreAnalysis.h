@@ -17,6 +17,12 @@
 
 namespace lleq {
 class SymbolicStoreAnalysis;
+
+/// Represents a lattice element that tracks a `valueStore`, which maps
+/// array-typed SSA values to symbolic expressions, and a `signalStore` which
+/// maps struct signals to symbolic expressions. The stores are keyed by
+/// `IndexedLocation`s, which track the name of the entry and an optional list
+/// of symbolic indices (one per dimension of the array)
 class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
   friend class SymbolicStoreAnalysis;
   std::unique_ptr<ValueStore> valueStore;
@@ -99,6 +105,9 @@ public:
     return {signalStore.get(), valueStore.get()};
   };
 };
+
+/// This implements a dense analysis that populates the symbolic stores at every
+/// program point.
 class SymbolicStoreAnalysis
     : public mlir::dataflow::DenseForwardDataFlowAnalysis<StoreLattice> {
   SymbolPool &pool;
