@@ -93,7 +93,7 @@ Store<T> _join_stores(const Store<T> &a, const Store<T> &b, SymbolPool &);
 
 // What action to take when writing to an existing entry: `OverwriteExact`
 // overwrites the entry, `AntiUnify` performs anti-unification with the existing
-// entry and the new value, and `HavocEquivalent` overwrites the existing entry
+// entry and the new value, and `HavocAliases` overwrites the existing entry
 // and sets all other entries that could alias it to Unknown
 enum class WriteMode { OverwriteExact, AntiUnify, HavocAliases };
 

@@ -33,7 +33,6 @@ class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
   mlir::DataFlowSolver solver;
 
-  // Marked mutable because for some reason looking up symbols in a StructDef is
   // not const
   llzk::component::StructDefOp component;
   SignalStore *signalStore;
