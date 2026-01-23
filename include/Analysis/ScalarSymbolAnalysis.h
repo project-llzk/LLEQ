@@ -19,11 +19,14 @@
 
 namespace lleq {
 
+/// This is a wrapper around `Symbol` that provides a `join` method for use in
+/// the ScalarSymbolAnalysis lattice
 class SymbolValue {
   Symbol sym;
 
 public:
-  // Needs to be default-constructible
+  // Needs to be default-constructible, so we treat `nullptr` as an
+  // uninitialized symbol
   SymbolValue() : sym{nullptr} {}
   SymbolValue(Symbol sym) : sym{sym} {}
 
@@ -34,6 +37,8 @@ public:
     }
   }
 
+  // Joining is just antiunification, once we take care to special-case the
+  // nullptr values
   static SymbolValue join(const SymbolValue &a, const SymbolValue &b) {
     if (!a.sym) {
       return b;
@@ -70,13 +75,14 @@ public:
   operator Symbol() const { return sym; }
 };
 
-class ScalarSymbolAnalysis;
-
 class ScalarLattice : public mlir::dataflow::Lattice<SymbolValue> {
 public:
   using Lattice::Lattice;
 };
 
+/// This analysis computes a symbolic expression associated to each *scalar*
+/// (i.e., not array-typed) SSA value. It is mutually dependent on the
+/// SymbolicStoreAnalysis to handle struct field reads/writes.
 class ScalarSymbolAnalysis
     : public llzk::dataflow::SparseForwardDataFlowAnalysis<ScalarLattice> {
   using Lattice = ScalarLattice;
@@ -94,6 +100,8 @@ public:
     lattice->getValue().initPool(&pool.get());
     mlir::Value anchor = lattice->getAnchor();
     if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(anchor)) {
+      // We don't want to treat a function argument as uninitialized/unknown
+      // since all the symbolic expressions are relative to these
       if (llvm::isa<llzk::function::FuncDefOp>(
               blockArg.getOwner()->getParentOp())) {
         propagateIfChanged(
@@ -101,11 +109,13 @@ public:
         return;
       }
       // Apparently setToEntryState gets called on loop induction vars too, but
-      // these should just be set to Unknown
+      // these should just be set to Unknown because `i` and `i + step` will
+      // never antiunify to anything interesting
       if (llvm::isa<mlir::scf::ForOp>(blockArg.getOwner()->getParentOp())) {
         propagateIfChanged(lattice, lattice->join(pool.get().fresh_unknown()));
       }
     }
+    // If nothing else is known, a default of `uninitialized` is fine
     propagateIfChanged(lattice, lattice->join(pool.get().uninitialized()));
   }
 };

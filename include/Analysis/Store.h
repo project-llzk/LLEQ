@@ -45,9 +45,9 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
 }
 
 // Indexing into an ordinary MLIR value
-using ValueRef = IndexedLocation<mlir::Value>;
+using IndexedValue = IndexedLocation<mlir::Value>;
 // Indexing into a struct signal (either fieldName or blockArgIndex)
-using SignalRef = IndexedLocation<llvm::StringRef>;
+using IndexedSignal = IndexedLocation<llvm::StringRef>;
 } // namespace lleq
 
 namespace llvm {
@@ -75,10 +75,10 @@ template <std::equality_comparable T> struct RefInfo {
 };
 
 template <>
-struct DenseMapInfo<lleq::ValueRef> : public RefInfo<mlir::Value> {};
+struct DenseMapInfo<lleq::IndexedValue> : public RefInfo<mlir::Value> {};
 
 template <>
-struct DenseMapInfo<lleq::SignalRef> : public RefInfo<llvm::StringRef> {};
+struct DenseMapInfo<lleq::IndexedSignal> : public RefInfo<llvm::StringRef> {};
 
 } // namespace llvm
 

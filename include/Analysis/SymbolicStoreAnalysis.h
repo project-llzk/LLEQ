@@ -47,7 +47,7 @@ class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
 
 public:
   using AbstractDenseLattice::AbstractDenseLattice;
-  void setPool(SymbolPool *pool) {
+  void initPool(SymbolPool *pool) {
     if (!this->pool) {
       this->pool = pool;
       valueStore = std::make_unique<ValueStore>(*pool);
@@ -55,6 +55,8 @@ public:
     }
   }
 
+  // Look up the symbol written to a particular location, or `nullptr` if
+  // nothing has been written
   template <class T> Symbol lookupOrNull(IndexedLocation<T> ref) const {
     if (!initialized || !store<T>().contains(ref)) {
       return nullptr;
@@ -62,6 +64,8 @@ public:
     return store<T>().at(ref);
   }
 
+  // Look up the symbol written to a particular location, or update and return a
+  // fresh UNKNOWN
   template <class T> Symbol lookup(IndexedLocation<T> ref) {
     initialized = true;
     auto symbol = lookupOrNull<T>(ref);
@@ -72,11 +76,11 @@ public:
     return symbol;
   }
 
-  mlir::ChangeResult write(SignalRef ref, Symbol sym) {
+  mlir::ChangeResult write(IndexedSignal ref, Symbol sym) {
     return _write_impl(ref, sym);
   }
 
-  mlir::ChangeResult write(ValueRef ref, Symbol sym) {
+  mlir::ChangeResult write(IndexedValue ref, Symbol sym) {
     return _write_impl(ref, sym);
   }
 
@@ -107,7 +111,8 @@ public:
 };
 
 /// This implements a dense analysis that populates the symbolic stores at every
-/// program point.
+/// program point. It is mutually dependent on `ScalarSymbolAnalysis` for struct
+/// field reads/writes
 class SymbolicStoreAnalysis
     : public mlir::dataflow::DenseForwardDataFlowAnalysis<StoreLattice> {
   SymbolPool &pool;
@@ -120,7 +125,7 @@ public:
                                      const StoreLattice &before,
                                      StoreLattice *after) override;
   void setToEntryState(StoreLattice *lattice) override {
-    lattice->setPool(&pool);
+    lattice->initPool(&pool);
   }
 
   // Looks up the symbol SignalValueAnalysis computed for the given SSA value,

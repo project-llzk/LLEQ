@@ -5,6 +5,7 @@
 
 #include "Analysis/SymbolicStoreAnalysis.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
+#include "Analysis/Store.h"
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
@@ -46,7 +47,6 @@ void StoreLattice::print(llvm::raw_ostream &os) const {
   for (auto [key, val] : *signalStore) {
     os << key << ": " << static_cast<Symbol>(val) << "\n";
   }
-  // os << "--\n";
 }
 
 Symbol SymbolicStoreAnalysis::getBoundSymbol(mlir::Value value) {
@@ -63,15 +63,14 @@ mlir::ChangeResult StoreLattice::_write_impl(IndexedLocation<T> ref,
   if (st.contains(ref) && *st.at(ref) == *sym) {
     return mlir::ChangeResult::NoChange;
   }
-  // TODO: is `Clobber` the correct mode to use here?
   st.write(ref, sym, WriteMode::HavocAliases);
   return mlir::ChangeResult::Change;
 }
 
-template mlir::ChangeResult StoreLattice::_write_impl<mlir::Value>(ValueRef,
+template mlir::ChangeResult StoreLattice::_write_impl<mlir::Value>(IndexedValue,
                                                                    Symbol);
 template mlir::ChangeResult
-    StoreLattice::_write_impl<llvm::StringRef>(SignalRef, Symbol);
+    StoreLattice::_write_impl<llvm::StringRef>(IndexedSignal, Symbol);
 
 mlir::ChangeResult
 StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
@@ -83,7 +82,7 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
   if (!initialized) {
-    setPool(rhs->pool);
+    initPool(rhs->pool);
     *valueStore = *rhs->valueStore;
     *signalStore = *rhs->signalStore;
     initialized = true;
@@ -102,7 +101,7 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
 
 mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
     mlir::Operation *op, const StoreLattice &before, StoreLattice *after) {
-  after->setPool(&pool);
+  after->initPool(&pool);
   LLVM_DEBUG({
     llvm::dbgs() << "Operation: " << *op << "\n";
     llvm::dbgs() << "Before:\n";
@@ -126,7 +125,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
               // `after->write` will correctly clobber any entries signalStore
               // already has for this signal
               result |= after->write(
-                  SignalRef{write.getFieldName(), ref.indices}, sym);
+                  IndexedSignal{write.getFieldName(), ref.indices}, sym);
             }
           }
           return;
@@ -143,7 +142,8 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             if (ref.name == read.getFieldName()) {
               // Technically, `after->write` attempts to clobber here, but since
               // `read.getVal()` should be a fresh SSA value, it doesn't matter
-              result |= after->write(ValueRef{read.getVal(), ref.indices}, sym);
+              result |=
+                  after->write(IndexedValue{read.getVal(), ref.indices}, sym);
             }
           }
           return;
@@ -162,7 +162,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           indices.push_back(getBoundSymbol(idx));
         }
         // `after->write` will automatically clobber
-        result |= after->write(ValueRef{write.getArrRef(), indices}, rval);
+        result |= after->write(IndexedValue{write.getArrRef(), indices}, rval);
       })
       .Case<ReadArrayOp>([this, &before, after](ReadArrayOp read) {
         // If the array is a block arg, there's nothing to propagate
@@ -174,7 +174,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         for (auto idx : read.getIndices()) {
           indices.push_back(getBoundSymbol(idx));
         }
-        Symbol newSym = after->lookup(ValueRef{read.getArrRef(), indices});
+        Symbol newSym = after->lookup(IndexedValue{read.getArrRef(), indices});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }

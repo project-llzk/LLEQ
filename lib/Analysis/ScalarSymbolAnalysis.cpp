@@ -75,22 +75,30 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
               })
           .Case<llzk::component::FieldReadOp>(
               [this](auto) -> llvm::SmallVector<Symbol> {
+                // We don't have any store information yet, so just set it to
+                // uninitialized. When this op is picked up by
+                // SymbolicStoreAnalysis it will read from the store and
+                // propagate the correct lattice value
                 return {pool.get().uninitialized()};
               })
           .Case<llzk::array::ReadArrayOp>(
               [this, operands](llzk::array::ReadArrayOp readArr)
                   -> llvm::SmallVector<Symbol> {
                 if (llvm::isa<mlir::BlockArgument>(readArr.getArrRef())) {
+                  // If the array we're reading from is an input, we don't need
+                  // a store to construct the right symbol
                   llvm::SmallVector<Symbol> indices;
                   for (auto *arg : llvm::drop_begin(operands)) {
                     indices.push_back(arg->getValue());
                   }
                   return {pool.get().index(readArr.getArrRef(), indices)};
                 }
+                // Otherwise, do the same thing as FieldReadOp
                 return {pool.get().uninitialized()};
               })
           .Case<mlir::scf::YieldOp>([this, operands](mlir::scf::YieldOp yield)
                                         -> llvm::SmallVector<Symbol> {
+            // Propagate yielded values to the parent's results
             mlir::Operation *parent = yield->getParentOp();
             for (auto [yielded, result] :
                  llvm::zip(operands, parent->getResults())) {
@@ -98,6 +106,8 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
               propagateIfChanged(resultLattice,
                                  resultLattice->join(yielded->getValue()));
             }
+            // If necessary, propagate yielded values to the next iteration's
+            // iter_args
             if (auto forOp = llvm::dyn_cast<mlir::scf::ForOp>(parent)) {
               for (auto [yielded, iterArg] :
                    llvm::zip(operands, forOp.getRegionIterArgs())) {
@@ -110,9 +120,12 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
           })
           .Default([this, operands,
                     results](mlir::Operation *op) -> llvm::SmallVector<Symbol> {
+            // Bit weird to get called on an op with no results, but that's fine
             if (results.empty()) {
               return {};
             }
+            // Conservatively just build a symbol out of the op name and
+            // operands
             llvm::SmallVector<Symbol> args;
             for (auto *arg : operands) {
               args.push_back(arg->getValue());
