@@ -37,7 +37,7 @@ void StoreLattice::print(llvm::raw_ostream &os) const {
       os << "(empty)\n";
     }
     for (auto [key, val] : *valueStore) {
-      os << key << ": " << val << "\n";
+      os << key << ": " << val << '\n';
     }
     os << "--\n";
     if (signalStore->size() == 0) {
@@ -103,7 +103,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
     mlir::Operation *op, const StoreLattice &before, StoreLattice *after) {
   after->initPool(&pool);
   LLVM_DEBUG({
-    llvm::dbgs() << "Operation: " << *op << "\n";
+    llvm::dbgs() << "Operation: " << *op << '\n';
     llvm::dbgs() << "Before:\n";
     before.print(llvm::dbgs());
     llvm::dbgs() << "Start:\n";
@@ -112,8 +112,8 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
   mlir::ChangeResult result = after->join(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<FieldWriteOp>([this, after, &result, &before](FieldWriteOp write) {
-        if (llvm::dyn_cast<llzk::array::ArrayType>(
-                write.getOperandTypes()[1])) {
+        if (llvm::isa<llzk::array::ArrayType>(
+                write.getVal().getType())) {
           // Its an array so copy from valueStore to signalStore
           if (!before.initialized) {
             // This is weird but there's nothing to copy
@@ -136,7 +136,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         result |= after->write(write.getFieldName(), written);
       })
       .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
-        if (llvm::dyn_cast<llzk::array::ArrayType>(read.getType())) {
+        if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
           for (auto [ref, sym] : *before.signalStore) {
             if (ref.name == read.getFieldName()) {

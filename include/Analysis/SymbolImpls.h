@@ -31,6 +31,7 @@ struct Uninitialized : public impl::SymbolEq<Uninitialized> {
     return sym->kind == SymbolKind::SK_Uninitialized;
   }
 };
+
 struct Unknown : public impl::SymbolEq<Unknown> {
   unsigned n;
   Unknown(SymbolPool &pool, unsigned n)

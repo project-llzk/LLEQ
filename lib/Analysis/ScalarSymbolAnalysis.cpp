@@ -135,7 +135,7 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
   llzk::ensure(results.size() == symbols.size(),
                "unsupported: expression with multiple results");
   for (auto [result, sym] : llvm::zip(results, symbols)) {
-    LLVM_DEBUG(llvm::dbgs() << "Symbol: " << sym << "\n");
+    LLVM_DEBUG(llvm::dbgs() << "Symbol: " << sym << '\n');
     propagateIfChanged(result, result->join(sym));
   }
   return mlir::success();

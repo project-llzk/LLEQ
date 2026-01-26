@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Veridise Inc.
+ * Copyright 2025--2026 Veridise Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
