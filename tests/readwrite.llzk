@@ -1,5 +1,4 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
-// XFAIL: *
 
 module attributes {veridise.lang = "llzk"} {
     struct.def @A {
@@ -35,4 +34,4 @@ module attributes {veridise.lang = "llzk"} {
 
 // CHECK-DAG: arr1[0]: felt.add(%arg0, %arg1)
 // CHECK-DAG: arr1[1]: felt.sub(%arg0, %arg1)
-// CHECK-DAG: arr2[0]: felt.mul(felt.add(%arg0 %arg1), %arg2)
+// CHECK-DAG: arr2[0]: felt.mul(felt.add(%arg0, %arg1), %arg2)

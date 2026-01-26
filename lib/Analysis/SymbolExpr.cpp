@@ -5,157 +5,104 @@
 
 #include "Analysis/SymbolExpr.h"
 
+#include "Analysis/SymbolImpls.h"
+#include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/Hashing.h>
+#include <llvm/ADT/STLExtras.h>
+#include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/TypeSwitch.h>
 #include <llvm/ADT/iterator_range.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
-#include <memory_resource>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Value.h>
 #include <mlir/Support/LLVM.h>
 
 using namespace lleq;
 
-struct Unknown : impl::SymbolEq<Unknown> {
-  size_t n;
-  Unknown(SymbolPool *pool, size_t n) : impl::SymbolEq<Unknown>{pool}, n{n} {}
-  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    os << '?' << n;
-    return os;
-  }
-  unsigned hash_value() const override {
-    return llvm::hash_combine("unknown", n);
-  }
-  bool operator==(const Unknown &other) const { return n == other.n; }
-};
+Symbol SymbolPool::copy(Symbol s) {
+  return llvm::TypeSwitch<Symbol, Symbol>(s)
+      .Case<Unknown>(
+          [this](Unknown *s) { return alloc.new_object<Unknown>(*this, s->n); })
+      .Case<Constant>([this](Constant *s) {
+        return alloc.new_object<Constant>(*this, s->value);
+      })
+      .Case<TemplParam>([this](TemplParam *s) {
+        return alloc.new_object<TemplParam>(*this, s->name);
+      })
+      .Case<OpCall>([this](OpCall *s) {
+        llvm::SmallVector<Symbol> copiedArgs;
+        for (auto arg : s->arguments) {
+          copiedArgs.push_back(copy(arg));
+        }
+        return alloc.new_object<OpCall>(*this, s->opName, copiedArgs);
+      })
+      .Case<Index>([this](Index *s) {
+        llvm::SmallVector<Symbol> copiedIdx;
+        for (auto idx : s->indices) {
+          copiedIdx.push_back(copy(idx));
+        }
+        return alloc.new_object<Index>(*this, s->signal, copiedIdx);
+      });
+}
 
-struct Constant : impl::SymbolEq<Constant> {
-  mlir::APInt value;
-  Constant(SymbolPool *pool, mlir::APInt value)
-      : impl::SymbolEq<Constant>{pool}, value{value} {}
-  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    // Print it as signed
-    value.print(os, true);
-    return os;
-  }
-  unsigned hash_value() const override {
-    return llvm::hash_combine("constant", value);
-  }
-  bool operator==(const Constant &other) const { return value == other.value; }
-};
-
-struct TemplParam : impl::SymbolEq<TemplParam> {
-  std::string name;
-  TemplParam(SymbolPool *pool, llvm::StringRef name)
-      : impl::SymbolEq<TemplParam>{pool}, name{name} {}
-  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    os << '@' << name.data();
-    return os;
-  }
-  unsigned hash_value() const override {
-    return llvm::hash_combine("template", name);
-  }
-  bool operator==(const TemplParam &other) const { return name == other.name; }
-};
-
-struct Index : impl::SymbolEq<Index> {
-  mlir::Value signal;
-  llvm::SmallVector<Symbol> indices;
-
-  Index(SymbolPool *pool, mlir::Value signal, llvm::ArrayRef<Symbol> ns)
-      : impl::SymbolEq<Index>{pool}, signal{signal}, indices{ns} {}
-  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    // TODO: print the MLIR value too
-    os << pool->getNameForValue(signal);
-    for (auto n : indices) {
-      os << "[";
-      n->print(os) << "]";
-    }
-    return os;
-  }
-  unsigned hash_value() const override {
-    return llvm::hash_combine(
-        "indices", signal,
-        llvm::hash_combine_range(indices.begin(), indices.end()));
-  }
-  bool operator==(const Index &other) const {
-    return signal == other.signal && indices.size() == other.indices.size() &&
-           std::equal(indices.begin(), indices.end(), other.indices.begin(),
-                      [](auto *a, auto *b) { return *a == *b; });
-  }
-};
-
-struct OpCall : impl::SymbolEq<OpCall> {
-  llvm::SmallVector<Symbol> arguments;
-  std::string opName;
-
-  OpCall(SymbolPool *pool, llvm::StringRef opName,
-         llvm::ArrayRef<Symbol> arguments)
-      : impl::SymbolEq<OpCall>{pool}, arguments{arguments}, opName{opName} {}
-
-  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    os << opName << "(";
-    for (unsigned i = 0; i < arguments.size() - 1; i++) {
-      os << arguments[i] << ", ";
-    }
-    os << arguments[arguments.size() - 1];
-    os << ")";
-    return os;
-  }
-
-  unsigned hash_value() const override {
-    return llvm::hash_combine(
-        opName, llvm::hash_combine_range(arguments.begin(), arguments.end()));
-  }
-  bool operator==(const OpCall &other) const {
-    return opName == other.opName &&
-           arguments.size() == other.arguments.size() &&
-           std::equal(arguments.begin(), arguments.end(),
-                      other.arguments.begin(),
-                      [](auto *a, auto *b) { return *a == *b; });
-  }
-};
+Symbol SymbolPool::uninitialized() {
+  return alloc.new_object<Uninitialized>(*this);
+}
 
 Symbol SymbolPool::fresh_unknown() {
   static std::size_t n;
-  return alloc.new_object<Unknown>(this, n++);
+  return alloc.new_object<Unknown>(*this, n++);
 }
 
-Symbol SymbolPool::constant(mlir::APInt value) {
-  return alloc.new_object<Constant>(this, value);
+Symbol SymbolPool::constant(mlir::DynamicAPInt value) {
+  return alloc.new_object<Constant>(*this, value);
 }
 Symbol SymbolPool::templ_param(llvm::StringRef name) {
-  return alloc.new_object<TemplParam>(this, name);
+  return alloc.new_object<TemplParam>(*this, name);
 }
 Symbol SymbolPool::index(mlir::Value signal, llvm::ArrayRef<Symbol> ns) {
-  return alloc.new_object<Index>(this, signal, ns);
+  if (llvm::any_of(ns, [](Symbol s) { return llvm::isa<Uninitialized>(s); })) {
+    return alloc.new_object<Uninitialized>(*this);
+  }
+  return alloc.new_object<Index>(*this, signal, ns);
 }
 Symbol SymbolPool::func_call(llvm::StringRef name,
                              llvm::ArrayRef<Symbol> args) {
-  return alloc.new_object<OpCall>(this, name, args);
+  if (llvm::any_of(args,
+                   [](Symbol s) { return llvm::isa<Uninitialized>(s); })) {
+    return alloc.new_object<Uninitialized>(*this);
+  }
+  return alloc.new_object<OpCall>(*this, name, args);
 }
 
 std::string SymbolPool::_gen_name(mlir::Value value) const {
   static unsigned value_number = 0u;
+  static unsigned block_arg_number = 0u;
   std::string result;
   llvm::raw_string_ostream ss(result);
-  if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(value)) {
-    ss << llvm::format("%%arg%u", blockArg.getArgNumber());
+  if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(value)) {
+    ss << llvm::format("%%arg%u", block_arg_number++);
   } else {
     ss << llvm::format("%%val%u", value_number++);
   }
   return result;
 }
 std::string SymbolPool::getNameForValue(mlir::Value value) const {
-  static mlir::DenseMap<mlir::Value, std::string> valueNameMap;
+  static llvm::DenseMap<mlir::Value, std::string> valueNameMap;
   if (!valueNameMap.contains(value)) {
     valueNameMap[value] = _gen_name(value);
   }
   return valueNameMap[value];
 }
 
-llvm::raw_ostream &operator<<(llvm::raw_ostream &os, Symbol s) {
+llvm::raw_ostream &lleq::operator<<(llvm::raw_ostream &os, Symbol s) {
+  if (s == nullptr) {
+    os << "(null)";
+    return os;
+  }
   return s->print(os);
 }

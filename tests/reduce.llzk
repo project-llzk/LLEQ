@@ -1,5 +1,4 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
-// XFAIL: *
 
 module attributes {veridise.lang = "llzk"} {
     struct.def @Reduce<[@N]> {
@@ -27,4 +26,4 @@ module attributes {veridise.lang = "llzk"} {
     }
 }
 
-// CHECK: sum: ?0
+// CHECK: sum: ?1

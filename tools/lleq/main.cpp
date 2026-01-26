@@ -8,21 +8,27 @@
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/Support/Signals.h>
 #include <llvm/Support/WithColor.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Analysis/AnalysisUtil.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LogicalResult.h>
@@ -31,7 +37,9 @@
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
   lleq::SymbolicStore store;
-  store.build_store(structDef);
+  if (mlir::failed(store.build_store(structDef))) {
+    llvm::report_fatal_error("symbolic store construction failed");
+  }
   store.dump(llvm::outs());
 }
 
@@ -77,7 +85,7 @@ int main(int argc, char **argv) {
   mlir::MLIRContext context(registry);
   context.getDiagEngine().registerHandler([](mlir::Diagnostic &diag) {
     printDiag(diag);
-    return mlir::success();
+    return llvm::success();
   });
 
   mlir::OpBuilder builder(&context);
@@ -85,7 +93,7 @@ int main(int argc, char **argv) {
       mlir::NameLoc::get(builder.getStringAttr("LLEQ")));
 
   auto parserConfig = mlir::ParserConfig(&context);
-  if (mlir::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
+  if (llvm::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
                                          parserConfig))) {
     llvm::errs() << "Failed to parse " << lleq::cli::inputFile() << '\n';
     return EXIT_FAILURE;
