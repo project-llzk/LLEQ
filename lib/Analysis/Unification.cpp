@@ -56,11 +56,11 @@ llvm::LogicalResult unify(Symbol a, Symbol b, Substitutions &s) {
 
   // If one of them is unknown, make sure its not coinductive, update the
   // mapping, and succeed
-  if (llvm::isa<Unknown>(a)) {
-    if (_occurs(llvm::dyn_cast<Unknown>(a)->n, b)) {
+  if (auto unknownA = llvm::dyn_cast<Unknown>(a)) {
+    if (_occurs(unknownA->n, b)) {
       return llvm::failure();
     }
-    s.push_back({llvm::dyn_cast<Unknown>(a)->n, b});
+    s.push_back({unknownA->n, b});
     return llvm::success();
   }
   // By symmetry
