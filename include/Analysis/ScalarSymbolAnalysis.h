@@ -30,6 +30,8 @@ public:
   SymbolValue() : sym{nullptr} {}
   SymbolValue(Symbol sym) : sym{sym} {}
 
+  bool isInitialized() const { return sym != nullptr; }
+
   void initPool(SymbolPool *pool) {
     llzk::ensure(pool != nullptr, "pool cannot be null");
     if (sym == nullptr) {
@@ -40,10 +42,10 @@ public:
   // Joining is just antiunification, once we take care to special-case the
   // nullptr values
   static SymbolValue join(const SymbolValue &a, const SymbolValue &b) {
-    if (!a.sym) {
+    if (!a.isInitialized()) {
       return b;
     }
-    if (!b.sym) {
+    if (!b.isInitialized()) {
       return a;
     }
     auto joined = anti_unify(a.sym, b.sym);
@@ -51,13 +53,10 @@ public:
   }
 
   bool operator==(const SymbolValue &other) const {
-    if (!sym) {
-      return !other.sym;
+    if (isInitialized() && other.isInitialized()) {
+      return *sym == *other.sym;
     }
-    if (!other.sym) {
-      return !sym;
-    }
-    return *sym == *other.sym;
+    return isInitialized() == other.isInitialized();
   }
 
   void print(llvm::raw_ostream &os) const { sym->print(os); }

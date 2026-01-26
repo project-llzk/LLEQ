@@ -16,10 +16,16 @@
 
 namespace lleq {
 
+// Represents a location in the store with a "name" pointing to a
+// multidimensional array, and a symbolic index into each dimension
 template <std::equality_comparable NameT> struct IndexedLocation {
   NameT name;
   llvm::SmallVector<Symbol> indices;
-  bool canEqual(const IndexedLocation<NameT> &other) const {
+
+  // Returns true if the two locations might alias each other (i.e.
+  // have the same name, and the symbolic indices could be the same under some
+  // valuation)
+  bool canAlias(const IndexedLocation<NameT> &other) const {
     return name == other.name && indices.size() == other.indices.size() &&
            std::equal(indices.begin(), indices.end(), other.indices.begin(),
                       [](auto a, auto b) { return a->canEqual(*b); });
@@ -56,7 +62,7 @@ inline unsigned hash_value(mlir::Value val) {
   return llvm::hash_value(val.getAsOpaquePointer());
 }
 
-template <std::equality_comparable T> struct RefInfo {
+template <std::equality_comparable T> struct IndexedLocationInfo {
   static inline lleq::IndexedLocation<T> getEmptyKey() {
     return {llvm::DenseMapInfo<T>::getEmptyKey(), {}};
   }
@@ -75,10 +81,12 @@ template <std::equality_comparable T> struct RefInfo {
 };
 
 template <>
-struct DenseMapInfo<lleq::IndexedValue> : public RefInfo<mlir::Value> {};
+struct DenseMapInfo<lleq::IndexedValue>
+    : public IndexedLocationInfo<mlir::Value> {};
 
 template <>
-struct DenseMapInfo<lleq::IndexedSignal> : public RefInfo<llvm::StringRef> {};
+struct DenseMapInfo<lleq::IndexedSignal>
+    : public IndexedLocationInfo<llvm::StringRef> {};
 
 } // namespace llvm
 
@@ -112,7 +120,7 @@ template <class T> struct Store {
   }
   bool canContain(IndexedLocation<T> ref) const {
     for (auto [key, _] : _store) {
-      if (key.canEqual(ref)) {
+      if (key.canAlias(ref)) {
         return true;
       }
     }
@@ -131,7 +139,7 @@ template <class T> struct Store {
     if (mode == WriteMode::HavocAliases) {
       // Start by clobbering any possible aliases
       for (auto [key, old] : _store) {
-        if (ref.canEqual(key)) {
+        if (ref.canAlias(key)) {
           _store[key] = _pool.get().fresh_unknown();
         }
       }
@@ -191,7 +199,7 @@ template <class T> struct Store {
         write(key, _pool.get().fresh_unknown());
       } else if (other.canContain(key)) {
         auto aliasedEntries = llvm::filter_to_vector(
-            other, [key](auto entry) { return key.canEqual(entry.first); });
+            other, [key](auto entry) { return key.canAlias(entry.first); });
         for (auto [otherKey, otherVal] : aliasedEntries) {
           write(key, otherVal, WriteMode::AntiUnify);
         }

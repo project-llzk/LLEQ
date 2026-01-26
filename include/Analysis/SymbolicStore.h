@@ -33,7 +33,6 @@ class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
   mlir::DataFlowSolver solver;
 
-  // not const
   llzk::component::StructDefOp component;
   SignalStore *signalStore;
   ValueStore *valueStore;
@@ -41,8 +40,8 @@ class SymbolicStore {
 public:
   SymbolicStore() {
     solver.load<mlir::dataflow::DeadCodeAnalysis>();
-    solver.load<lleq::ScalarSymbolAnalysis>(*pool.get());
-    solver.load<lleq::SymbolicStoreAnalysis>(*pool.get());
+    solver.load<lleq::ScalarSymbolAnalysis>(*pool);
+    solver.load<lleq::SymbolicStoreAnalysis>(*pool);
   }
 
   /// @brief Build a store from a given circuit component (struct)

@@ -44,7 +44,7 @@ void SymbolicStore::dump(llvm::raw_ostream &os) const {
   }
 
   for (auto [signal, symbol] : *signalStore) {
-    os << signal << ": " << symbol << "\n";
+    os << signal << ": " << symbol << '\n';
   }
 }
 
