@@ -112,8 +112,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
   mlir::ChangeResult result = after->join(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<FieldWriteOp>([this, after, &result, &before](FieldWriteOp write) {
-        if (llvm::isa<llzk::array::ArrayType>(
-                write.getVal().getType())) {
+        if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
           // Its an array so copy from valueStore to signalStore
           if (!before.initialized) {
             // This is weird but there's nothing to copy
