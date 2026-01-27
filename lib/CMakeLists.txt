@@ -8,5 +8,5 @@ target_sources(LLEQ PRIVATE
     Analysis/SymbolicStore.cpp
     Analysis/ScalarSymbolAnalysis.cpp
     Analysis/SymbolicStoreAnalysis.cpp)
-target_link_libraries(LLEQ PUBLIC LLEQHeaders)
+target_link_libraries(LLEQ PUBLIC LLEQHeaders LLZKTransforms)
 install(TARGETS LLEQ)

@@ -33,11 +33,10 @@ class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
 
   template <class T> decltype(auto) store(this auto &&self) {
     static_assert(std::is_same_v<T, mlir::Value> ||
-                  std::is_same_v<T, llvm::StringRef> &&
-                      "unsupported store type");
+                  std::is_same_v<T, Signal> && "unsupported store type");
     if constexpr (std::is_same_v<T, mlir::Value>) {
       return *self.valueStore;
-    } else if constexpr (std::is_same_v<T, llvm::StringRef>) {
+    } else if constexpr (std::is_same_v<T, Signal>) {
       return *self.signalStore;
     }
   }

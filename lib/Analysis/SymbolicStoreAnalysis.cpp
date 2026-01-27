@@ -69,8 +69,8 @@ mlir::ChangeResult StoreLattice::_write_impl(IndexedLocation<T> ref,
 
 template mlir::ChangeResult StoreLattice::_write_impl<mlir::Value>(IndexedValue,
                                                                    Symbol);
-template mlir::ChangeResult
-    StoreLattice::_write_impl<llvm::StringRef>(IndexedSignal, Symbol);
+template mlir::ChangeResult StoreLattice::_write_impl<Signal>(IndexedSignal,
+                                                              Symbol);
 
 mlir::ChangeResult
 StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
@@ -123,8 +123,10 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             if (ref.name == write.getVal()) {
               // `after->write` will correctly clobber any entries signalStore
               // already has for this signal
-              result |= after->write(
-                  IndexedSignal{write.getFieldName(), ref.indices}, sym);
+              result |= after->write(IndexedSignal{Signal{SignalType::Witness,
+                                                          write.getFieldName()},
+                                                   ref.indices},
+                                     sym);
             }
           }
           return;
@@ -132,13 +134,14 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         // Otherwise, its a scalar, so lookup the symbol from
         // SignalValueAnalysis and write it to the store
         Symbol written = getBoundSymbol(write.getVal());
-        result |= after->write(write.getFieldName(), written);
+        result |= after->write(
+            Signal{SignalType::Witness, write.getFieldName()}, written);
       })
       .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
         if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
           for (auto [ref, sym] : *before.signalStore) {
-            if (ref.name == read.getFieldName()) {
+            if (ref.name.name == read.getFieldName()) {
               // Technically, `after->write` attempts to clobber here, but since
               // `read.getVal()` should be a fresh SSA value, it doesn't matter
               result |=
@@ -149,7 +152,8 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         }
         // Otherwise, its a scalar, so inject into SignalValueAnalysis
         ScalarLattice *lat = getOrCreate<ScalarLattice>(read.getVal());
-        Symbol newSym = before.lookupOrNull(read.getFieldName());
+        Symbol newSym = before.lookupOrNull(
+            Signal{SignalType::Witness, read.getFieldName()});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }

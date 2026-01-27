@@ -12,6 +12,7 @@
 #include <concepts>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVectorExtras.h>
+#include <llvm/ADT/Twine.h>
 #include <llvm/Support/Debug.h>
 
 namespace lleq {
@@ -52,8 +53,27 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
 
 // Indexing into an ordinary MLIR value
 using IndexedValue = IndexedLocation<mlir::Value>;
+
 // Indexing into a struct signal (either fieldName or blockArgIndex)
-using IndexedSignal = IndexedLocation<llvm::StringRef>;
+enum class SignalType { Witness, Constraint };
+struct Signal {
+  SignalType _type;
+  llvm::StringRef name;
+  bool operator==(const Signal &other) const = default;
+  operator std::string() const {
+    llvm::Twine twine = name;
+    twine.concat(_type == SignalType::Witness ? "_w" : "_c");
+    return twine.str();
+  }
+};
+
+inline unsigned hash_value(Signal sig) {
+  return llvm::hash_value(sig.name);
+  // return llvm::hash_combine(llvm::hash_value(sig.name),
+  //                           llvm::hash_value(sig._type));
+}
+
+using IndexedSignal = IndexedLocation<Signal>;
 } // namespace lleq
 
 namespace llvm {
@@ -61,6 +81,18 @@ namespace llvm {
 inline unsigned hash_value(mlir::Value val) {
   return llvm::hash_value(val.getAsOpaquePointer());
 }
+
+template <> struct DenseMapInfo<lleq::Signal> {
+  static inline auto getEmptyKey() {
+    return lleq::Signal{lleq::SignalType::Witness,
+                        DenseMapInfo<StringRef>::getEmptyKey()};
+  }
+  static inline auto getTombstoneKey() {
+    return lleq::Signal{lleq::SignalType::Witness,
+                        DenseMapInfo<StringRef>::getTombstoneKey()};
+  }
+  static bool isEqual(auto LHS, auto RHS) { return LHS == RHS; }
+};
 
 template <std::equality_comparable T> struct IndexedLocationInfo {
   static inline lleq::IndexedLocation<T> getEmptyKey() {
@@ -86,7 +118,7 @@ struct DenseMapInfo<lleq::IndexedValue>
 
 template <>
 struct DenseMapInfo<lleq::IndexedSignal>
-    : public IndexedLocationInfo<llvm::StringRef> {};
+    : public IndexedLocationInfo<lleq::Signal> {};
 
 } // namespace llvm
 
@@ -212,7 +244,7 @@ private:
   std::reference_wrapper<SymbolPool> _pool;
 };
 
-using SignalStore = Store<llvm::StringRef>;
+using SignalStore = Store<Signal>;
 using ValueStore = Store<mlir::Value>;
 
 template <class T>
