@@ -26,4 +26,4 @@ module attributes {veridise.lang = "llzk"} {
     }
 }
 
-// CHECK: sum: ?1
+// CHECK: sum_w: ?1

@@ -28,4 +28,4 @@ module attributes {veridise.lang = "llzk"} {
     }
 }
 
-// CHECK: sums[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
+// CHECK: sums_w[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
