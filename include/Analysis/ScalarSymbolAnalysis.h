@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/Unification.h"
 
@@ -129,6 +130,11 @@ inline bool isConstraintOp(mlir::Operation *op) {
   return op->hasAttrOfType<mlir::StringAttr>("product_source") &&
          op->getAttrOfType<mlir::StringAttr>("product_source") ==
              llzk::FUNC_NAME_CONSTRAIN;
+}
+
+inline bool sourceMatchesOp(mlir::Operation *op, SignalSource source) {
+  return (source == SignalSource::Constraint && isConstraintOp(op)) ||
+         (source == SignalSource::Witness && isWitnessOp(op));
 }
 
 } // namespace lleq

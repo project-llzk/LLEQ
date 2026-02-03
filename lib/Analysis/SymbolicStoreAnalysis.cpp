@@ -151,7 +151,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             if (ref.name == write.getVal()) {
               // `after->write` will correctly clobber any entries signalStore
               // already has for this signal
-              result |= after->write(IndexedSignal{Signal{SignalType::Witness,
+              result |= after->write(IndexedSignal{Signal{SignalSource::Witness,
                                                           write.getFieldName()},
                                                    ref.indices},
                                      sym);
@@ -163,20 +163,16 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         // SignalValueAnalysis and write it to the store
         Symbol written = getBoundSymbol(write.getVal());
         result |= after->write(
-            Signal{SignalType::Witness, write.getFieldName()}, written);
+            Signal{SignalSource::Witness, write.getFieldName()}, written);
       })
       .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
-        // struct.readf should *only* do something if its a compute op, since
-        // constrain ops can't write to struct fields anyway so there's nothing
-        // initialized (and we don't want to accidentally read the value that
-        // @constrain wrote to this field)
-        if (isConstraintOp(read)) {
-          return;
-        }
         if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
           for (auto [ref, sym] : *before.signalStore) {
-            if (ref.name.name == read.getFieldName()) {
+            if (ref.name.name == read.getFieldName() &&
+                // Make sure we don't accidentally read a value @compute wrote
+                // to this field while in @constrain
+                sourceMatchesOp(read, ref.name.source)) {
               // Technically, `after->write` attempts to clobber here, but since
               // `read.getVal()` should be a fresh SSA value, it doesn't matter
               result |=
@@ -188,7 +184,9 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         // Otherwise, its a scalar, so inject into SignalValueAnalysis
         ScalarLattice *lat = getOrCreate<ScalarLattice>(read.getVal());
         Symbol newSym = before.lookupOrNull(
-            Signal{SignalType::Witness, read.getFieldName()});
+            Signal{isWitnessOp(read) ? SignalSource::Witness
+                                     : SignalSource::Constraint,
+                   read.getFieldName()});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
@@ -222,7 +220,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             [this](mlir::Value val) -> llvm::FailureOr<IndexedSignal> {
           // If the value immediately comes from a constraint `struct.readf`
           if (auto read = llvm::dyn_cast<FieldReadOp>(val.getDefiningOp())) {
-            return {{{SignalType::Constraint, read.getFieldName()}, {}}};
+            return {{{SignalSource::Constraint, read.getFieldName()}, {}}};
           }
           if (auto arrRead = llvm::dyn_cast<ReadArrayOp>(val.getDefiningOp())) {
             if (auto arr = llvm::dyn_cast<FieldReadOp>(
@@ -231,7 +229,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
               for (auto idx : arrRead.getIndices()) {
                 indices.push_back(getBoundSymbol(idx));
               }
-              return {{{SignalType::Constraint, arr.getFieldName()},
+              return {{{SignalSource::Constraint, arr.getFieldName()},
                        std::move(indices)}};
             }
           }
@@ -241,9 +239,17 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         auto leftLoc = getIndexedLoc(eq.getLhs());
         auto rightLoc = getIndexedLoc(eq.getRhs());
         if (llvm::succeeded(leftLoc)) {
-          result |= after->write(*leftLoc, getBoundSymbol(eq.getRhs()));
+          auto rightSym = getBoundSymbol(eq.getRhs());
+          result |= after->write(*leftLoc, rightSym);
+          // Update the ScalarSymbolAnalysis with the value for leftLoc
+          auto lat = getOrCreate<ScalarLattice>(eq.getLhs());
+          propagateIfChanged(lat, lat->join(rightSym));
         } else if (llvm::succeeded(rightLoc)) {
-          result |= after->write(*rightLoc, getBoundSymbol(eq.getLhs()));
+          auto leftSym = getBoundSymbol(eq.getLhs());
+          result |= after->write(*rightLoc, leftSym);
+          // Update the ScalarSymbolAnalysis with the value for rightLoc
+          auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
+          propagateIfChanged(lat, lat->join(leftSym));
         }
       });
   LLVM_DEBUG({

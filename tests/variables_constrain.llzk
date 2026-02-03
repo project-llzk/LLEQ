@@ -37,3 +37,5 @@ module attributes {veridise.lang = "llzk"} {
 
 // CHECK-DAG: x_w: felt.mul(%arg0, felt.add(%arg0, %arg1))
 // CHECK-DAG: y_w: felt.mul(felt.mul(%arg0, felt.add(%arg0, %arg1)), felt.mul(%arg0, felt.add(%arg0, %arg1)))
+// CHECK-DAG: x_c: felt.mul(%arg0, felt.add(%arg0, %arg1))
+// CHECK-DAG: y_c: felt.mul(felt.mul(%arg0, felt.add(%arg0, %arg1)), felt.mul(%arg0, felt.add(%arg0, %arg1)))

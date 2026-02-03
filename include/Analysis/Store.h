@@ -55,14 +55,14 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
 using IndexedValue = IndexedLocation<mlir::Value>;
 
 // Indexing into a struct signal (either fieldName or blockArgIndex)
-enum class SignalType { Witness, Constraint };
+enum class SignalSource { Witness, Constraint };
 struct Signal {
-  SignalType _type;
+  SignalSource source; // compute or constrain
   llvm::StringRef name;
   bool operator==(const Signal &other) const = default;
   operator std::string() const {
     llvm::Twine twine = name;
-    return twine.concat(_type == SignalType::Witness ? "_w" : "_c").str();
+    return twine.concat(source == SignalSource::Witness ? "_w" : "_c").str();
   }
 };
 
@@ -83,11 +83,11 @@ inline unsigned hash_value(mlir::Value val) {
 
 template <> struct DenseMapInfo<lleq::Signal> {
   static inline auto getEmptyKey() {
-    return lleq::Signal{lleq::SignalType::Witness,
+    return lleq::Signal{lleq::SignalSource::Witness,
                         DenseMapInfo<StringRef>::getEmptyKey()};
   }
   static inline auto getTombstoneKey() {
-    return lleq::Signal{lleq::SignalType::Witness,
+    return lleq::Signal{lleq::SignalSource::Witness,
                         DenseMapInfo<StringRef>::getTombstoneKey()};
   }
   static bool isEqual(auto LHS, auto RHS) { return LHS == RHS; }
