@@ -26,6 +26,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
 #include <llzk/Util/ErrorHelper.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Block.h>
@@ -33,6 +34,7 @@
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Interfaces/ControlFlowInterfaces.h>
 #include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LLVM.h>
 
@@ -67,6 +69,27 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
 
   auto productFunc = component.getComputeOrProductFuncOp();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
+
+  // Make sure the top level func is set to live
+  auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
+      solver.getProgramPointAfter(productFunc));
+  (void)funcDefExec->setToLive();
+
+  // For some reason, PredecessorState doesn't propagate lattice values into
+  // region control flow ops correctly
+  productFunc.walk([this](mlir::RegionBranchOpInterface branchOp) {
+    // Mark the branch op as a predecessor of each of its regions
+    for (auto &region : branchOp->getRegions()) {
+      if (region.empty()) {
+        continue;
+      }
+      auto predecessorState =
+          solver.getOrCreateState<mlir::dataflow::PredecessorState>(
+              solver.getProgramPointBefore(&*region.op_begin()));
+      (void)predecessorState->join(branchOp);
+    }
+  });
+
   llzk::dataflow::markAllOpsAsLive(solver, productFunc);
 
   if (mlir::failed(solver.initializeAndRun(productFunc))) {

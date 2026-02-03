@@ -10,10 +10,12 @@
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
+#include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Interfaces/ControlFlowInterfaces.h>
 
 #define DEBUG_TYPE "symbolic-store-analysis"
 
@@ -21,6 +23,7 @@ namespace lleq {
 
 using namespace llzk::component;
 using namespace llzk::array;
+using namespace llzk::constrain;
 
 void StoreLattice::print(llvm::raw_ostream &os) const {
   LLVM_DEBUG({
@@ -32,17 +35,18 @@ void StoreLattice::print(llvm::raw_ostream &os) const {
       os << "(null)\n";
       return;
     }
-    os << "--\n";
+    // os << "--\n";
     if (valueStore->size() == 0) {
       os << "(empty)\n";
     }
     for (auto [key, val] : *valueStore) {
       os << key << ": " << val << '\n';
     }
-    os << "--\n";
+    // os << "--\n";
     if (signalStore->size() == 0) {
       os << "(empty)\n";
     }
+    // os << "--\n";
   });
   for (auto [key, val] : *signalStore) {
     os << key << ": " << static_cast<Symbol>(val) << "\n";
@@ -93,24 +97,48 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
+  // llvm::dbgs() << "[JOINING]\n";
+  // llvm::dbgs() << "<lhs:>\n";
+  // print(llvm::dbgs());
+  // llvm::dbgs() << "<rhs:>\n";
+  // rhs->print(llvm::dbgs());
+
   valueStore->join_with(*rhs->valueStore);
   signalStore->join_with(*rhs->signalStore);
+
+  // llvm::dbgs() << "<result:>\n";
+  // print(llvm::dbgs());
 
   return mlir::ChangeResult::Change;
 }
 
 mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
-    mlir::Operation *op, const StoreLattice &before, StoreLattice *after) {
+    mlir::Operation *op, const StoreLattice &_before, StoreLattice *after) {
   after->initPool(&pool);
+
+  // This is kind of a hack, but if `op` is the first op in a basic block whose
+  // parent op has region control flow, try to manually inherit the lattice from
+  // the parent (since at initialization time it won't be present)
+
+  const auto &before =
+      (op->getPrevNode() == nullptr &&
+       llvm::isa<mlir::RegionBranchOpInterface>(op->getParentOp()))
+          ? *getOrCreate<StoreLattice>(getProgramPointBefore(op->getParentOp()))
+          : _before;
+
   LLVM_DEBUG({
-    llvm::dbgs() << "Operation: " << *op << '\n';
-    llvm::dbgs() << "Before:\n";
+    llvm::dbgs() << '\n';
     before.print(llvm::dbgs());
-    llvm::dbgs() << "Start:\n";
-    after->print(llvm::dbgs());
+    llvm::dbgs() << "Operation: " << *op << '\n';
   });
+
   mlir::ChangeResult result = after->join(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
+      .Case<mlir::scf::YieldOp>([this, after](mlir::scf::YieldOp yieldOp) {
+        auto afterState = getOrCreate<StoreLattice>(
+            getProgramPointAfter(yieldOp->getParentOp()));
+        propagateIfChanged(afterState, afterState->join(*after));
+      })
       .Case<FieldWriteOp>([this, after, &result, &before](FieldWriteOp write) {
         if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
           // Its an array so copy from valueStore to signalStore
@@ -138,6 +166,13 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             Signal{SignalType::Witness, write.getFieldName()}, written);
       })
       .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
+        // struct.readf should *only* do something if its a compute op, since
+        // constrain ops can't write to struct fields anyway so there's nothing
+        // initialized (and we don't want to accidentally read the value that
+        // @constrain wrote to this field)
+        if (isConstraintOp(read)) {
+          return;
+        }
         if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
           for (auto [ref, sym] : *before.signalStore) {
@@ -181,10 +216,39 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
+      })
+      .Case<EmitEqualityOp>([this, after, &result](EmitEqualityOp eq) {
+        auto getIndexedLoc =
+            [this](mlir::Value val) -> llvm::FailureOr<IndexedSignal> {
+          // If the value immediately comes from a constraint `struct.readf`
+          if (auto read = llvm::dyn_cast<FieldReadOp>(val.getDefiningOp())) {
+            return {{{SignalType::Constraint, read.getFieldName()}, {}}};
+          }
+          if (auto arrRead = llvm::dyn_cast<ReadArrayOp>(val.getDefiningOp())) {
+            if (auto arr = llvm::dyn_cast<FieldReadOp>(
+                    arrRead.getArrRef().getDefiningOp())) {
+              llvm::SmallVector<Symbol> indices;
+              for (auto idx : arrRead.getIndices()) {
+                indices.push_back(getBoundSymbol(idx));
+              }
+              return {{{SignalType::Constraint, arr.getFieldName()},
+                       std::move(indices)}};
+            }
+          }
+          return {};
+        };
+
+        auto leftLoc = getIndexedLoc(eq.getLhs());
+        auto rightLoc = getIndexedLoc(eq.getRhs());
+        if (llvm::succeeded(leftLoc)) {
+          result |= after->write(*leftLoc, getBoundSymbol(eq.getRhs()));
+        } else if (llvm::succeeded(rightLoc)) {
+          result |= after->write(*rightLoc, getBoundSymbol(eq.getLhs()));
+        }
       });
   LLVM_DEBUG({
-    llvm::dbgs() << "After:\n";
     after->print(llvm::dbgs());
+    llvm::dbgs() << '\n';
   });
   propagateIfChanged(after, result);
   return mlir::success();

@@ -5,14 +5,16 @@
 
 #pragma once
 
+// #include "Analysis/DenseAnalysis.h"
+#include "Analysis/DataFlowFramework.h"
+#include "Analysis/DenseAnalysis.h"
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include <cstddef>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
-#include <mlir/Analysis/DataFlow/DenseAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
+#include <llzk/Analysis/DenseAnalysis.h>
 #include <mlir/Support/TypeID.h>
 
 namespace lleq {
@@ -103,6 +105,7 @@ public:
   }
 
   void print(llvm::raw_ostream &os) const override;
+  // void dump() const override { print(llvm::dbgs()); }
 
   std::pair<SignalStore *, ValueStore *> getStores() const {
     return {signalStore.get(), valueStore.get()};

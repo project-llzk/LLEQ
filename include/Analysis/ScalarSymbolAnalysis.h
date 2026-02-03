@@ -13,6 +13,7 @@
 #include <llzk/Analysis/SparseAnalysis.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/Constants.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
@@ -118,5 +119,16 @@ public:
     propagateIfChanged(lattice, lattice->join(pool.get().uninitialized()));
   }
 };
+
+inline bool isWitnessOp(mlir::Operation *op) {
+  return op->hasAttrOfType<mlir::StringAttr>("product_source") &&
+         op->getAttrOfType<mlir::StringAttr>("product_source") ==
+             llzk::FUNC_NAME_COMPUTE;
+}
+inline bool isConstraintOp(mlir::Operation *op) {
+  return op->hasAttrOfType<mlir::StringAttr>("product_source") &&
+         op->getAttrOfType<mlir::StringAttr>("product_source") ==
+             llzk::FUNC_NAME_CONSTRAIN;
+}
 
 } // namespace lleq

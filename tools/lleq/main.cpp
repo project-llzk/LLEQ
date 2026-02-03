@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
@@ -19,8 +20,6 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
-#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
@@ -41,6 +40,19 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
     llvm::report_fatal_error("symbolic store construction failed");
   }
   store.dump(llvm::outs());
+}
+
+static inline void printPoints(llzk::function::FuncDefOp funcDef,
+                               lleq::dataflow::DataFlowSolver &solver) {
+  for (auto &block : funcDef.getBody().getBlocks()) {
+    llvm::dbgs() << "---\n";
+    for (auto &op : block) {
+      llvm::dbgs() << solver.getProgramPointBefore(&op) << "\n";
+      llvm::dbgs() << "\t" << op.getName() << "\n";
+      llvm::dbgs() << solver.getProgramPointAfter(&op) << "\n";
+    }
+    llvm::dbgs() << "---\n";
+  }
 }
 
 static inline void printDiag(mlir::Diagnostic &d) {
@@ -76,7 +88,6 @@ int main(int argc, char **argv) {
   llvm::setBugReportMsg(
       "LLEQ has crashed! Please report the bug to contact@veridise.com\n");
 
-  llvm::cl::HideUnrelatedOptions(lleq::cli::lleqCat);
   llvm::cl::ParseCommandLineOptions(argc, argv, "LLZK Equivalence Verifier\n");
 
   mlir::DialectRegistry registry;
@@ -100,8 +111,11 @@ int main(int argc, char **argv) {
   }
 
   if (lleq::cli::dumpStore()) {
-    mod.walk(
-        [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
+    lleq::dataflow::DataFlowSolver solver;
+    mod.walk([&solver](llzk::component::StructDefOp structDef) {
+      // printPoints(structDef.getComputeOrProductFuncOp(), solver);
+      dumpStore(structDef);
+    });
   }
 
   return EXIT_SUCCESS;

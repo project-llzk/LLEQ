@@ -9,6 +9,7 @@
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStoreAnalysis.h"
 
+#include "Analysis/DataFlowFramework.h"
 #include <cassert>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
@@ -17,8 +18,8 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/ConstantPropagationAnalysis.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Operation.h>
 #include <mlir/IR/Value.h>

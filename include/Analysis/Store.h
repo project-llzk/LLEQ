@@ -62,8 +62,7 @@ struct Signal {
   bool operator==(const Signal &other) const = default;
   operator std::string() const {
     llvm::Twine twine = name;
-    twine.concat(_type == SignalType::Witness ? "_w" : "_c");
-    return twine.str();
+    return twine.concat(_type == SignalType::Witness ? "_w" : "_c").str();
   }
 };
 
@@ -141,6 +140,9 @@ enum class WriteMode { OverwriteExact, AntiUnify, HavocAliases };
 /// Lightweight wrapper around a DenseMap<Ref<T>, Symbol> that provides some
 /// convenience methods
 template <class T> struct Store {
+  // Whether this store has ever been written to
+  bool initialized = false;
+
   // Support iterating over the underlying store
   auto begin() const { return _store.begin(); }
   auto end() const { return _store.end(); }
@@ -164,6 +166,7 @@ template <class T> struct Store {
   // (overwrite vs. anti-unify)
   Symbol write(const IndexedLocation<T> &ref, Symbol val,
                WriteMode mode = WriteMode::OverwriteExact) {
+    initialized = true;
     if (&val->pool != &_pool.get()) {
       val = _pool.get().copy(val);
     }
@@ -226,9 +229,16 @@ template <class T> struct Store {
   }
 
   void join_with(const Store<T> &other) {
+    if (!other.initialized) {
+      return;
+    }
+    if (!initialized) {
+      _store = other._store;
+      return;
+    }
     for (auto [key, val] : _store) {
       if (!other.contains(key) && !llvm::isa<Uninitialized>(val)) {
-        write(key, _pool.get().fresh_unknown());
+        _store.erase(key);
       } else if (other.canContain(key)) {
         auto aliasedEntries = llvm::filter_to_vector(
             other, [key](auto entry) { return key.canAlias(entry.first); });

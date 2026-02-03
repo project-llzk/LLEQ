@@ -5,6 +5,7 @@
 
 #include "Analysis/ScalarSymbolAnalysis.h"
 
+#include "Analysis/DataFlowFramework.h"
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -14,7 +15,6 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
@@ -74,7 +74,8 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                     call.getCallee().getLeafReference(), args)};
               })
           .Case<llzk::component::FieldReadOp>(
-              [this](auto) -> llvm::SmallVector<Symbol> {
+              [this](llzk::component::FieldReadOp readOp)
+                  -> llvm::SmallVector<Symbol> {
                 // We don't have any store information yet, so just set it to
                 // uninitialized. When this op is picked up by
                 // SymbolicStoreAnalysis it will read from the store and
