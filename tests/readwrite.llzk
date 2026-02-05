@@ -9,8 +9,8 @@ module attributes {veridise.lang = "llzk"} {
             %c1 = arith.constant 1 : index
 
             %self = struct.new : <@A>
-            %arr1 = struct.readf %self[@arr1] : !struct.type<@A>, !array.type<2 x !felt.type>
-            %arr2 = struct.readf %self[@arr2] : !struct.type<@A>, !array.type<1 x !felt.type>
+            %arr1 = array.new : !array.type<2 x !felt.type>
+            %arr2 = array.new : !array.type<1 x !felt.type>
             
             %0 = felt.add %a, %b
             %1 = felt.sub %a, %b
