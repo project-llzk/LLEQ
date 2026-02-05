@@ -210,7 +210,14 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         for (auto idx : read.getIndices()) {
           indices.push_back(getBoundSymbol(idx));
         }
-        Symbol newSym = after->lookup(IndexedValue{read.getArrRef(), indices});
+
+        // If reading from an array during a constraint op, don't
+        // default-initialize with unknowns because a constrain may later
+        // initialize this value
+        Symbol newSym =
+            isWitnessOp(read)
+                ? after->lookup(IndexedValue{read.getArrRef(), indices})
+                : after->lookupOrNull(IndexedValue{read.getArrRef(), indices});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
@@ -242,11 +249,15 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           auto rightSym = getBoundSymbol(eq.getRhs());
           result |= after->write(*leftLoc, rightSym);
           // Update the ScalarSymbolAnalysis with the value for leftLoc
+          // llvm::dbgs() << "Propagating value " << rightSym << " to anchor "
+          //              << eq.getLhs() << "\n";
           auto lat = getOrCreate<ScalarLattice>(eq.getLhs());
           propagateIfChanged(lat, lat->join(rightSym));
         } else if (llvm::succeeded(rightLoc)) {
           auto leftSym = getBoundSymbol(eq.getLhs());
           result |= after->write(*rightLoc, leftSym);
+          // llvm::dbgs() << "Propagating value " << leftSym << " to anchor "
+          //  << eq.getRhs() << "\n";
           // Update the ScalarSymbolAnalysis with the value for rightLoc
           auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
           propagateIfChanged(lat, lat->join(leftSym));

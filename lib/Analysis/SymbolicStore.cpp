@@ -70,6 +70,8 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   auto productFunc = component.getComputeOrProductFuncOp();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
 
+  // productFunc->dump();
+
   // Make sure the top level func is set to live
   auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
       solver.getProgramPointAfter(productFunc));
