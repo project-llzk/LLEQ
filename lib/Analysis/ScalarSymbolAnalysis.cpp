@@ -5,7 +5,6 @@
 
 #include "Analysis/ScalarSymbolAnalysis.h"
 
-#include "Analysis/DataFlowFramework.h"
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>

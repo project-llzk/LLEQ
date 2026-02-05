@@ -42,19 +42,6 @@ static inline void dumpStore(llzk::component::StructDefOp structDef) {
   store.dump(llvm::outs());
 }
 
-static inline void printPoints(llzk::function::FuncDefOp funcDef,
-                               lleq::dataflow::DataFlowSolver &solver) {
-  for (auto &block : funcDef.getBody().getBlocks()) {
-    llvm::dbgs() << "---\n";
-    for (auto &op : block) {
-      llvm::dbgs() << solver.getProgramPointBefore(&op) << "\n";
-      llvm::dbgs() << "\t" << op.getName() << "\n";
-      llvm::dbgs() << solver.getProgramPointAfter(&op) << "\n";
-    }
-    llvm::dbgs() << "---\n";
-  }
-}
-
 static inline void printDiag(mlir::Diagnostic &d) {
   switch (d.getSeverity()) {
   case mlir::DiagnosticSeverity::Error:
@@ -111,11 +98,8 @@ int main(int argc, char **argv) {
   }
 
   if (lleq::cli::dumpStore()) {
-    lleq::dataflow::DataFlowSolver solver;
-    mod.walk([&solver](llzk::component::StructDefOp structDef) {
-      // printPoints(structDef.getComputeOrProductFuncOp(), solver);
-      dumpStore(structDef);
-    });
+    mod.walk(
+        [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
   }
 
   return EXIT_SUCCESS;

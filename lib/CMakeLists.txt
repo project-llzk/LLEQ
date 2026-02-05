@@ -7,8 +7,6 @@ target_sources(LLEQ PRIVATE
     Analysis/Unification.cpp
     Analysis/SymbolicStore.cpp
     Analysis/ScalarSymbolAnalysis.cpp
-    Analysis/SymbolicStoreAnalysis.cpp
-    Analysis/DenseAnalysis.cpp
-    Analysis/DataFlowFramework.cpp)
+    Analysis/SymbolicStoreAnalysis.cpp)
 target_link_libraries(LLEQ PUBLIC LLEQHeaders LLZKTransforms)
 install(TARGETS LLEQ)

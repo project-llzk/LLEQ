@@ -206,12 +206,6 @@ template <class T> struct Store {
     return cloned;
   }
 
-  // Widen to include symbols from another store
-  void widen(const Store<T> &other) {
-    // TODO: update when _join_stores works in-place
-    *this = _join_stores(*this, other, _pool);
-  }
-
   bool operator==(const Store<T> &other) const {
     for (auto [ref, val] : _store) {
       if (!other.contains(ref) || *other.at(ref) != *val) {
@@ -256,16 +250,5 @@ private:
 
 using SignalStore = Store<Signal>;
 using ValueStore = Store<mlir::Value>;
-
-template <class T>
-void _join_stores_simple(Store<T> &a, const Store<T> &b, SymbolPool &pool) {
-  for (auto [key, val] : a) {
-    if (!b.contains(key) && !llvm::isa<Uninitialized>(val)) {
-      a.write(key, pool.fresh_unknown());
-    } else if (b.contains(key)) {
-      a.write(key, b.at(key), WriteMode::AntiUnify);
-    }
-  }
-}
 
 } // namespace lleq

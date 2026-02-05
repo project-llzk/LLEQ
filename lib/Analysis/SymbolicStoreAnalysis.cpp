@@ -26,28 +26,23 @@ using namespace llzk::array;
 using namespace llzk::constrain;
 
 void StoreLattice::print(llvm::raw_ostream &os) const {
-  LLVM_DEBUG({
-    if (!initialized) {
-      os << "(uninit)\n";
-      return;
-    }
-    if (valueStore == nullptr || signalStore == nullptr) {
-      os << "(null)\n";
-      return;
-    }
-    // os << "--\n";
-    if (valueStore->size() == 0) {
-      os << "(empty)\n";
-    }
-    for (auto [key, val] : *valueStore) {
-      os << key << ": " << val << '\n';
-    }
-    // os << "--\n";
-    if (signalStore->size() == 0) {
-      os << "(empty)\n";
-    }
-    // os << "--\n";
-  });
+  if (!initialized) {
+    os << "(uninit)\n";
+    return;
+  }
+  if (valueStore == nullptr || signalStore == nullptr) {
+    os << "(null)\n";
+    return;
+  }
+  if (valueStore->size() == 0) {
+    os << "(empty)\n";
+  }
+  for (auto [key, val] : *valueStore) {
+    os << key << ": " << val << '\n';
+  }
+  if (signalStore->size() == 0) {
+    os << "(empty)\n";
+  }
   for (auto [key, val] : *signalStore) {
     os << key << ": " << static_cast<Symbol>(val) << "\n";
   }
@@ -99,17 +94,8 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
-  // llvm::dbgs() << "[JOINING]\n";
-  // llvm::dbgs() << "<lhs:>\n";
-  // print(llvm::dbgs());
-  // llvm::dbgs() << "<rhs:>\n";
-  // rhs->print(llvm::dbgs());
-
   valueStore->join_with(*rhs->valueStore);
   signalStore->join_with(*rhs->signalStore);
-
-  // llvm::dbgs() << "<result:>\n";
-  // print(llvm::dbgs());
 
   return mlir::ChangeResult::Change;
 }
@@ -121,7 +107,6 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
   // This is kind of a hack, but if `op` is the first op in a basic block whose
   // parent op has region control flow, try to manually inherit the lattice from
   // the parent (since at initialization time it won't be present)
-
   const auto &before =
       (op->getPrevNode() == nullptr &&
        llvm::isa<mlir::RegionBranchOpInterface>(op->getParentOp()))
@@ -254,15 +239,11 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           auto rightSym = getBoundSymbol(eq.getRhs());
           result |= after->write(*leftLoc, rightSym);
           // Update the ScalarSymbolAnalysis with the value for leftLoc
-          // llvm::dbgs() << "Propagating value " << rightSym << " to anchor "
-          //              << eq.getLhs() << "\n";
           auto lat = getOrCreate<ScalarLattice>(eq.getLhs());
           propagateIfChanged(lat, lat->join(rightSym));
         } else if (llvm::succeeded(rightLoc)) {
           auto leftSym = getBoundSymbol(eq.getLhs());
           result |= after->write(*rightLoc, leftSym);
-          // llvm::dbgs() << "Propagating value " << leftSym << " to anchor "
-          //  << eq.getRhs() << "\n";
           // Update the ScalarSymbolAnalysis with the value for rightLoc
           auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
           propagateIfChanged(lat, lat->join(leftSym));

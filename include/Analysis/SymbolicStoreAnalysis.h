@@ -5,9 +5,6 @@
 
 #pragma once
 
-// #include "Analysis/DenseAnalysis.h"
-#include "Analysis/DataFlowFramework.h"
-#include "Analysis/DenseAnalysis.h"
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include <cstddef>
@@ -105,7 +102,6 @@ public:
   }
 
   void print(llvm::raw_ostream &os) const override;
-  // void dump() const override { print(llvm::dbgs()); }
 
   std::pair<SignalStore *, ValueStore *> getStores() const {
     return {signalStore.get(), valueStore.get()};
