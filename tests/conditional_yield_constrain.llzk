@@ -23,9 +23,24 @@ module attributes {llzk.lang = "llzk"} {
         }
 
         function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type, %c: i1) {
+            %c0 = arith.constant 0 : index
+            %sums = struct.readm %self[@sums] : !struct.type<@A>, !array.type<1 x !felt.type>
+
+            %ans = scf.if %c -> !felt.type {
+                %sum = felt.add %a, %b
+                scf.yield %sum : !felt.type
+            } else {
+                %diff = felt.add %a, %a
+                scf.yield %diff : !felt.type
+            }
+            %to_constrain = felt.sub %ans, %b
+            %written = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
+            constrain.eq %written, %to_constrain : !felt.type
+            
             function.return
         }
     }
 }
 
-// CHECK: sums_w[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
+// CHECK-DAG: sums_w[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
+// CHECK-DAG: sums_c[0]: felt.sub(felt.add(%arg0, ?0), %arg1)

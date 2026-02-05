@@ -1,0 +1,46 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+// XFAIL: *
+// Should pass once loop fusion is merged
+
+module attributes {llzk.lang = "llzk"} {
+    struct.def @Reduce<[@N]> {
+        struct.member @sum : !felt.type
+
+        function.def @compute(%vals: !array.type<@N x !felt.type>) -> !struct.type<@Reduce<[@N]>> {
+            %self = struct.new : <@Reduce<[@N]>>
+            %N = poly.read_const @N : index
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+            %sum0 = felt.const 0
+
+            %sum = scf.for %i = %c0 to %N step %c1 iter_args(%iter_sum = %sum0) -> !felt.type {
+                %val_i = array.read %vals[%i] : !array.type<@N x !felt.type>, !felt.type
+                %new_sum = felt.add %iter_sum, %val_i
+                scf.yield %new_sum : !felt.type
+            }
+
+            struct.writem %self[@sum] = %sum : !struct.type<@Reduce<[@N]>>, !felt.type
+            function.return %self : !struct.type<@Reduce<[@N]>>
+        }
+        function.def @constrain(%self: !struct.type<@Reduce<[@N]>>, %vals: !array.type<@N x !felt.type>) {
+            %N = poly.read_const @N : index
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+            %sum0 = felt.const 0
+
+            %sum = scf.for %i = %c0 to %N step %c1 iter_args(%iter_sum = %sum0) -> !felt.type {
+                %val_i = array.read %vals[%i] : !array.type<@N x !felt.type>, !felt.type
+                %new_sum = felt.add %iter_sum, %val_i
+                scf.yield %new_sum : !felt.type
+            }
+
+            %written_sum = struct.readm %self[@sum] : <@Reduce<[@N]>>, !felt.type
+            constrain.eq %written_sum, %sum : !felt.type
+
+            function.return
+        }
+    }
+}
+
+// CHECK-DAG: sum_w: ?1
+// CHECK-DAG: sum_c: ?1
