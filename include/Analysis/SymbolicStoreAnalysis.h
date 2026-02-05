@@ -30,7 +30,7 @@ class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
   std::unique_ptr<ValueStore> valueStore;
   std::unique_ptr<SignalStore> signalStore;
 
-  SymbolPool *pool;
+  SymbolPool *pool = nullptr;
   bool initialized = false;
 
   template <class T> decltype(auto) store(this auto &&self) {
