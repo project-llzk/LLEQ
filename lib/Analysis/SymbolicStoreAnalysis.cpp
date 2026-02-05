@@ -139,37 +139,40 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             getProgramPointAfter(yieldOp->getParentOp()));
         propagateIfChanged(afterState, afterState->join(*after));
       })
-      .Case<FieldWriteOp>([this, after, &result, &before](FieldWriteOp write) {
-        if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
-          // Its an array so copy from valueStore to signalStore
-          if (!before.initialized) {
-            // This is weird but there's nothing to copy
-            // Hopefully we'll visit this state again when there is something
-            return;
-          }
-          for (auto [ref, sym] : *before.valueStore) {
-            if (ref.name == write.getVal()) {
-              // `after->write` will correctly clobber any entries signalStore
-              // already has for this signal
-              result |= after->write(IndexedSignal{Signal{SignalSource::Witness,
-                                                          write.getFieldName()},
-                                                   ref.indices},
-                                     sym);
+      .Case<MemberWriteOp>(
+          [this, after, &result, &before](MemberWriteOp write) {
+            if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
+              // Its an array so copy from valueStore to signalStore
+              if (!before.initialized) {
+                // This is weird but there's nothing to copy
+                // Hopefully we'll visit this state again when there is
+                // something
+                return;
+              }
+              for (auto [ref, sym] : *before.valueStore) {
+                if (ref.name == write.getVal()) {
+                  // `after->write` will correctly clobber any entries
+                  // signalStore already has for this signal
+                  result |=
+                      after->write(IndexedSignal{Signal{SignalSource::Witness,
+                                                        write.getMemberName()},
+                                                 ref.indices},
+                                   sym);
+                }
+              }
+              return;
             }
-          }
-          return;
-        }
-        // Otherwise, its a scalar, so lookup the symbol from
-        // SignalValueAnalysis and write it to the store
-        Symbol written = getBoundSymbol(write.getVal());
-        result |= after->write(
-            Signal{SignalSource::Witness, write.getFieldName()}, written);
-      })
-      .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
+            // Otherwise, its a scalar, so lookup the symbol from
+            // SignalValueAnalysis and write it to the store
+            Symbol written = getBoundSymbol(write.getVal());
+            result |= after->write(
+                Signal{SignalSource::Witness, write.getMemberName()}, written);
+          })
+      .Case<MemberReadOp>([this, &before, &result, after](MemberReadOp read) {
         if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
           for (auto [ref, sym] : *before.signalStore) {
-            if (ref.name.name == read.getFieldName() &&
+            if (ref.name.name == read.getMemberName() &&
                 // Make sure we don't accidentally read a value @compute wrote
                 // to this field while in @constrain
                 sourceMatchesOp(read, ref.name.source)) {
@@ -186,7 +189,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         Symbol newSym = before.lookupOrNull(
             Signal{isWitnessOp(read) ? SignalSource::Witness
                                      : SignalSource::Constraint,
-                   read.getFieldName()});
+                   read.getMemberName()});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
@@ -225,18 +228,18 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
       .Case<EmitEqualityOp>([this, after, &result](EmitEqualityOp eq) {
         auto getIndexedLoc =
             [this](mlir::Value val) -> llvm::FailureOr<IndexedSignal> {
-          // If the value immediately comes from a constraint `struct.readf`
-          if (auto read = llvm::dyn_cast<FieldReadOp>(val.getDefiningOp())) {
-            return {{{SignalSource::Constraint, read.getFieldName()}, {}}};
+          // If the value immediately comes from a constraint `struct.readm`
+          if (auto read = llvm::dyn_cast<MemberReadOp>(val.getDefiningOp())) {
+            return {{{SignalSource::Constraint, read.getMemberName()}, {}}};
           }
           if (auto arrRead = llvm::dyn_cast<ReadArrayOp>(val.getDefiningOp())) {
-            if (auto arr = llvm::dyn_cast<FieldReadOp>(
+            if (auto arr = llvm::dyn_cast<MemberReadOp>(
                     arrRead.getArrRef().getDefiningOp())) {
               llvm::SmallVector<Symbol> indices;
               for (auto idx : arrRead.getIndices()) {
                 indices.push_back(getBoundSymbol(idx));
               }
-              return {{{SignalSource::Constraint, arr.getFieldName()},
+              return {{{SignalSource::Constraint, arr.getMemberName()},
                        std::move(indices)}};
             }
           }

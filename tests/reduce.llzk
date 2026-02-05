@@ -1,8 +1,8 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {veridise.lang = "llzk"} {
+module attributes {llzk.lang = "llzk"} {
     struct.def @Reduce<[@N]> {
-        struct.field @sum : !felt.type
+        struct.member @sum : !felt.type
 
         function.def @compute(%vals: !array.type<@N x !felt.type>) -> !struct.type<@Reduce<[@N]>> {
             %self = struct.new : <@Reduce<[@N]>>
@@ -17,7 +17,7 @@ module attributes {veridise.lang = "llzk"} {
                 scf.yield %new_sum : !felt.type
             }
 
-            struct.writef %self[@sum] = %sum : !struct.type<@Reduce<[@N]>>, !felt.type
+            struct.writem %self[@sum] = %sum : !struct.type<@Reduce<[@N]>>, !felt.type
             function.return %self : !struct.type<@Reduce<[@N]>>
         }
         function.def @constrain(%self: !struct.type<@Reduce<[@N]>>, %val: !array.type<@N x !felt.type>) {

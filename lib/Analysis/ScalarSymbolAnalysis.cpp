@@ -14,6 +14,7 @@
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
+#include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
@@ -73,8 +74,8 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                 return {pool.get().func_call(
                     call.getCallee().getLeafReference(), args)};
               })
-          .Case<llzk::component::FieldReadOp>(
-              [this](llzk::component::FieldReadOp readOp)
+          .Case<llzk::component::MemberReadOp>(
+              [this](llzk::component::MemberReadOp readOp)
                   -> llvm::SmallVector<Symbol> {
                 // We don't have any store information yet, so just set it to
                 // uninitialized. When this op is picked up by

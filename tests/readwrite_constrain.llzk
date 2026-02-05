@@ -1,9 +1,9 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {veridise.lang = "llzk"} {
+module attributes {llzk.lang = "llzk"} {
     struct.def @A {
-        struct.field @arr1 : !array.type<2 x !felt.type>
-        struct.field @arr2 : !array.type<1 x !felt.type>
+        struct.member @arr1 : !array.type<2 x !felt.type>
+        struct.member @arr2 : !array.type<1 x !felt.type>
         function.def @compute(%a: !felt.type, %b: !felt.type, %c: !felt.type) -> !struct.type<@A> {
             %c0 = arith.constant 0 : index
             %c1 = arith.constant 1 : index
@@ -21,8 +21,8 @@ module attributes {veridise.lang = "llzk"} {
             %3 = felt.mul %2, %c
             array.write %arr2[%c0] = %3 : !array.type<1 x !felt.type>, !felt.type
 
-            struct.writef %self[@arr1] = %arr1 : <@A>, !array.type<2 x !felt.type>
-            struct.writef %self[@arr2] = %arr2 : <@A>, !array.type<1 x !felt.type>
+            struct.writem %self[@arr1] = %arr1 : <@A>, !array.type<2 x !felt.type>
+            struct.writem %self[@arr2] = %arr2 : <@A>, !array.type<1 x !felt.type>
 
             function.return %self : !struct.type<@A>
         }
@@ -30,8 +30,8 @@ module attributes {veridise.lang = "llzk"} {
             %c0 = arith.constant 0 : index
             %c1 = arith.constant 1 : index
 
-            %arr1 = struct.readf %self[@arr1] : !struct.type<@A>, !array.type<2 x !felt.type>
-            %arr2 = struct.readf %self[@arr2] : !struct.type<@A>, !array.type<1 x !felt.type>
+            %arr1 = struct.readm %self[@arr1] : !struct.type<@A>, !array.type<2 x !felt.type>
+            %arr2 = struct.readm %self[@arr2] : !struct.type<@A>, !array.type<1 x !felt.type>
 
             %0 = felt.add %a, %b
             %1 = felt.sub %a, %b

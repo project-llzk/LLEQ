@@ -1,20 +1,20 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {veridise.lang = "llzk"} {
+module attributes {llzk.lang = "llzk"} {
     struct.def @A {
-        struct.field @x : !felt.type
-        struct.field @y : !felt.type
+        struct.member @x : !felt.type
+        struct.member @y : !felt.type
         function.def @compute(%a: !felt.type, %b: !felt.type) -> !struct.type<@A> {
             %self = struct.new : <@A>
             // x = a * (a + b)
             %0 = felt.add %a, %b
             %1 = felt.mul %a, %0
-            struct.writef %self[@x] = %1 : !struct.type<@A>, !felt.type
+            struct.writem %self[@x] = %1 : !struct.type<@A>, !felt.type
             
             // y = x * x
-            %2 = struct.readf %self[@x] : !struct.type<@A>, !felt.type
+            %2 = struct.readm %self[@x] : !struct.type<@A>, !felt.type
             %3 = felt.mul %2, %2
-            struct.writef %self[@y] = %3 : !struct.type<@A>, !felt.type
+            struct.writem %self[@y] = %3 : !struct.type<@A>, !felt.type
             function.return %self : !struct.type<@A>
         }
 
