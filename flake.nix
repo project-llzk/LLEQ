@@ -34,7 +34,7 @@
       overlays.default = final: prev: {
 
         # Default lleq build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
-        lleq = final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk-debug; mlir = final.mlir-debug; }; 
+        lleq = final.callPackage ./nix/lleq.nix { clang = final.clang_20; }; # llzk = final.llzk-debug; mlir = final.mlir-debug; }; 
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.
         # Mostly useful for development and CI
         lleqClang = (final.lleq.override { stdenv = final.clangStdenv; llzk = final.llzk; mlir = final.mlir; }).overrideAttrs(attrs: {
