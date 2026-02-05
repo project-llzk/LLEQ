@@ -87,6 +87,8 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
   }
   if (!initialized) {
     initPool(rhs->pool);
+    llzk::ensure(rhs->valueStore && rhs->signalStore,
+                 "stores not initialized!");
     *valueStore = *rhs->valueStore;
     *signalStore = *rhs->signalStore;
     initialized = true;
