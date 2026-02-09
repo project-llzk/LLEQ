@@ -16,6 +16,8 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/Constants.h>
 #include <llzk/Util/ErrorHelper.h>
+#include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
 
@@ -43,14 +45,25 @@ public:
 
   // Joining is just antiunification, once we take care to special-case the
   // nullptr values
-  static SymbolValue join(const SymbolValue &a, const SymbolValue &b) {
+  static SymbolValue join(const SymbolValue &a, const SymbolValue &b,
+                          mlir::Value anchor = nullptr) {
     if (!a.isInitialized()) {
       return b;
     }
     if (!b.isInitialized()) {
       return a;
     }
-    auto joined = anti_unify(a.sym, b.sym);
+
+    AUTag tag;
+    if (anchor != nullptr) {
+      if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(anchor)) {
+        tag = blockArg.getParentBlock()->getParentOp();
+      } else {
+        tag = anchor.getDefiningOp();
+      }
+    }
+
+    auto joined = anti_unify(a.sym, b.sym, tag);
     return {joined};
   }
 
@@ -76,9 +89,34 @@ public:
   operator Symbol() const { return sym; }
 };
 
-class ScalarLattice : public mlir::dataflow::Lattice<SymbolValue> {
+class ScalarLattice : public mlir::dataflow::AbstractSparseLattice {
+  SymbolValue value;
+
 public:
-  using Lattice::Lattice;
+  using AbstractSparseLattice::AbstractSparseLattice;
+
+  mlir::Value getAnchor() const { return mlir::cast<mlir::Value>(anchor); }
+
+  SymbolValue &getValue() { return value; }
+  const SymbolValue &getValue() const {
+    return const_cast<ScalarLattice *>(this)->getValue();
+  }
+
+  void print(llvm::raw_ostream &os) const override { value.print(os); }
+
+  mlir::ChangeResult
+  join(const mlir::dataflow::AbstractSparseLattice &other) override {
+    return join(static_cast<const ScalarLattice &>(other).value);
+  }
+
+  mlir::ChangeResult join(SymbolValue otherValue) {
+    SymbolValue newValue = SymbolValue::join(value, otherValue, getAnchor());
+    if (value == newValue) {
+      return mlir::ChangeResult::NoChange;
+    }
+    value = newValue;
+    return mlir::ChangeResult::Change;
+  }
 };
 
 /// This analysis computes a symbolic expression associated to each *scalar*
