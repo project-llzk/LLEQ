@@ -33,7 +33,7 @@ module attributes {llzk.lang = "llzk"} {
                 %diff = felt.add %a, %a
                 scf.yield %diff : !felt.type
             }
-            %to_constrain = felt.sub %ans, %b
+            %to_constrain = felt.sub %ans, %a
             %written = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
             constrain.eq %written, %to_constrain : !felt.type
             
@@ -43,4 +43,4 @@ module attributes {llzk.lang = "llzk"} {
 }
 
 // CHECK-DAG: sums_w[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
-// CHECK-DAG: sums_c[0]: felt.sub(felt.add(%arg0, ?1), %arg1)
+// CHECK-DAG: sums_c[0]: felt.sub(felt.add(%arg0, ?1), %arg0)

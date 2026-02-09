@@ -44,4 +44,4 @@ module attributes {llzk.lang = "llzk"} {
 }
 
 // CHECK-DAG: sums_w[0]: felt.add(%arg0, ?0)
-// CHECK-DAG: sums_c[0]: felt.add(%arg0, ?0)
+// CHECK-DAG: sums_c[0]: felt.add(%arg0, ?1)

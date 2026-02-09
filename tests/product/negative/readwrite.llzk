@@ -1,0 +1,57 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
+module attributes {llzk.lang = "llzk"} {
+    struct.def @A {
+        struct.member @arr1 : !array.type<2 x !felt.type>
+        struct.member @arr2 : !array.type<1 x !felt.type>
+        function.def @compute(%a: !felt.type, %b: !felt.type, %c: !felt.type) -> !struct.type<@A> {
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+
+            %self = struct.new : <@A>
+            %arr1 = array.new : !array.type<2 x !felt.type>
+            %arr2 = array.new : !array.type<1 x !felt.type>
+            
+            %0 = felt.add %a, %b
+            %1 = felt.sub %a, %b
+            array.write %arr1[%c0] = %0 : !array.type<2 x !felt.type>, !felt.type
+            array.write %arr1[%c1] = %1 : !array.type<2 x !felt.type>, !felt.type
+
+            %2 = array.read %arr1[%c0] : !array.type<2 x !felt.type>, !felt.type
+            %3 = felt.mul %2, %c
+            array.write %arr2[%c0] = %3 : !array.type<1 x !felt.type>, !felt.type
+
+            struct.writem %self[@arr1] = %arr1 : <@A>, !array.type<2 x !felt.type>
+            struct.writem %self[@arr2] = %arr2 : <@A>, !array.type<1 x !felt.type>
+
+            function.return %self : !struct.type<@A>
+        }
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type, %c: !felt.type) {
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+
+            %arr1 = struct.readm %self[@arr1] : !struct.type<@A>, !array.type<2 x !felt.type>
+            %arr2 = struct.readm %self[@arr2] : !struct.type<@A>, !array.type<1 x !felt.type>
+
+            %0 = felt.add %a, %b
+            %1 = felt.sub %a, %b
+            %2 = array.read %arr1[%c0] : !array.type<2 x !felt.type>, !felt.type
+            constrain.eq %2, %0 : !felt.type
+            %arr1_1 = array.read %arr1[%c1] : !array.type<2 x !felt.type>, !felt.type
+            constrain.eq %arr1_1, %1 : !felt.type
+
+            %3 = felt.mul %2, %c
+            %arr2_0 = array.read %arr2[%c0] : !array.type<1 x !felt.type>, !felt.type
+            constrain.eq %3, %arr2_0 : !felt.type
+
+            function.return
+        }
+    }
+}
+
+// CHECK-DAG: arr1_w[0]: felt.add(%arg0, %arg1)
+// CHECK-DAG: arr1_w[1]: felt.sub(%arg0, %arg1)
+// CHECK-DAG: arr2_w[0]: felt.mul(felt.add(%arg0, %arg1), %arg2)
+// CHECK-DAG: arr1_c[0]: felt.add(%arg0, %arg1)
+// CHECK-DAG: arr1_c[1]: felt.sub(%arg0, %arg1)
+// CHECK-DAG: arr2_c[0]: felt.mul(felt.add(%arg0, %arg1), %arg2)

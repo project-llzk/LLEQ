@@ -8,15 +8,15 @@ module attributes {llzk.lang = "llzk"} {
             %self = struct.new : !struct.type<@A>
             %sums = array.new : !array.type<1 x !felt.type>
             
-            %ans = scf.if %c -> !felt.type {
+            scf.if %c {
                 %sum = felt.add %a, %b
-                scf.yield %sum : !felt.type
+                array.write %sums[%c0] = %sum : !array.type<1 x !felt.type>, !felt.type
+                scf.yield
             } else {
                 %diff = felt.add %a, %a
-                scf.yield %diff : !felt.type
+                array.write %sums[%c0] = %diff : !array.type<1 x !felt.type>, !felt.type
+                scf.yield
             }
-            %to_write = felt.sub %ans, %b
-            array.write %sums[%c0] = %to_write : !array.type<1 x !felt.type>, !felt.type
             
             struct.writem %self[@sums] = %sums : !struct.type<@A>, !array.type<1 x !felt.type>
             function.return %self : !struct.type<@A>
@@ -24,23 +24,24 @@ module attributes {llzk.lang = "llzk"} {
 
         function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type, %c: i1) {
             %c0 = arith.constant 0 : index
-            %sums = struct.readm %self[@sums] : !struct.type<@A>, !array.type<1 x !felt.type>
+            %sums = struct.readm %self[@sums] : <@A>, !array.type<1 x !felt.type>
 
-            %ans = scf.if %c -> !felt.type {
+            scf.if %c {
                 %sum = felt.add %a, %b
-                scf.yield %sum : !felt.type
+                %written_sum = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
+                constrain.eq %sum, %written_sum : !felt.type
+                scf.yield
             } else {
-                %diff = felt.add %a, %a
-                scf.yield %diff : !felt.type
+                %diff = felt.sub %a, %a
+                %written_diff = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
+                constrain.eq %diff, %written_diff : !felt.type
+                scf.yield
             }
-            %to_constrain = felt.sub %ans, %b
-            %written = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
-            constrain.eq %written, %to_constrain : !felt.type
-            
+
             function.return
         }
     }
 }
 
-// CHECK-DAG: sums_w[0]: felt.sub(felt.add(%arg0, ?0), %arg1)
-// CHECK-DAG: sums_c[0]: felt.sub(felt.add(%arg0, ?1), %arg1)
+// CHECK-DAG: sums_w[0]: felt.add(%arg0, ?0)
+// CHECK-DAG: sums_c[0]: ?1

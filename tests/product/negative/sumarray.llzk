@@ -1,0 +1,47 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
+module attributes {llzk.lang = "llzk"} {
+    struct.def @SumArr<[@N]> {
+        struct.member @sum : !array.type<@N x !felt.type>
+
+        function.def @compute(%a: !array.type<@N x !felt.type>, %b: !array.type<@N x !felt.type>) -> !struct.type<@SumArr<[@N]>> {
+            %self = struct.new : <@SumArr<[@N]>>
+            %N = poly.read_const @N : index
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+
+            %sum = array.new : <@N x !felt.type>
+            scf.for %i = %c0 to %N step %c1 {
+                %a_i = array.read %a[%i] : !array.type<@N x !felt.type>, !felt.type
+                %b_i = array.read %b[%i] : !array.type<@N x !felt.type>, !felt.type
+                %c_i = felt.add %a_i, %b_i
+                array.write %sum[%i] = %c_i : !array.type<@N x !felt.type>, !felt.type
+                scf.yield
+            }
+
+            struct.writem %self[@sum] = %sum : !struct.type<@SumArr<[@N]>>, !array.type<@N x !felt.type>
+            function.return %self : !struct.type<@SumArr<[@N]>>
+        }
+        
+        function.def @constrain(%self: !struct.type<@SumArr<[@N]>>, %a: !array.type<@N x !felt.type>, %b: !array.type<@N x !felt.type>) {
+            %N = poly.read_const @N : index
+            %c0 = arith.constant 0 : index
+            %c1 = arith.constant 1 : index
+            
+            %sum = struct.readm %self[@sum] : !struct.type<@SumArr<[@N]>>, !array.type<@N x !felt.type>
+
+            scf.for %i = %c0 to %N step %c1 {
+                %a_i = array.read %a[%i] : !array.type<@N x !felt.type>, !felt.type
+                %b_i = array.read %b[%i] : !array.type<@N x !felt.type>, !felt.type
+                %c_i = felt.add %a_i, %b_i
+                %sum_i = array.read %sum[%i] : !array.type<@N x !felt.type>, !felt.type
+                constrain.eq %c_i, %sum_i : !felt.type
+            }
+
+            function.return
+        }
+    }
+}
+
+// CHECK-DAG: sum_w[?0]: felt.add(%arg0[?0], %arg1[?0])
+// CHECK-DAG: sum_c[?1]: felt.add(%arg0[?1], %arg1[?1])
