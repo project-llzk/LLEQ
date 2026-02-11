@@ -39,6 +39,7 @@ class SymbolicStore {
 
 public:
   SymbolicStore() {
+    solver.load<mlir::dataflow::SparseConstantPropagation>();
     solver.load<mlir::dataflow::DeadCodeAnalysis>();
     solver.load<lleq::ScalarSymbolAnalysis>(*pool);
     solver.load<lleq::SymbolicStoreAnalysis>(*pool);

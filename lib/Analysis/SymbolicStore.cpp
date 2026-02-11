@@ -42,6 +42,19 @@
 
 using namespace lleq;
 
+void markAllOpsAsLive(mlir::DataFlowSolver &solver, mlir::Operation *top) {
+  for (mlir::Region &region : top->getRegions()) {
+    for (mlir::Block &block : region) {
+      mlir::ProgramPoint *point = solver.getProgramPointBefore(&block);
+      (void)solver.getOrCreateState<mlir::dataflow::Executable>(point)
+          ->setToLive();
+      for (mlir::Operation &oper : block) {
+        markAllOpsAsLive(solver, &oper);
+      }
+    }
+  }
+}
+
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
   if (!signalStore) {
     os << "(null)\n";
@@ -71,26 +84,28 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
 
   // Make sure the top level func is set to live
-  auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
-      solver.getProgramPointAfter(productFunc));
-  (void)funcDefExec->setToLive();
+  // auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
+  //     solver.getProgramPointAfter(productFunc));
+  // (void)funcDefExec->setToLive();
 
   // For some reason, PredecessorState doesn't propagate lattice values into
   // region control flow ops correctly
-  productFunc.walk([this](mlir::RegionBranchOpInterface branchOp) {
-    // Mark the branch op as a predecessor of each of its regions
-    for (auto &region : branchOp->getRegions()) {
-      if (region.empty()) {
-        continue;
-      }
-      auto predecessorState =
-          solver.getOrCreateState<mlir::dataflow::PredecessorState>(
-              solver.getProgramPointBefore(&*region.op_begin()));
-      (void)predecessorState->join(branchOp);
-    }
-  });
+  // productFunc.walk([this](mlir::RegionBranchOpInterface branchOp) {
+  //   // Mark the branch op as a predecessor of each of its regions
+  //   for (auto &region : branchOp->getRegions()) {
+  //     if (region.empty()) {
+  //       continue;
+  //     }
+  //     auto predecessorState =
+  //         solver.getOrCreateState<mlir::dataflow::PredecessorState>(
+  //             solver.getProgramPointBefore(&*region.op_begin()));
+  //     (void)predecessorState->join(branchOp);
+  //   }
+  // });
 
-  llzk::dataflow::markAllOpsAsLive(solver, productFunc);
+  markAllOpsAsLive(solver, productFunc);
+
+  // llzk::dataflow::markAllOpsAsLive(solver, productFunc);
 
   if (mlir::failed(solver.initializeAndRun(productFunc))) {
     return mlir::failure();
