@@ -8,6 +8,7 @@
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStoreAnalysis.h"
+#include "Transforms/LLEQWhileToFor.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -69,6 +70,10 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
 
   auto productFunc = component.getComputeOrProductFuncOp();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
+
+  if (llvm::failed(transform::transformWhileToFor(productFunc))) {
+    llvm::report_fatal_error("while->for conversion failed");
+  }
 
   // Make sure the top level func is set to live
   auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
