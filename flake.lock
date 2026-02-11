@@ -35,13 +35,13 @@
       "locked": {
         "lastModified": 1770755995,
         "narHash": "sha256-aR8xvcXfU3vo2qgWp7pBXDkJkV3PHePqpVZ0taPHIuw=",
-        "owner": "Veridise",
+        "owner": "project-llzk",
         "repo": "llzk-lib",
         "rev": "91c7bd202c3d8257be9521f99d16c871f12e6082",
         "type": "github"
       },
       "original": {
-        "owner": "Veridise",
+        "owner": "project-llzk",
         "ref": "iangneal/analysis-tests",
         "repo": "llzk-lib",
         "type": "github"
@@ -55,13 +55,13 @@
       "locked": {
         "lastModified": 1768329036,
         "narHash": "sha256-aScxpJJ7VMDETL4hi+6Pojxb4VwKucW0VwOPCZDt53Q=",
-        "owner": "Veridise",
+        "owner": "project-llzk",
         "repo": "llzk-nix-pkgs",
         "rev": "830b084608fe510c2bd2612bf66def7cdabf7cf7",
         "type": "github"
       },
       "original": {
-        "owner": "Veridise",
+        "owner": "project-llzk",
         "ref": "main",
         "repo": "llzk-nix-pkgs",
         "type": "github"
