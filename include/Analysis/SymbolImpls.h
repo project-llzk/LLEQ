@@ -20,7 +20,8 @@ struct Uninitialized : public impl::SymbolEq<Uninitialized> {
   Uninitialized(SymbolPool &pool)
       : impl::SymbolEq<Uninitialized>{pool, SymbolKind::SK_Uninitialized} {}
   llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
-    os << u'⊥';
+    // os << u'⊥';
+    os << '*';
     return os;
   }
   unsigned hash_value() const override {

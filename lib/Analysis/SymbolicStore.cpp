@@ -81,6 +81,7 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   }
 
   auto productFunc = component.getComputeOrProductFuncOp();
+  productFunc->dumpPretty();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
 
   // Make sure the top level func is set to live
@@ -103,7 +104,7 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   //   }
   // });
 
-  markAllOpsAsLive(solver, productFunc);
+  // markAllOpsAsLive(solver, productFunc);
 
   // llzk::dataflow::markAllOpsAsLive(solver, productFunc);
 
