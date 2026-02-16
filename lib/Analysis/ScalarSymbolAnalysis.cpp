@@ -133,6 +133,9 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
             }
             return {pool.get().func_call(op->getName().getStringRef(), args)};
           });
+  if (results.empty()) {
+    return mlir::success();
+  }
   llzk::ensure(results.size() == symbols.size(),
                "unsupported: expression with multiple results");
   for (auto [result, sym] : llvm::zip(results, symbols)) {

@@ -216,11 +216,13 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         auto getIndexedLoc =
             [this](mlir::Value val) -> llvm::FailureOr<IndexedSignal> {
           // If the value immediately comes from a constraint `struct.readm`
-          if (auto read = llvm::dyn_cast<MemberReadOp>(val.getDefiningOp())) {
+          if (auto read =
+                  llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
             return {{{SignalSource::Constraint, read.getMemberName()}, {}}};
           }
-          if (auto arrRead = llvm::dyn_cast<ReadArrayOp>(val.getDefiningOp())) {
-            if (auto arr = llvm::dyn_cast<MemberReadOp>(
+          if (auto arrRead =
+                  llvm::dyn_cast_or_null<ReadArrayOp>(val.getDefiningOp())) {
+            if (auto arr = llvm::dyn_cast_or_null<MemberReadOp>(
                     arrRead.getArrRef().getDefiningOp())) {
               llvm::SmallVector<Symbol> indices;
               for (auto idx : arrRead.getIndices()) {
