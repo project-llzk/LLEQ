@@ -71,6 +71,11 @@ if __name__ == '__main__':
     error_cnt = 0
     timeout_cnt = 0
     results.sort()
+
+    # Don't include verification results that fail because alignment failed
+    successfully_aligned = {result[0].removesuffix(':align') for result in results if result[0].endswith(':align') and result[1] == 'success'}
+    results = filter(lambda result: result[0].endswith(':align') or result[0].removesuffix(':verify') in successfully_aligned, results)
+
     for _, cause, _, _ in results:
         success_cnt += 1 if cause == "success" else 0
         error_cnt += 1 if cause == "error" else 0
