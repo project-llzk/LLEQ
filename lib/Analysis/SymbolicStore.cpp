@@ -84,29 +84,14 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   productFunc->dumpPretty();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
 
-  // Make sure the top level func is set to live
-  // auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
-  //     solver.getProgramPointAfter(productFunc));
-  // (void)funcDefExec->setToLive();
+  // Pre-populate the liveness analysis so our custom analyses traverse region bodies
+  // as they are encountered rather than waiting for the liveness analysis to traverse them.
+  if (mlir::failed(llzk::dataflow::loadAndRunRequiredAnalyses(solver, productFunc))) {
+    return mlir::failure();
+  }
 
-  // For some reason, PredecessorState doesn't propagate lattice values into
-  // region control flow ops correctly
-  // productFunc.walk([this](mlir::RegionBranchOpInterface branchOp) {
-  //   // Mark the branch op as a predecessor of each of its regions
-  //   for (auto &region : branchOp->getRegions()) {
-  //     if (region.empty()) {
-  //       continue;
-  //     }
-  //     auto predecessorState =
-  //         solver.getOrCreateState<mlir::dataflow::PredecessorState>(
-  //             solver.getProgramPointBefore(&*region.op_begin()));
-  //     (void)predecessorState->join(branchOp);
-  //   }
-  // });
-
-  // markAllOpsAsLive(solver, productFunc);
-
-  // llzk::dataflow::markAllOpsAsLive(solver, productFunc);
+  solver.load<lleq::ScalarSymbolAnalysis>(*pool);
+  solver.load<lleq::SymbolicStoreAnalysis>(*pool);
 
   if (mlir::failed(solver.initializeAndRun(productFunc))) {
     return mlir::failure();

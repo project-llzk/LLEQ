@@ -38,12 +38,7 @@ class SymbolicStore {
   ValueStore *valueStore;
 
 public:
-  SymbolicStore() {
-    solver.load<mlir::dataflow::SparseConstantPropagation>();
-    solver.load<mlir::dataflow::DeadCodeAnalysis>();
-    solver.load<lleq::ScalarSymbolAnalysis>(*pool);
-    solver.load<lleq::SymbolicStoreAnalysis>(*pool);
-  }
+  SymbolicStore() {}
 
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef
