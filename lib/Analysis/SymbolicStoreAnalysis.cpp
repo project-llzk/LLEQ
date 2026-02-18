@@ -14,6 +14,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Value.h>
 #include <mlir/Interfaces/ControlFlowInterfaces.h>
 
@@ -74,6 +75,24 @@ template mlir::ChangeResult StoreLattice::_write_impl<Signal>(IndexedSignal,
                                                               Symbol);
 
 mlir::ChangeResult
+StoreLattice::copy(const mlir::dataflow::AbstractDenseLattice &other) {
+  const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
+  if (!rhs) {
+    llvm::report_fatal_error("cannot copy incomparable lattices");
+  }
+  if (!rhs->initialized || *this == *rhs) {
+    return mlir::ChangeResult::NoChange;
+  }
+
+  initPool(rhs->pool);
+  llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
+  *valueStore = *rhs->valueStore;
+  *signalStore = *rhs->signalStore;
+  initialized = true;
+  return mlir::ChangeResult::Change;
+}
+
+mlir::ChangeResult
 StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
   const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
   if (!rhs) {
@@ -84,10 +103,9 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
   }
   if (!initialized) {
     initPool(rhs->pool);
-    llzk::ensure(rhs->valueStore && rhs->signalStore,
-                 "stores not initialized!");
-    *valueStore = *rhs->valueStore;
-    *signalStore = *rhs->signalStore;
+    llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
+    // *valueStore = *rhs->valueStore;
+    // *signalStore = *rhs->signalStore;
     initialized = true;
     return mlir::ChangeResult::Change;
   }
@@ -96,22 +114,16 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
-  llvm::dbgs() << "Joining:\n";
-  for (auto [key, val] : *signalStore) {
-    llvm::dbgs() << "\t* " << key << " -> " << val << "\n";
-  }
-  llvm::dbgs() << "With:\n";
-  for (auto [key, val] : *rhs->signalStore) {
-    llvm::dbgs() << "\t* " << key << " -> " << val << "\n";
-  }
+  // llvm::dbgs() << "Joining:\n";
+  // print(llvm::dbgs());
+  // llvm::dbgs() << "With:\n";
+  // rhs->print(llvm::dbgs());
 
   valueStore->join_with(*rhs->valueStore);
   signalStore->join_with(*rhs->signalStore);
 
-  llvm::dbgs() << "Result:\n";
-  for (auto [key, val] : *signalStore) {
-    llvm::dbgs() << "\t* " << key << " -> " << val << "\n";
-  }
+  // llvm::dbgs() << "Result:\n";
+  // print(llvm::dbgs());
 
   return mlir::ChangeResult::Change;
 }
@@ -135,7 +147,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
     llvm::dbgs() << "Operation: " << *op << '\n';
   });
 
-  mlir::ChangeResult result = after->join(before);
+  mlir::ChangeResult result = after->copy(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<mlir::scf::YieldOp>([this, after](mlir::scf::YieldOp yieldOp) {
         auto afterState = getOrCreate<StoreLattice>(

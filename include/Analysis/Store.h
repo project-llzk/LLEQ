@@ -235,13 +235,13 @@ template <class T> struct Store {
   }
 
   void join_with(const Store<T> &other) {
-    if (!other.initialized) {
+    if (!initialized || !other.initialized) {
       return;
     }
-    if (!initialized) {
-      _store = other._store;
-      return;
-    }
+    // if (!initialized) {
+    //   _store = other._store;
+    //   return;
+    // }
     for (auto [key, val] : _store) {
       if (!other.contains(key) && !llvm::isa<Uninitialized>(val)) {
         _store.erase(key);
