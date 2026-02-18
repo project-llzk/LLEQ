@@ -81,12 +81,14 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   }
 
   auto productFunc = component.getComputeOrProductFuncOp();
-  productFunc->dumpPretty();
+  // productFunc->dumpPretty();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
 
-  // Pre-populate the liveness analysis so our custom analyses traverse region bodies
-  // as they are encountered rather than waiting for the liveness analysis to traverse them.
-  if (mlir::failed(llzk::dataflow::loadAndRunRequiredAnalyses(solver, productFunc))) {
+  // Pre-populate the liveness analysis so our custom analyses traverse region
+  // bodies as they are encountered rather than waiting for the liveness
+  // analysis to traverse them.
+  if (mlir::failed(
+          llzk::dataflow::loadAndRunRequiredAnalyses(solver, productFunc))) {
     return mlir::failure();
   }
 

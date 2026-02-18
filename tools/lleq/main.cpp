@@ -20,6 +20,7 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
@@ -35,6 +36,24 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
+
+  // mlir::DataFlowSolver solver;
+  // solver.load<mlir::dataflow::SparseConstantPropagation>();
+  // solver.load<mlir::dataflow::DeadCodeAnalysis>();
+  // if (mlir::failed(solver.initializeAndRun(structDef))) {
+  //   llvm::outs() << "fuck\n";
+  // }
+
+  // structDef->walk([&solver](mlir::Operation *op) {
+  //   auto preds = solver.getOrCreateState<mlir::dataflow::PredecessorState>(
+  //       solver.getProgramPointBefore(op));
+  //   llvm::dbgs() << "---\n";
+  //   op->dumpPretty();
+  //   for (auto pred : preds->getKnownPredecessors()) {
+  //     llvm::dbgs() << '\t' << pred->getName() << "\n";
+  //   }
+  // });
+
   lleq::SymbolicStore store;
   if (mlir::failed(store.build_store(structDef))) {
     llvm::report_fatal_error("symbolic store construction failed");

@@ -96,8 +96,22 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
+  llvm::dbgs() << "Joining:\n";
+  for (auto [key, val] : *signalStore) {
+    llvm::dbgs() << "\t* " << key << " -> " << val << "\n";
+  }
+  llvm::dbgs() << "With:\n";
+  for (auto [key, val] : *rhs->signalStore) {
+    llvm::dbgs() << "\t* " << key << " -> " << val << "\n";
+  }
+
   valueStore->join_with(*rhs->valueStore);
   signalStore->join_with(*rhs->signalStore);
+
+  llvm::dbgs() << "Result:\n";
+  for (auto [key, val] : *signalStore) {
+    llvm::dbgs() << "\t* " << key << " -> " << val << "\n";
+  }
 
   return mlir::ChangeResult::Change;
 }
