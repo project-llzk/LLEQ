@@ -33,16 +33,16 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1771353200,
-        "narHash": "sha256-RZKi1ZxMYcuXymGX1D89c2nwgJTxQiWgHTztci5bTPE=",
+        "lastModified": 1771361682,
+        "narHash": "sha256-kCl/Qvoe7ZgYKMM6hxunMApvW8duyUh0dpznaPhCV5s=",
         "owner": "project-llzk",
         "repo": "llzk-lib",
-        "rev": "6cabe1116f70c125746833753686e0a5eec17f2e",
+        "rev": "d3e053e40ffea1c61c1c163224a18a0b75c6c6e6",
         "type": "github"
       },
       "original": {
         "owner": "project-llzk",
-        "ref": "iangneal/analysis-tests",
+        "ref": "main",
         "repo": "llzk-lib",
         "type": "github"
       }
