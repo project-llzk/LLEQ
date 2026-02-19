@@ -11,7 +11,7 @@
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llzk/Analysis/DenseAnalysis.h>
+#include <mlir/Analysis/DataFlow/DenseAnalysis.h>
 #include <mlir/Support/TypeID.h>
 
 namespace lleq {

@@ -52,8 +52,8 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
           .Case<llzk::felt::FeltConstantOp>(
               [this](
                   llzk::felt::FeltConstantOp op) -> llvm::SmallVector<Symbol> {
-                return {pool.get().constant(
-                    mlir::DynamicAPInt{op.getValue().getSExtValue()})};
+                return {pool.get().constant(mlir::DynamicAPInt{
+                    op.getValue().getValue().getSExtValue()})};
               })
           .Case<llzk::felt::FeltBinaryOpInterface>(
               [this, operands](llzk::felt::FeltBinaryOpInterface binop)
