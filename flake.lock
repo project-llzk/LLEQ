@@ -33,16 +33,16 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1771536569,
-        "narHash": "sha256-hByZpFXfFQyQdCxdUzeabn+3o2uJdJ74Bb4Z+tA5Cdw=",
+        "lastModified": 1771540321,
+        "narHash": "sha256-XP7J1emVHCI7ffNCTLx1QNYFuUYNmvyVrr99LK+g3l0=",
         "owner": "Veridise",
         "repo": "llzk-lib",
-        "rev": "a17ca540fd55448682e1a7645d0b21eb74c2949d",
+        "rev": "6b34dd16329411baecd777a8045d25a9f9b66d22",
         "type": "github"
       },
       "original": {
         "owner": "Veridise",
-        "ref": "raghav/323-llzk-derived",
+        "ref": "raghav/product-alignment-fixes",
         "repo": "llzk-lib",
         "type": "github"
       }

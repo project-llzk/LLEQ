@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:Veridise/llzk-lib?ref=raghav/323-llzk-derived";
+      url = "github:Veridise/llzk-lib?ref=raghav/product-alignment-fixes";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";
