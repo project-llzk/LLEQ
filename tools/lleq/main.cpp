@@ -35,6 +35,7 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
+  llvm::outs() << "-- " << structDef.getSymName() << " --\n";
   lleq::SymbolicStore store;
   if (mlir::failed(store.build_store(structDef))) {
     llvm::report_fatal_error("symbolic store construction failed");
