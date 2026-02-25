@@ -4,6 +4,7 @@
  */
 
 #include "Analysis/SymbolicStore.h"
+#include "Transforms/LLEQWhileToFor.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
@@ -27,6 +28,7 @@
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/PatternMatch.h>
 #include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
@@ -35,6 +37,7 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
+  llvm::outs() << "-- " << structDef.getSymName() << " --\n";
   lleq::SymbolicStore store;
   if (mlir::failed(store.build_store(structDef))) {
     llvm::report_fatal_error("symbolic store construction failed");

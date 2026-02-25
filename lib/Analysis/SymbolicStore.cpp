@@ -8,6 +8,7 @@
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStoreAnalysis.h"
+#include "Transforms/LLEQWhileToFor.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -53,6 +54,19 @@ void SymbolicStore::dump(llvm::raw_ostream &os) const {
   }
 }
 
+void markAllOpsAsLive(mlir::DataFlowSolver &solver, mlir::Operation *top) {
+  for (mlir::Region &region : top->getRegions()) {
+    for (mlir::Block &block : region) {
+      mlir::ProgramPoint *point = solver.getProgramPointBefore(&block);
+      (void)solver.getOrCreateState<mlir::dataflow::Executable>(point)
+          ->setToLive();
+      for (mlir::Operation &oper : block) {
+        markAllOpsAsLive(solver, &oper);
+      }
+    }
+  }
+}
+
 mlir::LogicalResult
 SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   component = structDef;
@@ -67,8 +81,12 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
     }
   }
 
-  auto productFunc = component.getComputeOrProductFuncOp();
-  llzk::ensure(productFunc.isStructProduct(), "alignment failed");
+  auto productFunc = component.getProductFuncOp();
+  llzk::ensure(productFunc, "alignment failed");
+
+  if (llvm::failed(transform::transformWhileToFor(productFunc))) {
+    llvm::report_fatal_error("while->for conversion failed");
+  }
 
   // Make sure the top level func is set to live
   auto funcDefExec = solver.getOrCreateState<mlir::dataflow::Executable>(
@@ -90,7 +108,7 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
     }
   });
 
-  llzk::dataflow::markAllOpsAsLive(solver, productFunc);
+  markAllOpsAsLive(solver, productFunc);
 
   if (mlir::failed(solver.initializeAndRun(productFunc))) {
     return mlir::failure();

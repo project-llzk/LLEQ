@@ -7,6 +7,7 @@
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
+#include <llvm/ADT/SlowDynamicAPInt.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
@@ -14,6 +15,7 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
@@ -52,8 +54,8 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
           .Case<llzk::felt::FeltConstantOp>(
               [this](
                   llzk::felt::FeltConstantOp op) -> llvm::SmallVector<Symbol> {
-                return {pool.get().constant(
-                    mlir::DynamicAPInt{op.getValue().getSExtValue()})};
+                auto value = op.getValue().getValue();
+                return {pool.get().constant(llzk::toDynamicAPInt(value))};
               })
           .Case<llzk::felt::FeltBinaryOpInterface>(
               [this, operands](llzk::felt::FeltBinaryOpInterface binop)
@@ -133,6 +135,9 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
             }
             return {pool.get().func_call(op->getName().getStringRef(), args)};
           });
+  if (results.empty()) {
+    return mlir::success();
+  }
   llzk::ensure(results.size() == symbols.size(),
                "unsupported: expression with multiple results");
   for (auto [result, sym] : llvm::zip(results, symbols)) {
