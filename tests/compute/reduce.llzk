@@ -26,4 +26,4 @@ module attributes {llzk.lang = "llzk"} {
     }
 }
 
-// CHECK: sum_w: felt.add(?1, %arg0[?0])
+// CHECK: sum_w: ?2

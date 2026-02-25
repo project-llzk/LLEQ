@@ -128,6 +128,16 @@ public:
     lattice->initPool(&pool);
   }
 
+  void
+  visitRegionBranchControlFlowTransfer(mlir::RegionBranchOpInterface branch,
+                                       std::optional<unsigned int> regionFrom,
+                                       std::optional<unsigned int> regionTo,
+                                       const StoreLattice &before,
+                                       StoreLattice *after) override {
+
+    // TODO: Figure out why disabling this fixes some things
+  }
+
   // Looks up the symbol SignalValueAnalysis computed for the given SSA value,
   // and subscribes to any updates to the symbol
   Symbol getBoundSymbol(mlir::Value value);
