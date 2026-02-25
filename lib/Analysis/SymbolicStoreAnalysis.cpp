@@ -8,6 +8,7 @@
 #include "Analysis/Store.h"
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Casting.h>
 #include <llvm/Support/Debug.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
@@ -215,6 +216,8 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
       .Case<EmitEqualityOp>([this, after, &result](EmitEqualityOp eq) {
         auto getIndexedLoc =
             [this](mlir::Value val) -> llvm::FailureOr<IndexedSignal> {
+          if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(val)) {
+          }
           // If the value immediately comes from a constraint `struct.readm`
           if (auto read =
                   llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
