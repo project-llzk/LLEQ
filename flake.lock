@@ -55,13 +55,13 @@
       "locked": {
         "lastModified": 1768329036,
         "narHash": "sha256-aScxpJJ7VMDETL4hi+6Pojxb4VwKucW0VwOPCZDt53Q=",
-        "owner": "Veridise",
+        "owner": "project-llzk",
         "repo": "llzk-nix-pkgs",
         "rev": "830b084608fe510c2bd2612bf66def7cdabf7cf7",
         "type": "github"
       },
       "original": {
-        "owner": "Veridise",
+        "owner": "project-llzk",
         "ref": "main",
         "repo": "llzk-nix-pkgs",
         "type": "github"

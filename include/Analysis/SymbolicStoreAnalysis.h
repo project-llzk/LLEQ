@@ -96,6 +96,8 @@ public:
   mlir::ChangeResult
   join(const mlir::dataflow::AbstractDenseLattice &other) override;
 
+  mlir::ChangeResult copy(const mlir::dataflow::AbstractDenseLattice &other);
+
   bool operator==(const StoreLattice &other) const {
     return *valueStore == *other.valueStore &&
            *signalStore == *other.signalStore;

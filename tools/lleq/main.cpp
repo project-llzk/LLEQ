@@ -4,7 +4,6 @@
  */
 
 #include "Analysis/SymbolicStore.h"
-#include "Transforms/LLEQWhileToFor.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
@@ -21,6 +20,7 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>

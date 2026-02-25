@@ -15,6 +15,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Value.h>
 #include <mlir/Interfaces/ControlFlowInterfaces.h>
 
@@ -52,7 +53,9 @@ void StoreLattice::print(llvm::raw_ostream &os) const {
 Symbol SymbolicStoreAnalysis::getBoundSymbol(mlir::Value value) {
   ScalarLattice *lattice = getOrCreate<ScalarLattice>(value);
   lattice->useDefSubscribe(this);
-  return lattice->getValue();
+  auto latticeElem = lattice->getValue();
+  latticeElem.initPool(&pool);
+  return latticeElem;
 }
 
 template <class T>
@@ -73,18 +76,41 @@ template mlir::ChangeResult StoreLattice::_write_impl<Signal>(IndexedSignal,
                                                               Symbol);
 
 mlir::ChangeResult
+StoreLattice::copy(const mlir::dataflow::AbstractDenseLattice &other) {
+  const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
+  if (!rhs) {
+    llvm::report_fatal_error("cannot copy incomparable lattices");
+  }
+  if (!rhs->initialized || *this == *rhs) {
+    return mlir::ChangeResult::NoChange;
+  }
+
+  initPool(rhs->pool);
+  llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
+  *valueStore = *rhs->valueStore;
+  *signalStore = *rhs->signalStore;
+  initialized = true;
+  return mlir::ChangeResult::Change;
+}
+
+mlir::ChangeResult
 StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
+
   const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
   if (!rhs) {
     llvm::report_fatal_error("cannot join incomparable lattices");
   }
   if (!rhs->initialized) {
+    if (initialized) {
+      valueStore->clear();
+      signalStore->clear();
+      return mlir::ChangeResult::Change;
+    }
     return mlir::ChangeResult::NoChange;
   }
   if (!initialized) {
     initPool(rhs->pool);
-    llzk::ensure(rhs->valueStore && rhs->signalStore,
-                 "stores not initialized!");
+    llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
     *valueStore = *rhs->valueStore;
     *signalStore = *rhs->signalStore;
     initialized = true;
@@ -120,7 +146,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
     llvm::dbgs() << "Operation: " << *op << '\n';
   });
 
-  mlir::ChangeResult result = after->join(before);
+  mlir::ChangeResult result = after->copy(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<mlir::scf::YieldOp>([this, after](mlir::scf::YieldOp yieldOp) {
         auto afterState = getOrCreate<StoreLattice>(
@@ -248,6 +274,10 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           propagateIfChanged(lat, lat->join(rightSym));
         } else if (llvm::succeeded(rightLoc)) {
           auto leftSym = getBoundSymbol(eq.getLhs());
+          // llvm::dbgs() << "Bound symbol is: " << leftSym << "\n";
+          // llvm::dbgs() << "Writing to loc: " << *rightLoc << "\n";
+          // llvm::dbgs() << "Before writing, store is: \n";
+          // after->print(llvm::dbgs());
           result |= after->write(*rightLoc, leftSym);
           // Update the ScalarSymbolAnalysis with the value for rightLoc
           auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
