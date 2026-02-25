@@ -94,18 +94,24 @@ StoreLattice::copy(const mlir::dataflow::AbstractDenseLattice &other) {
 
 mlir::ChangeResult
 StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
+
   const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
   if (!rhs) {
     llvm::report_fatal_error("cannot join incomparable lattices");
   }
   if (!rhs->initialized) {
+    if (initialized) {
+      valueStore->clear();
+      signalStore->clear();
+      return mlir::ChangeResult::Change;
+    }
     return mlir::ChangeResult::NoChange;
   }
   if (!initialized) {
     initPool(rhs->pool);
     llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
-    // *valueStore = *rhs->valueStore;
-    // *signalStore = *rhs->signalStore;
+    *valueStore = *rhs->valueStore;
+    *signalStore = *rhs->signalStore;
     initialized = true;
     return mlir::ChangeResult::Change;
   }
@@ -114,16 +120,8 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
-  // llvm::dbgs() << "Joining:\n";
-  // print(llvm::dbgs());
-  // llvm::dbgs() << "With:\n";
-  // rhs->print(llvm::dbgs());
-
   valueStore->join_with(*rhs->valueStore);
   signalStore->join_with(*rhs->signalStore);
-
-  // llvm::dbgs() << "Result:\n";
-  // print(llvm::dbgs());
 
   return mlir::ChangeResult::Change;
 }

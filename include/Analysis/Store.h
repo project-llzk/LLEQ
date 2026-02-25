@@ -255,6 +255,8 @@ template <class T> struct Store {
     }
   }
 
+  void clear() { _store.clear(); }
+
 private:
   llvm::DenseMap<IndexedLocation<T>, Symbol> _store;
   std::reference_wrapper<SymbolPool> _pool;

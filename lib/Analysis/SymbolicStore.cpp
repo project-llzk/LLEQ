@@ -80,7 +80,7 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
     }
   }
 
-  auto productFunc = component.getComputeOrProductFuncOp();
+  auto productFunc = component.getProductFuncOp();
   // productFunc->dumpPretty();
   llzk::ensure(productFunc.isStructProduct(), "alignment failed");
 

@@ -128,34 +128,6 @@ public:
     lattice->initPool(&pool);
   }
 
-  void
-  visitRegionBranchControlFlowTransfer(mlir::RegionBranchOpInterface branch,
-                                       std::optional<unsigned int> regionFrom,
-                                       std::optional<unsigned int> regionTo,
-                                       const StoreLattice &before,
-                                       StoreLattice *after) override {
-
-    // llvm::dbgs() << "Branch: " << branch << "\n";
-    // llvm::dbgs() << "before =\n";
-    // before.print(llvm::dbgs());
-
-    llvm::dbgs() << "Predecessor of "
-                 << *mlir::dyn_cast<mlir::ProgramPoint *>(after->anchor)
-                 << " is "
-                 << *mlir::dyn_cast<mlir::ProgramPoint *>(before.anchor)
-                 << "\n";
-
-    llvm::dbgs() << "After state is currently: " << after->initialized << "\n";
-
-    // llvm::dbgs() << "I want to propagate:\n";
-    // before.print(llvm::dbgs());
-
-    DenseForwardDataFlowAnalysis::visitRegionBranchControlFlowTransfer(
-        branch, regionFrom, regionTo, before, after);
-    // llvm::dbgs() << "after =\n";
-    // after->print(llvm::dbgs());
-  }
-
   // Looks up the symbol SignalValueAnalysis computed for the given SSA value,
   // and subscribes to any updates to the symbol
   Symbol getBoundSymbol(mlir::Value value);
