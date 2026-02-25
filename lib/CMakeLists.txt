@@ -16,5 +16,5 @@ target_sources(LLEQ PRIVATE
     ${Analysis_SRC}
     ${Transforms_SRC}
     )
-target_link_libraries(LLEQ PUBLIC LLEQHeaders LLZKTransforms)
+target_link_libraries(LLEQ PUBLIC LLEQHeaders LLZKTransforms LLZKAnalysis LLZKDialect LLZKTransforms MLIRIR)
 install(TARGETS LLEQ)
