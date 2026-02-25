@@ -11,6 +11,7 @@
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
+#include <memory>
 #include <mlir/Analysis/DataFlow/DenseAnalysis.h>
 #include <mlir/Support/TypeID.h>
 
@@ -26,6 +27,7 @@ class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
   friend class SymbolicStoreAnalysis;
   std::unique_ptr<ValueStore> valueStore;
   std::unique_ptr<SignalStore> signalStore;
+  std::unique_ptr<PodStore> podStore;
 
   SymbolPool *pool = nullptr;
   bool initialized = false;

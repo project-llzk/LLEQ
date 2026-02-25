@@ -17,6 +17,7 @@
 #include <llvm/Support/Format.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Util/ErrorHelper.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Value.h>
 #include <mlir/Support/LLVM.h>
@@ -77,6 +78,32 @@ Symbol SymbolPool::func_call(llvm::StringRef name,
     return alloc.new_object<Uninitialized>(*this);
   }
   return alloc.new_object<OpCall>(*this, name, args);
+}
+
+Symbol SymbolPool::pod(const llvm::DenseMap<llvm::StringRef, Symbol> &entries) {
+  if (llvm::any_of(entries,
+                   [](auto e) { return llvm::isa<Uninitialized>(e.second); })) {
+    return alloc.new_object<Uninitialized>(*this);
+  }
+
+  return alloc.new_object<Pod>(*this, entries);
+}
+
+Symbol SymbolPool::pod(llvm::ArrayRef<llvm::StringRef> keys,
+                       llvm::ArrayRef<Symbol> values) {
+  llzk::ensure(keys.size() == values.size(),
+               "differing number of keys and values in pod!");
+
+  llvm::DenseMap<llvm::StringRef, Symbol> entries;
+  for (auto [k, v] : llvm::zip(keys, values)) {
+    entries.insert({k, v});
+  }
+  return pod(entries);
+}
+
+Symbol SymbolPool::pod() {
+  llvm::DenseMap<llvm::StringRef, Symbol> entries;
+  return pod(entries);
 }
 
 std::string SymbolPool::_gen_name(mlir::Value value) const {

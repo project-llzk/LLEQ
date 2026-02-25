@@ -31,7 +31,10 @@ struct SymbolBase {
     // (symbolic) indices
     SK_Index,
     // Also encodes basic arithmetic, e.g. as "felt.add(sym1, sym2)"
-    SK_Call
+    SK_Call,
+    // Represents a plain-old-data object (i.e. a !pod.type) potentially
+    // containing multiple symbols
+    SK_Pod
   };
   SymbolKind kind;
 
@@ -106,6 +109,12 @@ public:
   Symbol index(mlir::Value signal, llvm::ArrayRef<Symbol> ns);
   // Handles operations like function calls and arithmetic
   Symbol func_call(llvm::StringRef name, llvm::ArrayRef<Symbol> args);
+  // A plain-old-data object (!pod.type)
+  Symbol pod(llvm::ArrayRef<llvm::StringRef> keys,
+             llvm::ArrayRef<Symbol> values);
+  Symbol pod(const llvm::DenseMap<llvm::StringRef, Symbol> &entries);
+  // An empty POD
+  Symbol pod();
 };
 
 llvm::raw_ostream &operator<<(llvm::raw_ostream &os, lleq::Symbol s);

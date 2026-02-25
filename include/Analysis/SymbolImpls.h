@@ -8,6 +8,8 @@
 #include "Analysis/SymbolExpr.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
+#include <llvm/ADT/Hashing.h>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/raw_ostream.h>
 #include <mlir/IR/BuiltinAttributes.h>
@@ -160,4 +162,36 @@ struct OpCall : public impl::SymbolEq<OpCall> {
     return sym->kind == SymbolKind::SK_Call;
   }
 };
+
+struct Pod : public impl::SymbolEq<Pod> {
+  llvm::DenseMap<llvm::StringRef, Symbol> entries;
+
+  Pod(SymbolPool &pool, llvm::DenseMap<llvm::StringRef, Symbol> entries)
+      : impl::SymbolEq<Pod>{pool, SymbolKind::SK_Pod}, entries{entries} {}
+
+  llvm::raw_ostream &print(llvm::raw_ostream &os) const override {
+    llvm::ListSeparator sep;
+    os << '{';
+    for (const auto [key, val] : entries) {
+      os << sep << key << ": ";
+      val->print(os);
+    }
+    os << '}';
+    return os;
+  }
+
+  unsigned hash_value() const override {
+    return llvm::hash_combine_range(entries.begin(), entries.end());
+  }
+
+  bool operator==(const Pod &other) const { return entries == other.entries; }
+
+  static bool classof(const impl::SymbolBase *sym) {
+    return sym->kind == SymbolKind::SK_Pod;
+  }
+
+  // Could override canEqual here but there's probably no point since a POD is
+  // never going to be used as an index
+};
+
 } // namespace lleq

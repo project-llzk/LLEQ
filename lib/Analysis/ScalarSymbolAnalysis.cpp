@@ -13,6 +13,7 @@
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
+#include <llzk/Dialect/POD/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>

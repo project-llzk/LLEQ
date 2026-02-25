@@ -14,6 +14,8 @@
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/Twine.h>
 #include <llvm/Support/Debug.h>
+#include <llvm/Support/raw_ostream.h>
+#include <mlir/IR/OpImplementation.h>
 
 namespace lleq {
 
@@ -66,13 +68,24 @@ struct Signal {
   }
 };
 
-inline unsigned hash_value(Signal sig) {
-  return llvm::hash_value(sig.name);
-  // return llvm::hash_combine(llvm::hash_value(sig.name),
-  //                           llvm::hash_value(sig._type));
-}
+inline unsigned hash_value(Signal sig) { return llvm::hash_value(sig.name); }
 
 using IndexedSignal = IndexedLocation<Signal>;
+
+struct PodName {
+  mlir::Value instance;
+  llvm::StringRef field;
+
+  bool operator==(const PodName &other) const = default;
+  operator std::string() const {
+    std::string str;
+    llvm::raw_string_ostream(str) << instance << "[@" << field << "]";
+    return str;
+  }
+};
+
+using IndexedPod = IndexedLocation<PodName>;
+
 } // namespace lleq
 
 namespace llvm {
@@ -89,6 +102,16 @@ template <> struct DenseMapInfo<lleq::Signal> {
   static inline auto getTombstoneKey() {
     return lleq::Signal{lleq::SignalSource::Witness,
                         DenseMapInfo<StringRef>::getTombstoneKey()};
+  }
+  static bool isEqual(auto LHS, auto RHS) { return LHS == RHS; }
+};
+
+template <> struct DenseMapInfo<lleq::PodName> {
+  static inline auto getEmptyKey() {
+    return lleq::PodName{DenseMapInfo<mlir::Value>::getEmptyKey(), ""};
+  }
+  static inline auto getTombstoneKey() {
+    return lleq::PodName{DenseMapInfo<mlir::Value>::getTombstoneKey(), ""};
   }
   static bool isEqual(auto LHS, auto RHS) { return LHS == RHS; }
 };
@@ -118,6 +141,10 @@ struct DenseMapInfo<lleq::IndexedValue>
 template <>
 struct DenseMapInfo<lleq::IndexedSignal>
     : public IndexedLocationInfo<lleq::Signal> {};
+
+template <>
+struct DenseMapInfo<lleq::IndexedPod>
+    : public IndexedLocationInfo<lleq::PodName> {};
 
 } // namespace llvm
 
@@ -250,5 +277,6 @@ private:
 
 using SignalStore = Store<Signal>;
 using ValueStore = Store<mlir::Value>;
+using PodStore = Store<PodName>;
 
 } // namespace lleq
