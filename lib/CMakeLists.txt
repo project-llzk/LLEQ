@@ -10,7 +10,8 @@ set(Analysis_SRC
     Analysis/SymbolicStoreAnalysis.cpp)
 
 set(Transforms_SRC
-    Transforms/LLEQWhileToFor.cpp)
+    Transforms/LLEQWhileToFor.cpp
+    Transforms/LLEQIfToIfElse.cpp)
 
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}

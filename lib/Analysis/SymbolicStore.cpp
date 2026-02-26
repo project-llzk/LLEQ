@@ -8,6 +8,7 @@
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStoreAnalysis.h"
+#include "Transforms/LLEQIfToIfElse.h"
 #include "Transforms/LLEQWhileToFor.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
@@ -86,6 +87,9 @@ SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
 
   if (llvm::failed(transform::transformWhileToFor(productFunc))) {
     llvm::report_fatal_error("while->for conversion failed");
+  }
+  if (llvm::failed(transform::transformIfToIfElse(productFunc))) {
+    llvm::report_fatal_error("default else conversion failed");
   }
 
   // Pre-populate the liveness analysis so our custom analyses traverse region
