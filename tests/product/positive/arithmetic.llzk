@@ -1,6 +1,6 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {llzk.lang = "llzk"} {
+module attributes {llzk.lang} {
     struct.def @A {
         struct.member @sum : !felt.type
         function.def @compute(%a: !felt.type, %b: !felt.type) -> !struct.type<@A> {

@@ -1,6 +1,6 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {llzk.lang = "llzk"} {
+module attributes {llzk.lang} {
     struct.def @A {
         struct.member @x : !felt.type
         struct.member @y : !felt.type

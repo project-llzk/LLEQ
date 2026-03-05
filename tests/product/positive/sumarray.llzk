@@ -1,6 +1,6 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {llzk.lang = "llzk"} {
+module attributes {llzk.lang} {
     struct.def @SumArr<[@N]> {
         struct.member @sum : !array.type<@N x !felt.type>
 

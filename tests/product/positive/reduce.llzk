@@ -2,7 +2,7 @@
 // XFAIL: *
 // Should pass once loop fusion is merged
 
-module attributes {llzk.lang = "llzk"} {
+module attributes {llzk.lang} {
     struct.def @Reduce<[@N]> {
         struct.member @sum : !felt.type
 
