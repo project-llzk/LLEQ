@@ -89,11 +89,11 @@ public:
   operator Symbol() const { return sym; }
 };
 
-class ScalarLattice : public mlir::dataflow::AbstractSparseLattice {
+class ScalarLattice : public mlir::dataflow::Lattice<SymbolValue> {
   SymbolValue value;
 
 public:
-  using AbstractSparseLattice::AbstractSparseLattice;
+  using Lattice::Lattice;
 
   mlir::Value getAnchor() const { return mlir::cast<mlir::Value>(anchor); }
 

@@ -20,6 +20,7 @@
 #include <mlir/IR/IRMapping.h>
 #include <mlir/IR/PatternMatch.h>
 
+#define DEBUG_TYPE "lleq-while-to-for"
 namespace lleq::transform {
 
 llvm::LogicalResult transformWhileToFor(llzk::function::FuncDefOp funcDef) {
@@ -86,7 +87,7 @@ llvm::FailureOr<mlir::scf::ForOp>
 transformWhileToFor(mlir::scf::WhileOp op, mlir::RewriterBase &rewriter) {
   ForOpInfo info = parseInfo(op);
   if (!info.success()) {
-    llvm::dbgs() << "[failed to parse info]\n";
+    LLVM_DEBUG(llvm::dbgs() << "[failed to parse info]\n");
     return llvm::failure();
   }
 
@@ -119,16 +120,6 @@ transformWhileToFor(mlir::scf::WhileOp op, mlir::RewriterBase &rewriter) {
 
   mapping.map(*info.ivar, forOp.getInductionVar());
   rewriter.setInsertionPointToStart(forOp.getBody());
-
-  // Cast all the iter_args to felt for use inside the for op
-  // auto indexTy = mlir::IndexType::get(rewriter.getContext());
-  // for (auto arg : forOp.getRegionIterArgs()) {
-  //   mapping.map(
-  //       arg,
-  //       rewriter.create<llzk::cast::IntToFeltOp>(forOp->getLoc(), indexTy,
-  //       arg)
-  //           .getResult());
-  // }
 
   auto *whileBody = op.getAfterBody();
   for (size_t i = 0; i < whileBody->getNumArguments(); i++) {

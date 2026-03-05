@@ -44,19 +44,6 @@
 
 using namespace lleq;
 
-void markAllOpsAsLive(mlir::DataFlowSolver &solver, mlir::Operation *top) {
-  for (mlir::Region &region : top->getRegions()) {
-    for (mlir::Block &block : region) {
-      mlir::ProgramPoint *point = solver.getProgramPointBefore(&block);
-      (void)solver.getOrCreateState<mlir::dataflow::Executable>(point)
-          ->setToLive();
-      for (mlir::Operation &oper : block) {
-        markAllOpsAsLive(solver, &oper);
-      }
-    }
-  }
-}
-
 void SymbolicStore::dump(llvm::raw_ostream &os) const {
   if (!signalStore) {
     os << "(null)\n";

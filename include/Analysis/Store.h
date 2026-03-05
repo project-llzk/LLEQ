@@ -172,11 +172,6 @@ template <class T> struct Store {
     }
 
     if (mode == WriteMode::HavocAliases) {
-      // llvm::dbgs() << "Store before havoc:\n";
-      // for (auto [key, val] : _store) {
-      //   llvm::dbgs() << key << " -> " << val << "\n";
-      // }
-      // llvm::dbgs() << "Checking for aliases to " << ref << "\n";
       // Start by clobbering any possible aliases
       llvm::SmallVector<IndexedLocation<T>> keys;
       keys.reserve(_store.size());
@@ -184,9 +179,7 @@ template <class T> struct Store {
         keys.push_back(key);
       }
       for (auto key : keys) {
-        // llvm::dbgs() << "\t[checking key " << key << "]\n";
         if (ref.canAlias(key)) {
-          // llvm::dbgs() << "\tAliasable, havocing...\n";
           _store[key] = _pool.get().fresh_unknown();
         }
       }
@@ -238,10 +231,7 @@ template <class T> struct Store {
     if (!initialized || !other.initialized) {
       return;
     }
-    // if (!initialized) {
-    //   _store = other._store;
-    //   return;
-    // }
+
     for (auto [key, val] : _store) {
       if (!other.contains(key) && !llvm::isa<Uninitialized>(val)) {
         _store.erase(key);
