@@ -12,6 +12,7 @@
 #include <concepts>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVectorExtras.h>
+#include <llvm/ADT/Twine.h>
 #include <llvm/Support/Debug.h>
 
 namespace lleq {
@@ -52,8 +53,26 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
 
 // Indexing into an ordinary MLIR value
 using IndexedValue = IndexedLocation<mlir::Value>;
+
 // Indexing into a struct signal (either fieldName or blockArgIndex)
-using IndexedSignal = IndexedLocation<llvm::StringRef>;
+enum class SignalSource { Witness, Constraint };
+struct Signal {
+  SignalSource source; // compute or constrain
+  llvm::StringRef name;
+  bool operator==(const Signal &other) const = default;
+  operator std::string() const {
+    llvm::Twine twine = name;
+    return twine.concat(source == SignalSource::Witness ? "_w" : "_c").str();
+  }
+};
+
+inline unsigned hash_value(Signal sig) {
+  return llvm::hash_value(sig.name);
+  // return llvm::hash_combine(llvm::hash_value(sig.name),
+  //                           llvm::hash_value(sig._type));
+}
+
+using IndexedSignal = IndexedLocation<Signal>;
 } // namespace lleq
 
 namespace llvm {
@@ -61,6 +80,18 @@ namespace llvm {
 inline unsigned hash_value(mlir::Value val) {
   return llvm::hash_value(val.getAsOpaquePointer());
 }
+
+template <> struct DenseMapInfo<lleq::Signal> {
+  static inline auto getEmptyKey() {
+    return lleq::Signal{lleq::SignalSource::Witness,
+                        DenseMapInfo<StringRef>::getEmptyKey()};
+  }
+  static inline auto getTombstoneKey() {
+    return lleq::Signal{lleq::SignalSource::Witness,
+                        DenseMapInfo<StringRef>::getTombstoneKey()};
+  }
+  static bool isEqual(auto LHS, auto RHS) { return LHS == RHS; }
+};
 
 template <std::equality_comparable T> struct IndexedLocationInfo {
   static inline lleq::IndexedLocation<T> getEmptyKey() {
@@ -86,7 +117,7 @@ struct DenseMapInfo<lleq::IndexedValue>
 
 template <>
 struct DenseMapInfo<lleq::IndexedSignal>
-    : public IndexedLocationInfo<llvm::StringRef> {};
+    : public IndexedLocationInfo<lleq::Signal> {};
 
 } // namespace llvm
 
@@ -109,6 +140,9 @@ enum class WriteMode { OverwriteExact, AntiUnify, HavocAliases };
 /// Lightweight wrapper around a DenseMap<Ref<T>, Symbol> that provides some
 /// convenience methods
 template <class T> struct Store {
+  // Whether this store has ever been written to
+  bool initialized = false;
+
   // Support iterating over the underlying store
   auto begin() const { return _store.begin(); }
   auto end() const { return _store.end(); }
@@ -132,13 +166,19 @@ template <class T> struct Store {
   // (overwrite vs. anti-unify)
   Symbol write(const IndexedLocation<T> &ref, Symbol val,
                WriteMode mode = WriteMode::OverwriteExact) {
+    initialized = true;
     if (&val->pool != &_pool.get()) {
       val = _pool.get().copy(val);
     }
 
     if (mode == WriteMode::HavocAliases) {
       // Start by clobbering any possible aliases
-      for (auto [key, old] : _store) {
+      llvm::SmallVector<IndexedLocation<T>> keys;
+      keys.reserve(_store.size());
+      for (auto [key, _] : _store) {
+        keys.push_back(key);
+      }
+      for (auto key : keys) {
         if (ref.canAlias(key)) {
           _store[key] = _pool.get().fresh_unknown();
         }
@@ -171,12 +211,6 @@ template <class T> struct Store {
     return cloned;
   }
 
-  // Widen to include symbols from another store
-  void widen(const Store<T> &other) {
-    // TODO: update when _join_stores works in-place
-    *this = _join_stores(*this, other, _pool);
-  }
-
   bool operator==(const Store<T> &other) const {
     for (auto [ref, val] : _store) {
       if (!other.contains(ref) || *other.at(ref) != *val) {
@@ -194,9 +228,13 @@ template <class T> struct Store {
   }
 
   void join_with(const Store<T> &other) {
+    if (!initialized || !other.initialized) {
+      return;
+    }
+
     for (auto [key, val] : _store) {
       if (!other.contains(key) && !llvm::isa<Uninitialized>(val)) {
-        write(key, _pool.get().fresh_unknown());
+        _store.erase(key);
       } else if (other.canContain(key)) {
         auto aliasedEntries = llvm::filter_to_vector(
             other, [key](auto entry) { return key.canAlias(entry.first); });
@@ -207,23 +245,14 @@ template <class T> struct Store {
     }
   }
 
+  void clear() { _store.clear(); }
+
 private:
   llvm::DenseMap<IndexedLocation<T>, Symbol> _store;
   std::reference_wrapper<SymbolPool> _pool;
 };
 
-using SignalStore = Store<llvm::StringRef>;
+using SignalStore = Store<Signal>;
 using ValueStore = Store<mlir::Value>;
-
-template <class T>
-void _join_stores_simple(Store<T> &a, const Store<T> &b, SymbolPool &pool) {
-  for (auto [key, val] : a) {
-    if (!b.contains(key) && !llvm::isa<Uninitialized>(val)) {
-      a.write(key, pool.fresh_unknown());
-    } else if (b.contains(key)) {
-      a.write(key, b.at(key), WriteMode::AntiUnify);
-    }
-  }
-}
 
 } // namespace lleq

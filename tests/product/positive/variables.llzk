@@ -1,0 +1,41 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
+module attributes {llzk.lang} {
+    struct.def @A {
+        struct.member @x : !felt.type
+        struct.member @y : !felt.type
+        function.def @compute(%a: !felt.type, %b: !felt.type) -> !struct.type<@A> {
+            %self = struct.new : <@A>
+            // x = a * (a + b)
+            %0 = felt.add %a, %b
+            %1 = felt.mul %a, %0
+            struct.writem %self[@x] = %1 : !struct.type<@A>, !felt.type
+            
+            // y = x * x
+            %2 = struct.readm %self[@x] : !struct.type<@A>, !felt.type
+            %3 = felt.mul %2, %2
+            struct.writem %self[@y] = %3 : !struct.type<@A>, !felt.type
+            function.return %self : !struct.type<@A>
+        }
+
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type) {
+            // assert x == a * (a + b)
+            %0 = felt.add %a, %b
+            %1 = felt.mul %a, %0
+            %x = struct.readm %self[@x] : !struct.type<@A>, !felt.type
+            constrain.eq %x, %1 : !felt.type
+
+            // assert y == x * x
+            %2 = felt.mul %x, %x
+            %y = struct.readm %self[@y] : !struct.type<@A>, !felt.type
+            constrain.eq %2, %y : !felt.type
+
+            function.return
+        }
+    }
+}
+
+// CHECK-DAG: x_w: felt.mul(%arg0, felt.add(%arg0, %arg1))
+// CHECK-DAG: y_w: felt.mul(felt.mul(%arg0, felt.add(%arg0, %arg1)), felt.mul(%arg0, felt.add(%arg0, %arg1)))
+// CHECK-DAG: x_c: felt.mul(%arg0, felt.add(%arg0, %arg1))
+// CHECK-DAG: y_c: felt.mul(felt.mul(%arg0, felt.add(%arg0, %arg1)), felt.mul(%arg0, felt.add(%arg0, %arg1)))

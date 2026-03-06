@@ -1,7 +1,7 @@
 # Based on the LLZK flake
 {
   inputs = {
-    llzk-pkgs.url = "github:Veridise/llzk-nix-pkgs?ref=main";
+    llzk-pkgs.url = "github:project-llzk/llzk-nix-pkgs?ref=main";
 
     nixpkgs = {
       # url = "github:NixOS/nixpkgs";
@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:Veridise/llzk-lib?ref=main";
+      url = "github:project-llzk/llzk-lib?ref=main";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";
@@ -34,7 +34,9 @@
       overlays.default = final: prev: {
 
         # Default lleq build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
-        lleq = final.callPackage ./nix/lleq.nix { clang = final.clang_20; }; 
+        lleq = (final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk-debug; mlir = final.mlir-debug; }).overrideAttrs(attr: {
+          cmakeBuildType = "Debug";
+        });
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.
         # Mostly useful for development and CI
         lleqClang = (final.lleq.override { stdenv = final.clangStdenv; llzk = final.llzk; mlir = final.mlir; }).overrideAttrs(attrs: {

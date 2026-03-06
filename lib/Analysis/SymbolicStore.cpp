@@ -8,6 +8,8 @@
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStoreAnalysis.h"
+#include "Transforms/LLEQIfToIfElse.h"
+#include "Transforms/LLEQWhileToFor.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -24,12 +26,17 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
+#include <llzk/Util/ErrorHelper.h>
+#include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/BlockSupport.h>
 #include <mlir/IR/BuiltinAttributes.h>
+#include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Interfaces/ControlFlowInterfaces.h>
 #include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LLVM.h>
 
@@ -51,14 +58,43 @@ void SymbolicStore::dump(llvm::raw_ostream &os) const {
 mlir::LogicalResult
 SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
   component = structDef;
-  auto computeFunc = component.getComputeFuncOp();
-  llzk::dataflow::markAllOpsAsLive(solver, computeFunc);
 
-  if (mlir::failed(solver.initializeAndRun(computeFunc))) {
+  if (component.getComputeFuncOp() != nullptr) {
+    // Make sure we work over a product program
+    mlir::SymbolTableCollection tables;
+    llzk::LightweightSignalEquivalenceAnalysis equivalence{component};
+
+    if (mlir::failed(llzk::alignStartingAt(component, tables, equivalence))) {
+      return mlir::failure();
+    }
+  }
+
+  auto productFunc = component.getProductFuncOp();
+  llzk::ensure(productFunc, "alignment failed");
+
+  if (llvm::failed(transform::transformWhileToFor(productFunc))) {
+    llvm::report_fatal_error("while->for conversion failed");
+  }
+  if (llvm::failed(transform::transformIfToIfElse(productFunc))) {
+    llvm::report_fatal_error("default else conversion failed");
+  }
+
+  // Pre-populate the liveness analysis so our custom analyses traverse region
+  // bodies as they are encountered rather than waiting for the liveness
+  // analysis to traverse them.
+  if (mlir::failed(
+          llzk::dataflow::loadAndRunRequiredAnalyses(solver, productFunc))) {
+    return mlir::failure();
+  }
+
+  solver.load<lleq::ScalarSymbolAnalysis>(*pool);
+  solver.load<lleq::SymbolicStoreAnalysis>(*pool);
+
+  if (mlir::failed(solver.initializeAndRun(productFunc))) {
     return mlir::failure();
   }
   mlir::ProgramPoint *terminator =
-      solver.getProgramPointAfter(&*std::prev(computeFunc.getBlocks().end()));
+      solver.getProgramPointAfter(&*std::prev(productFunc.getBlocks().end()));
   std::tie(signalStore, valueStore) =
       solver.lookupState<StoreLattice>(terminator)->getStores();
   return mlir::success();

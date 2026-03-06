@@ -1,0 +1,47 @@
+// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+
+module attributes {llzk.lang} {
+    struct.def @A {
+        struct.member @sums : !array.type<1 x !felt.type>
+        function.def @compute(%a: !felt.type, %b: !felt.type, %c: i1) -> !struct.type<@A> {
+            %c0 = arith.constant 0 : index
+            %self = struct.new : !struct.type<@A>
+            %sums = array.new : !array.type<1 x !felt.type>
+            
+            scf.if %c {
+                %sum = felt.add %a, %b
+                array.write %sums[%c0] = %sum : !array.type<1 x !felt.type>, !felt.type
+                scf.yield
+            } else {
+                %diff = felt.add %a, %a
+                array.write %sums[%c0] = %diff : !array.type<1 x !felt.type>, !felt.type
+                scf.yield
+            }
+            
+            struct.writem %self[@sums] = %sums : !struct.type<@A>, !array.type<1 x !felt.type>
+            function.return %self : !struct.type<@A>
+        }
+
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type, %c: i1) {
+            %c0 = arith.constant 0 : index
+            %sums = struct.readm %self[@sums] : <@A>, !array.type<1 x !felt.type>
+
+            scf.if %c {
+                %sum = felt.add %a, %b
+                %written_sum = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
+                constrain.eq %sum, %written_sum : !felt.type
+                scf.yield
+            } else {
+                %diff = felt.sub %a, %a
+                %written_diff = array.read %sums[%c0] : !array.type<1 x !felt.type>, !felt.type
+                constrain.eq %diff, %written_diff : !felt.type
+                scf.yield
+            }
+
+            function.return
+        }
+    }
+}
+
+// CHECK-DAG: sums_w[0]: felt.add(%arg0, ?0)
+// CHECK-DAG: sums_c[0]: ?1

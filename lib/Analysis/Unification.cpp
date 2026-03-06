@@ -146,7 +146,7 @@ Symbol substitute(Symbol original, const Substitutions &m) {
 
 // "Erase" whatever's different between `a` and `b` and replace it with unknowns
 // Return the anti-unified symbol
-static Symbol _anti_unify_impl(Symbol a, Symbol b) {
+static Symbol _anti_unify_impl(Symbol a, Symbol b, AUTag tag) {
   // If either is uninitialized, return the other
   if (llvm::isa<Uninitialized>(a)) {
     return b;
@@ -166,7 +166,7 @@ static Symbol _anti_unify_impl(Symbol a, Symbol b) {
     return a->pool.fresh_unknown();
   }
   return llvm::TypeSwitch<Symbol, Symbol>(a)
-      .Case<OpCall>([b](OpCall *callA) -> Symbol {
+      .Case<OpCall>([b, tag](OpCall *callA) -> Symbol {
         // If its two calls to the same function, try anti-unifying each
         // argument
         auto callB = llvm::dyn_cast<OpCall>(b);
@@ -178,11 +178,11 @@ static Symbol _anti_unify_impl(Symbol a, Symbol b) {
         llvm::SmallVector<Symbol> anti_unified_args;
         for (unsigned i = 0; i < callA->arguments.size(); i++) {
           anti_unified_args.push_back(
-              anti_unify(callA->arguments[i], callB->arguments[i]));
+              anti_unify(callA->arguments[i], callB->arguments[i], tag));
         }
         return callA->pool.func_call(callA->opName, anti_unified_args);
       })
-      .Case<Index>([b](Index *indexA) -> Symbol {
+      .Case<Index>([b, tag](Index *indexA) -> Symbol {
         // If its two indices into the same array, try anti-unifying each index
         auto indexB = llvm::dyn_cast<Index>(b);
         if (indexA->signal != indexB->signal ||
@@ -193,26 +193,27 @@ static Symbol _anti_unify_impl(Symbol a, Symbol b) {
         llvm::SmallVector<Symbol> anti_unified_idx;
         for (unsigned i = 0; i < indexA->indices.size(); i++) {
           anti_unified_idx.push_back(
-              anti_unify(indexA->indices[i], indexB->indices[i]));
+              anti_unify(indexA->indices[i], indexB->indices[i], tag));
         }
         return indexA->pool.index(indexA->signal, anti_unified_idx);
       })
       .Default([b](auto) { return b->pool.fresh_unknown(); });
 }
 
-Symbol anti_unify(Symbol a, Symbol b) {
-  static llvm::DenseMap<std::pair<Symbol, Symbol>, Symbol> previousLookups;
-  if (previousLookups.contains({a, b})) {
-    return previousLookups.at({a, b});
+Symbol anti_unify(Symbol a, Symbol b, AUTag tag) {
+  static llvm::DenseMap<std::tuple<Symbol, Symbol, AUTag>, Symbol>
+      previousLookups;
+
+  if (tag.isNull()) {
+    return _anti_unify_impl(a, b, tag);
   }
-  if (previousLookups.contains({b, a})) {
-    return previousLookups.at({b, a});
+  if (previousLookups.contains({a, b, tag})) {
+    return previousLookups.at({a, b, tag});
   }
 
-  auto ans = _anti_unify_impl(a, b);
-  previousLookups[{a, b}] = ans;
+  auto ans = _anti_unify_impl(a, b, tag);
+  previousLookups[{a, b, tag}] = ans;
   return ans;
 }
 
-// TODO: implement anti_unify_inplace
 } // namespace lleq

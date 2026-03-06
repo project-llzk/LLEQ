@@ -8,12 +8,16 @@
 #include "Analysis/Store.h"
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Casting.h>
 #include <llvm/Support/Debug.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
+#include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Interfaces/ControlFlowInterfaces.h>
 
 #define DEBUG_TYPE "symbolic-store-analysis"
 
@@ -21,29 +25,26 @@ namespace lleq {
 
 using namespace llzk::component;
 using namespace llzk::array;
+using namespace llzk::constrain;
 
 void StoreLattice::print(llvm::raw_ostream &os) const {
-  LLVM_DEBUG({
-    if (!initialized) {
-      os << "(uninit)\n";
-      return;
-    }
-    if (valueStore == nullptr || signalStore == nullptr) {
-      os << "(null)\n";
-      return;
-    }
-    os << "--\n";
-    if (valueStore->size() == 0) {
-      os << "(empty)\n";
-    }
-    for (auto [key, val] : *valueStore) {
-      os << key << ": " << val << '\n';
-    }
-    os << "--\n";
-    if (signalStore->size() == 0) {
-      os << "(empty)\n";
-    }
-  });
+  if (!initialized) {
+    os << "(uninit)\n";
+    return;
+  }
+  if (valueStore == nullptr || signalStore == nullptr) {
+    os << "(null)\n";
+    return;
+  }
+  if (valueStore->size() == 0) {
+    os << "(empty)\n";
+  }
+  for (auto [key, val] : *valueStore) {
+    os << key << ": " << val << '\n';
+  }
+  if (signalStore->size() == 0) {
+    os << "(empty)\n";
+  }
   for (auto [key, val] : *signalStore) {
     os << key << ": " << static_cast<Symbol>(val) << "\n";
   }
@@ -52,7 +53,9 @@ void StoreLattice::print(llvm::raw_ostream &os) const {
 Symbol SymbolicStoreAnalysis::getBoundSymbol(mlir::Value value) {
   ScalarLattice *lattice = getOrCreate<ScalarLattice>(value);
   lattice->useDefSubscribe(this);
-  return lattice->getValue();
+  auto latticeElem = lattice->getValue();
+  latticeElem.initPool(&pool);
+  return latticeElem;
 }
 
 template <class T>
@@ -69,20 +72,45 @@ mlir::ChangeResult StoreLattice::_write_impl(IndexedLocation<T> ref,
 
 template mlir::ChangeResult StoreLattice::_write_impl<mlir::Value>(IndexedValue,
                                                                    Symbol);
-template mlir::ChangeResult
-    StoreLattice::_write_impl<llvm::StringRef>(IndexedSignal, Symbol);
+template mlir::ChangeResult StoreLattice::_write_impl<Signal>(IndexedSignal,
+                                                              Symbol);
+
+mlir::ChangeResult
+StoreLattice::copy(const mlir::dataflow::AbstractDenseLattice &other) {
+  const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
+  if (!rhs) {
+    llvm::report_fatal_error("cannot copy incomparable lattices");
+  }
+  if (!rhs->initialized || *this == *rhs) {
+    return mlir::ChangeResult::NoChange;
+  }
+
+  initPool(rhs->pool);
+  llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
+  *valueStore = *rhs->valueStore;
+  *signalStore = *rhs->signalStore;
+  initialized = true;
+  return mlir::ChangeResult::Change;
+}
 
 mlir::ChangeResult
 StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
+
   const auto *rhs = dynamic_cast<const StoreLattice *>(&other);
   if (!rhs) {
     llvm::report_fatal_error("cannot join incomparable lattices");
   }
   if (!rhs->initialized) {
+    if (initialized) {
+      valueStore->clear();
+      signalStore->clear();
+      return mlir::ChangeResult::Change;
+    }
     return mlir::ChangeResult::NoChange;
   }
   if (!initialized) {
     initPool(rhs->pool);
+    llzk::ensure(rhs->valueStore && rhs->signalStore, "stores not initialized");
     *valueStore = *rhs->valueStore;
     *signalStore = *rhs->signalStore;
     initialized = true;
@@ -100,45 +128,68 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
 }
 
 mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
-    mlir::Operation *op, const StoreLattice &before, StoreLattice *after) {
+    mlir::Operation *op, const StoreLattice &_before, StoreLattice *after) {
   after->initPool(&pool);
+
+  // This is kind of a hack, but if `op` is the first op in a basic block whose
+  // parent op has region control flow, try to manually inherit the lattice from
+  // the parent (since at initialization time it won't be present)
+  const auto &before =
+      (op->getPrevNode() == nullptr &&
+       llvm::isa<mlir::RegionBranchOpInterface>(op->getParentOp()))
+          ? *getOrCreate<StoreLattice>(getProgramPointBefore(op->getParentOp()))
+          : _before;
+
   LLVM_DEBUG({
-    llvm::dbgs() << "Operation: " << *op << '\n';
-    llvm::dbgs() << "Before:\n";
+    llvm::dbgs() << '\n';
     before.print(llvm::dbgs());
-    llvm::dbgs() << "Start:\n";
-    after->print(llvm::dbgs());
+    llvm::dbgs() << "Operation: " << *op << '\n';
   });
-  mlir::ChangeResult result = after->join(before);
+
+  mlir::ChangeResult result = after->copy(before);
   llvm::TypeSwitch<mlir::Operation *, void>(op)
-      .Case<FieldWriteOp>([this, after, &result, &before](FieldWriteOp write) {
-        if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
-          // Its an array so copy from valueStore to signalStore
-          if (!before.initialized) {
-            // This is weird but there's nothing to copy
-            // Hopefully we'll visit this state again when there is something
-            return;
-          }
-          for (auto [ref, sym] : *before.valueStore) {
-            if (ref.name == write.getVal()) {
-              // `after->write` will correctly clobber any entries signalStore
-              // already has for this signal
-              result |= after->write(
-                  IndexedSignal{write.getFieldName(), ref.indices}, sym);
-            }
-          }
-          return;
-        }
-        // Otherwise, its a scalar, so lookup the symbol from
-        // SignalValueAnalysis and write it to the store
-        Symbol written = getBoundSymbol(write.getVal());
-        result |= after->write(write.getFieldName(), written);
+      .Case<mlir::scf::YieldOp>([this, after](mlir::scf::YieldOp yieldOp) {
+        auto afterState = getOrCreate<StoreLattice>(
+            getProgramPointAfter(yieldOp->getParentOp()));
+        propagateIfChanged(afterState, afterState->join(*after));
       })
-      .Case<FieldReadOp>([this, &before, &result, after](FieldReadOp read) {
+      .Case<MemberWriteOp>(
+          [this, after, &result, &before](MemberWriteOp write) {
+            if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
+              // Its an array so copy from valueStore to signalStore
+              if (!before.initialized) {
+                // This is weird but there's nothing to copy
+                // Hopefully we'll visit this state again when there is
+                // something
+                return;
+              }
+              for (auto [ref, sym] : *before.valueStore) {
+                if (ref.name == write.getVal()) {
+                  // `after->write` will correctly clobber any entries
+                  // signalStore already has for this signal
+                  result |=
+                      after->write(IndexedSignal{Signal{SignalSource::Witness,
+                                                        write.getMemberName()},
+                                                 ref.indices},
+                                   sym);
+                }
+              }
+              return;
+            }
+            // Otherwise, its a scalar, so lookup the symbol from
+            // SignalValueAnalysis and write it to the store
+            Symbol written = getBoundSymbol(write.getVal());
+            result |= after->write(
+                Signal{SignalSource::Witness, write.getMemberName()}, written);
+          })
+      .Case<MemberReadOp>([this, &before, &result, after](MemberReadOp read) {
         if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
           for (auto [ref, sym] : *before.signalStore) {
-            if (ref.name == read.getFieldName()) {
+            if (ref.name.name == read.getMemberName() &&
+                // Make sure we don't accidentally read a value @compute wrote
+                // to this field while in @constrain
+                sourceMatchesOp(read, ref.name.source)) {
               // Technically, `after->write` attempts to clobber here, but since
               // `read.getVal()` should be a fresh SSA value, it doesn't matter
               result |=
@@ -149,7 +200,10 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         }
         // Otherwise, its a scalar, so inject into SignalValueAnalysis
         ScalarLattice *lat = getOrCreate<ScalarLattice>(read.getVal());
-        Symbol newSym = before.lookupOrNull(read.getFieldName());
+        Symbol newSym = before.lookupOrNull(
+            Signal{isWitnessOp(read) ? SignalSource::Witness
+                                     : SignalSource::Constraint,
+                   read.getMemberName()});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
@@ -173,14 +227,66 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         for (auto idx : read.getIndices()) {
           indices.push_back(getBoundSymbol(idx));
         }
-        Symbol newSym = after->lookup(IndexedValue{read.getArrRef(), indices});
+
+        // If reading from an array during a constraint op, don't
+        // default-initialize with unknowns because a constrain may later
+        // initialize this value
+        Symbol newSym =
+            isWitnessOp(read)
+                ? after->lookup(IndexedValue{read.getArrRef(), indices})
+                : after->lookupOrNull(IndexedValue{read.getArrRef(), indices});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
         }
+      })
+      .Case<EmitEqualityOp>([this, after, &result](EmitEqualityOp eq) {
+        auto getIndexedLoc =
+            [this](mlir::Value val) -> llvm::FailureOr<IndexedSignal> {
+          if (auto blockArg = llvm::dyn_cast<mlir::BlockArgument>(val)) {
+          }
+          // If the value immediately comes from a constraint `struct.readm`
+          if (auto read =
+                  llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
+            return {{{SignalSource::Constraint, read.getMemberName()}, {}}};
+          }
+          if (auto arrRead =
+                  llvm::dyn_cast_or_null<ReadArrayOp>(val.getDefiningOp())) {
+            if (auto arr = llvm::dyn_cast_or_null<MemberReadOp>(
+                    arrRead.getArrRef().getDefiningOp())) {
+              llvm::SmallVector<Symbol> indices;
+              for (auto idx : arrRead.getIndices()) {
+                indices.push_back(getBoundSymbol(idx));
+              }
+              return {{{SignalSource::Constraint, arr.getMemberName()},
+                       std::move(indices)}};
+            }
+          }
+          return {};
+        };
+
+        auto leftLoc = getIndexedLoc(eq.getLhs());
+        auto rightLoc = getIndexedLoc(eq.getRhs());
+        if (llvm::succeeded(leftLoc)) {
+          auto rightSym = getBoundSymbol(eq.getRhs());
+          result |= after->write(*leftLoc, rightSym);
+          // Update the ScalarSymbolAnalysis with the value for leftLoc
+          auto lat = getOrCreate<ScalarLattice>(eq.getLhs());
+          propagateIfChanged(lat, lat->join(rightSym));
+        } else if (llvm::succeeded(rightLoc)) {
+          auto leftSym = getBoundSymbol(eq.getLhs());
+          // llvm::dbgs() << "Bound symbol is: " << leftSym << "\n";
+          // llvm::dbgs() << "Writing to loc: " << *rightLoc << "\n";
+          // llvm::dbgs() << "Before writing, store is: \n";
+          // after->print(llvm::dbgs());
+          result |= after->write(*rightLoc, leftSym);
+          // Update the ScalarSymbolAnalysis with the value for rightLoc
+          auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
+          propagateIfChanged(lat, lat->join(leftSym));
+        }
       });
   LLVM_DEBUG({
-    llvm::dbgs() << "After:\n";
     after->print(llvm::dbgs());
+    llvm::dbgs() << '\n';
   });
   propagateIfChanged(after, result);
   return mlir::success();

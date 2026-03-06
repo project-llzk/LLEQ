@@ -7,14 +7,16 @@
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
+#include <llvm/ADT/SlowDynamicAPInt.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
+#include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/ErrorHelper.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
@@ -52,8 +54,8 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
           .Case<llzk::felt::FeltConstantOp>(
               [this](
                   llzk::felt::FeltConstantOp op) -> llvm::SmallVector<Symbol> {
-                return {pool.get().constant(
-                    mlir::DynamicAPInt{op.getValue().getSExtValue()})};
+                auto value = op.getValue().getValue();
+                return {pool.get().constant(llzk::toDynamicAPInt(value))};
               })
           .Case<llzk::felt::FeltBinaryOpInterface>(
               [this, operands](llzk::felt::FeltBinaryOpInterface binop)
@@ -73,8 +75,9 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                 return {pool.get().func_call(
                     call.getCallee().getLeafReference(), args)};
               })
-          .Case<llzk::component::FieldReadOp>(
-              [this](auto) -> llvm::SmallVector<Symbol> {
+          .Case<llzk::component::MemberReadOp>(
+              [this](llzk::component::MemberReadOp readOp)
+                  -> llvm::SmallVector<Symbol> {
                 // We don't have any store information yet, so just set it to
                 // uninitialized. When this op is picked up by
                 // SymbolicStoreAnalysis it will read from the store and
@@ -132,6 +135,9 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
             }
             return {pool.get().func_call(op->getName().getStringRef(), args)};
           });
+  if (results.empty()) {
+    return mlir::success();
+  }
   llzk::ensure(results.size() == symbols.size(),
                "unsupported: expression with multiple results");
   for (auto [result, sym] : llvm::zip(results, symbols)) {

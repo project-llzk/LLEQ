@@ -17,8 +17,8 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <mlir/Analysis/DataFlow/ConstantPropagationAnalysis.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Operation.h>
 #include <mlir/IR/Value.h>
@@ -38,11 +38,7 @@ class SymbolicStore {
   ValueStore *valueStore;
 
 public:
-  SymbolicStore() {
-    solver.load<mlir::dataflow::DeadCodeAnalysis>();
-    solver.load<lleq::ScalarSymbolAnalysis>(*pool);
-    solver.load<lleq::SymbolicStoreAnalysis>(*pool);
-  }
+  SymbolicStore() {}
 
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef

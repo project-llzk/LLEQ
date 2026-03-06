@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/Unification.h"
 
@@ -13,7 +14,10 @@
 #include <llzk/Analysis/SparseAnalysis.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/Constants.h>
 #include <llzk/Util/ErrorHelper.h>
+#include <mlir/Analysis/DataFlow/SparseAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
 
@@ -41,14 +45,25 @@ public:
 
   // Joining is just antiunification, once we take care to special-case the
   // nullptr values
-  static SymbolValue join(const SymbolValue &a, const SymbolValue &b) {
+  static SymbolValue join(const SymbolValue &a, const SymbolValue &b,
+                          mlir::Value anchor = nullptr) {
     if (!a.isInitialized()) {
       return b;
     }
     if (!b.isInitialized()) {
       return a;
     }
-    auto joined = anti_unify(a.sym, b.sym);
+
+    AUTag tag;
+    if (anchor != nullptr) {
+      if (auto blockArg = mlir::dyn_cast<mlir::BlockArgument>(anchor)) {
+        tag = blockArg.getParentBlock()->getParentOp();
+      } else {
+        tag = anchor.getDefiningOp();
+      }
+    }
+
+    auto joined = anti_unify(a.sym, b.sym, tag);
     return {joined};
   }
 
@@ -75,8 +90,33 @@ public:
 };
 
 class ScalarLattice : public mlir::dataflow::Lattice<SymbolValue> {
+  SymbolValue value;
+
 public:
   using Lattice::Lattice;
+
+  mlir::Value getAnchor() const { return mlir::cast<mlir::Value>(anchor); }
+
+  SymbolValue &getValue() { return value; }
+  const SymbolValue &getValue() const {
+    return const_cast<ScalarLattice *>(this)->getValue();
+  }
+
+  void print(llvm::raw_ostream &os) const override { value.print(os); }
+
+  mlir::ChangeResult
+  join(const mlir::dataflow::AbstractSparseLattice &other) override {
+    return join(static_cast<const ScalarLattice &>(other).value);
+  }
+
+  mlir::ChangeResult join(SymbolValue otherValue) {
+    SymbolValue newValue = SymbolValue::join(value, otherValue, getAnchor());
+    if (value == newValue) {
+      return mlir::ChangeResult::NoChange;
+    }
+    value = newValue;
+    return mlir::ChangeResult::Change;
+  }
 };
 
 /// This analysis computes a symbolic expression associated to each *scalar*
@@ -118,5 +158,21 @@ public:
     propagateIfChanged(lattice, lattice->join(pool.get().uninitialized()));
   }
 };
+
+inline bool isWitnessOp(mlir::Operation *op) {
+  return op->hasAttrOfType<mlir::StringAttr>("product_source") &&
+         op->getAttrOfType<mlir::StringAttr>("product_source") ==
+             llzk::FUNC_NAME_COMPUTE;
+}
+inline bool isConstraintOp(mlir::Operation *op) {
+  return op->hasAttrOfType<mlir::StringAttr>("product_source") &&
+         op->getAttrOfType<mlir::StringAttr>("product_source") ==
+             llzk::FUNC_NAME_CONSTRAIN;
+}
+
+inline bool sourceMatchesOp(mlir::Operation *op, SignalSource source) {
+  return (source == SignalSource::Constraint && isConstraintOp(op)) ||
+         (source == SignalSource::Witness && isWitnessOp(op));
+}
 
 } // namespace lleq

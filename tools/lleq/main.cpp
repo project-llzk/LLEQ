@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/InitLLVM.h>
 #include <llvm/Support/PrettyStackTrace.h>
@@ -20,7 +21,6 @@
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
 #include <mlir/IR/Builders.h>
@@ -28,6 +28,7 @@
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/PatternMatch.h>
 #include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
@@ -36,6 +37,7 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
+  llvm::outs() << "-- " << structDef.getSymName() << " --\n";
   lleq::SymbolicStore store;
   if (mlir::failed(store.build_store(structDef))) {
     llvm::report_fatal_error("symbolic store construction failed");
@@ -76,7 +78,6 @@ int main(int argc, char **argv) {
   llvm::setBugReportMsg(
       "LLEQ has crashed! Please report the bug to contact@veridise.com\n");
 
-  llvm::cl::HideUnrelatedOptions(lleq::cli::lleqCat);
   llvm::cl::ParseCommandLineOptions(argc, argv, "LLZK Equivalence Verifier\n");
 
   mlir::DialectRegistry registry;

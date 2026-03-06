@@ -1,8 +1,8 @@
 // RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
 
-module attributes {veridise.lang = "llzk"} {
+module attributes {llzk.lang} {
     struct.def @SumArr<[@N]> {
-        struct.field @sum : !array.type<@N x !felt.type>
+        struct.member @sum : !array.type<@N x !felt.type>
 
         function.def @compute(%a: !array.type<@N x !felt.type>, %b: !array.type<@N x !felt.type>) -> !struct.type<@SumArr<[@N]>> {
             %self = struct.new : <@SumArr<[@N]>>
@@ -19,7 +19,7 @@ module attributes {veridise.lang = "llzk"} {
                 scf.yield
             }
 
-            struct.writef %self[@sum] = %sum : !struct.type<@SumArr<[@N]>>, !array.type<@N x !felt.type>
+            struct.writem %self[@sum] = %sum : !struct.type<@SumArr<[@N]>>, !array.type<@N x !felt.type>
             function.return %self : !struct.type<@SumArr<[@N]>>
         }
         function.def @constrain(%self: !struct.type<@SumArr<[@N]>>, %a: !array.type<@N x !felt.type>, %b: !array.type<@N x !felt.type>) {
@@ -28,4 +28,4 @@ module attributes {veridise.lang = "llzk"} {
     }
 }
 
-// CHECK: sum[?0]: felt.add(%arg0[?0], %arg1[?0])
+// CHECK: sum_w[?0]: felt.add(%arg0[?0], %arg1[?0])

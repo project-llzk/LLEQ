@@ -7,6 +7,8 @@
 
 #include "Analysis/SymbolExpr.h"
 #include <llvm/ADT/DenseMap.h>
+#include <llvm/ADT/PointerUnion.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Support/LLVM.h>
 
 namespace lleq {
@@ -27,9 +29,10 @@ llvm::LogicalResult unify_all(llvm::ArrayRef<Symbol> as,
 // Substitute a set of unknowns in a symbol
 Symbol substitute(Symbol original, const Substitutions &m);
 
+using AUTag = llvm::PointerUnion<mlir::ProgramPoint *, mlir::Operation *>;
+
 // Compute the universal symbol that can be substituted to reach both `a` and
 // `b` (i.e., compute the "anti-unification") of `a` and `b`
-// TODO: when anti-unifying the same pair of symbols, return the same unknown
-// instead of a fresh one
-Symbol anti_unify(Symbol a, Symbol b);
+Symbol anti_unify(Symbol a, Symbol b, AUTag tag = nullptr);
+
 } // namespace lleq

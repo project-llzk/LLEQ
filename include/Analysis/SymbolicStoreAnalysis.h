@@ -12,7 +12,6 @@
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
 #include <mlir/Analysis/DataFlow/DenseAnalysis.h>
-#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Support/TypeID.h>
 
 namespace lleq {
@@ -28,16 +27,15 @@ class StoreLattice : public mlir::dataflow::AbstractDenseLattice {
   std::unique_ptr<ValueStore> valueStore;
   std::unique_ptr<SignalStore> signalStore;
 
-  SymbolPool *pool;
+  SymbolPool *pool = nullptr;
   bool initialized = false;
 
   template <class T> decltype(auto) store(this auto &&self) {
     static_assert(std::is_same_v<T, mlir::Value> ||
-                  std::is_same_v<T, llvm::StringRef> &&
-                      "unsupported store type");
+                  std::is_same_v<T, Signal> && "unsupported store type");
     if constexpr (std::is_same_v<T, mlir::Value>) {
       return *self.valueStore;
-    } else if constexpr (std::is_same_v<T, llvm::StringRef>) {
+    } else if constexpr (std::is_same_v<T, Signal>) {
       return *self.signalStore;
     }
   }
@@ -98,6 +96,8 @@ public:
   mlir::ChangeResult
   join(const mlir::dataflow::AbstractDenseLattice &other) override;
 
+  mlir::ChangeResult copy(const mlir::dataflow::AbstractDenseLattice &other);
+
   bool operator==(const StoreLattice &other) const {
     return *valueStore == *other.valueStore &&
            *signalStore == *other.signalStore;
@@ -126,6 +126,16 @@ public:
                                      StoreLattice *after) override;
   void setToEntryState(StoreLattice *lattice) override {
     lattice->initPool(&pool);
+  }
+
+  void
+  visitRegionBranchControlFlowTransfer(mlir::RegionBranchOpInterface branch,
+                                       std::optional<unsigned int> regionFrom,
+                                       std::optional<unsigned int> regionTo,
+                                       const StoreLattice &before,
+                                       StoreLattice *after) override {
+
+    // TODO: Figure out why disabling this fixes some things
   }
 
   // Looks up the symbol SignalValueAnalysis computed for the given SSA value,
