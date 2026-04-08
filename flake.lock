@@ -33,16 +33,16 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1772056206,
-        "narHash": "sha256-Sksgb8CJp+I4goKc2sj/i1FEZzbj6CHkEq/XBsFmfyg=",
+        "lastModified": 1775583868,
+        "narHash": "sha256-juJFmYJVuD33uC7s6wCj0+ICD7E6w2lvYKrigfpu8LU=",
         "owner": "project-llzk",
         "repo": "llzk-lib",
-        "rev": "4771f2c19db1374d12a71971d2df76207414fbbf",
+        "rev": "e5dbdd8000d796f6bc8ad3edf603adfc46f692a6",
         "type": "github"
       },
       "original": {
         "owner": "project-llzk",
-        "ref": "main",
+        "ref": "raghav/smt-lowering",
         "repo": "llzk-lib",
         "type": "github"
       }
@@ -105,11 +105,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762369885,
-        "narHash": "sha256-j7aARWOa10cranctQ39cfEELMlEAeZsRrJIGKPJ5o88=",
+        "lastModified": 1762544039,
+        "narHash": "sha256-Esd4SAzUt5G3esTa6fTmivKpRScEROwSME4nN/SAU4w=",
         "owner": "Veridise",
         "repo": "pcl-mlir",
-        "rev": "a82620c4dabf6e51ceda66bba2abb19f7f74ac7d",
+        "rev": "55cf619b032314198aacafc305871fb66b12b70e",
         "type": "github"
       },
       "original": {
@@ -132,11 +132,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1747068965,
-        "narHash": "sha256-px7s7IVHnR3SiShc7FKCUiL6vfqew5AM6jnkH7qO03I=",
+        "lastModified": 1772686265,
+        "narHash": "sha256-S2kG74Iyey8Qf9JWoEFG4T/i0mP68lHhLzeoXOTCwpw=",
         "owner": "project-llzk",
         "repo": "open-source-release-helpers",
-        "rev": "c3d1ab6082cc62b167927d074f2836f290b9e3b7",
+        "rev": "afc547538521b36112784cd6e9f3e2bb5db223f8",
         "type": "github"
       },
       "original": {

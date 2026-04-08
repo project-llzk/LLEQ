@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:project-llzk/llzk-lib?ref=main";
+      url = "github:project-llzk/llzk-lib?ref=raghav/smt-lowering";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";

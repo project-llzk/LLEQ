@@ -4,8 +4,10 @@
  */
 
 #include "Analysis/SymbolicStore.h"
+#include "Verification/SMTLIBEquivalenceEmitter.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
+#include <optional>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
@@ -23,7 +25,6 @@
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
-#include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
@@ -89,19 +90,42 @@ int main(int argc, char **argv) {
     return llvm::success();
   });
 
-  mlir::OpBuilder builder(&context);
-  auto mod = builder.create<mlir::ModuleOp>(
-      mlir::NameLoc::get(builder.getStringAttr("LLEQ")));
-
   auto parserConfig = mlir::ParserConfig(&context);
-  if (llvm::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
-                                         parserConfig))) {
+  auto mod = mlir::parseSourceFile<mlir::ModuleOp>(lleq::cli::inputFile(),
+                                                   parserConfig);
+  if (!mod) {
     llvm::errs() << "Failed to parse " << lleq::cli::inputFile() << '\n';
     return EXIT_FAILURE;
   }
 
+  if (lleq::cli::emitSMTLIBEquiv()) {
+    if (lleq::cli::dumpStore()) {
+      llvm::errs() << "--dump-store cannot be combined with "
+                      "--emit-smtlib-equiv\n";
+      return EXIT_FAILURE;
+    }
+
+    if (lleq::cli::equivMember().empty()) {
+      llvm::errs() << "--member is required with --emit-smtlib-equiv\n";
+      return EXIT_FAILURE;
+    }
+
+    std::optional<std::string> fieldName;
+    if (!lleq::cli::equivField().empty())
+      fieldName = lleq::cli::equivField();
+
+    if (failed(lleq::emitSMTLIBEquivalence(*mod, llvm::outs(),
+                                           lleq::cli::equivMember(),
+                                           lleq::cli::equivRootStruct(),
+                                           fieldName))) {
+      return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+  }
+
   if (lleq::cli::dumpStore()) {
-    mod.walk(
+    mod->walk(
         [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
   }
 

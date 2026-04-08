@@ -57,5 +57,8 @@ tools = [
 
 llvm_config.add_tool_substitutions(tools, tool_dirs)
 
+if config.enable_smt_equiv:
+    config.available_features.add('smt-equiv')
+
 # Limit testing time in the case of non-converging analyses
 config.maxIndividualTestTime = 60
