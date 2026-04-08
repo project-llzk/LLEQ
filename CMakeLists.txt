@@ -39,26 +39,6 @@ message(STATUS "Using MLIR in: ${MLIR_DIR}")
 find_package(LLZK REQUIRED CONFIG)
 message(STATUS "Using LLZK in: ${LLZK_DIR}")
 
-if(TARGET LLZK::SMTConversions)
-  set(LLEQ_HAS_SMT_BACKEND 1)
-else()
-  set(LLEQ_HAS_SMT_BACKEND 0)
-endif()
-
-set(LLEQ_HAS_LLZK_SMT_IR_HEADERS 0)
-if(TARGET LLZK::LLZKDialectHeaders)
-  get_target_property(
-    LLEQ_LLZK_DIALECT_INCLUDE_DIRS
-    LLZK::LLZKDialectHeaders
-    INTERFACE_INCLUDE_DIRECTORIES)
-  foreach(LLEQ_LLZK_INCLUDE_DIR IN LISTS LLEQ_LLZK_DIALECT_INCLUDE_DIRS)
-    if(EXISTS "${LLEQ_LLZK_INCLUDE_DIR}/llzk/Dialect/SMT/IR/SMTOps.h")
-      set(LLEQ_HAS_LLZK_SMT_IR_HEADERS 1)
-      break()
-    endif()
-  endforeach()
-endif()
-
 if(TARGET LLZK::LLZKDialectRegistration)
   set(LLEQ_LLZK_DIALECT_REGISTRATION_TARGET LLZK::LLZKDialectRegistration)
 elseif(TARGET LLZK::DialectRegistration)
@@ -71,6 +51,8 @@ list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
 include(AddLLVM)
 include(AddMLIR)
+
+set(LLEQ_ENABLE_SMT_EQUIV 1)
 
 add_custom_target(check DEPENDS $<$<BOOL:BUILD_TESTING>:check-lit>)
 

@@ -21,27 +21,19 @@ static llvm::cl::opt<bool>
                        llvm::cl::desc("Disable the deductive verifier"),
                        llvm::cl::cat(lleqCat));
 
-static llvm::cl::opt<bool> emitSMTLIBEquivOpt(
-    "emit-smtlib-equiv",
+static llvm::cl::opt<bool> emitSMTLIBOpt(
+    "emit-smtlib",
     llvm::cl::desc(
-        "Lower the selected struct to SMT and print a single-member "
-        "inequivalence query as SMTLIB"),
+        "Lower the selected struct to SMT and print its SMTLIB encoding"),
     llvm::cl::cat(lleqCat));
 
-static llvm::cl::opt<std::string> equivMemberOpt(
-    "member",
-    llvm::cl::desc("The struct member to compare as <member>_w != <member>_c"),
+static llvm::cl::opt<std::string> smtStructOpt(
+    "struct", llvm::cl::desc("The struct to lower before emitting SMTLIB"),
     llvm::cl::init(""), llvm::cl::cat(lleqCat));
 
-static llvm::cl::opt<std::string> equivRootStructOpt(
-    "root-struct",
-    llvm::cl::desc("The root struct to lower before emitting SMTLIB"),
-    llvm::cl::init("Main"), llvm::cl::cat(lleqCat));
-
-static llvm::cl::opt<std::string> equivFieldOpt(
+static llvm::cl::opt<std::string> smtFieldOpt(
     "field",
-    llvm::cl::desc(
-        "Optional prime field name forwarded to LLZK SMT lowering"),
+    llvm::cl::desc("Prime field name forwarded to LLZK SMT lowering"),
     llvm::cl::init(""), llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<std::string> inputFileOpt(llvm::cl::Positional,
@@ -54,13 +46,11 @@ bool disableStore() { return disableStoreOpt; }
 
 bool disableVerifier() { return disableVerifierOpt; }
 
-bool emitSMTLIBEquiv() { return emitSMTLIBEquivOpt; }
+bool emitSMTLIB() { return emitSMTLIBOpt; }
 
-std::string &equivMember() { return equivMemberOpt; }
+std::string &smtStruct() { return smtStructOpt; }
 
-std::string &equivRootStruct() { return equivRootStructOpt; }
-
-std::string &equivField() { return equivFieldOpt; }
+std::string &smtField() { return smtFieldOpt; }
 
 std::string &inputFile() { return inputFileOpt; }
 

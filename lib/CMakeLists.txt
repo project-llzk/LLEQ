@@ -14,10 +14,8 @@ set(Transforms_SRC
     Transforms/LLEQIfToIfElse.cpp)
 
 set(Verification_SRC
-    Verification/SMTLIBEquivalenceEmitter.cpp)
-if(LLEQ_HAS_LLZK_SMT_IR_HEADERS)
-  list(APPEND Verification_SRC Verification/DeductiveVerifier.cpp)
-endif()
+    Verification/SMTLIBEquivalenceEmitter.cpp
+    Verification/DeductiveVerifier.cpp)
 
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}
@@ -49,9 +47,6 @@ target_link_libraries(
   LLZK::LLZKTransforms
   LLZK::LLZKAnalysis
   LLZK::LLZKDialect
+  LLZK::SMTConversions
   MLIRIR)
-if(LLEQ_HAS_SMT_BACKEND)
-  target_link_libraries(LLEQ PUBLIC LLZK::SMTConversions)
-endif()
-target_compile_definitions(LLEQ PRIVATE LLEQ_HAS_SMT_BACKEND=${LLEQ_HAS_SMT_BACKEND})
 install(TARGETS LLEQ)

@@ -7,7 +7,6 @@
 #include "Verification/SMTLIBEquivalenceEmitter.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
-#include <optional>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
@@ -98,26 +97,32 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  if (lleq::cli::emitSMTLIBEquiv()) {
+  if (lleq::cli::emitSMTLIB()) {
     if (lleq::cli::dumpStore()) {
-      llvm::errs() << "--dump-store cannot be combined with "
-                      "--emit-smtlib-equiv\n";
+      llvm::errs() << "--dump-store cannot be combined with --emit-smtlib\n";
       return EXIT_FAILURE;
     }
 
-    if (lleq::cli::equivMember().empty()) {
-      llvm::errs() << "--member is required with --emit-smtlib-equiv\n";
+    if (lleq::cli::smtStruct().empty()) {
+      llvm::errs() << "--struct is required with --emit-smtlib\n";
       return EXIT_FAILURE;
     }
 
-    std::optional<std::string> fieldName;
-    if (!lleq::cli::equivField().empty())
-      fieldName = lleq::cli::equivField();
+    if (lleq::cli::smtField().empty()) {
+      llvm::errs() << "--field is required with --emit-smtlib\n";
+      return EXIT_FAILURE;
+    }
 
-    if (failed(lleq::emitSMTLIBEquivalence(*mod, llvm::outs(),
-                                           lleq::cli::equivMember(),
-                                           lleq::cli::equivRootStruct(),
-                                           fieldName))) {
+    auto structDef =
+        mod->lookupSymbol<llzk::component::StructDefOp>(lleq::cli::smtStruct());
+    if (!structDef) {
+      llvm::errs() << "could not find struct @" << lleq::cli::smtStruct()
+                   << '\n';
+      return EXIT_FAILURE;
+    }
+
+    if (failed(
+            lleq::emitSMTLIBEncoding(structDef, llvm::outs(), lleq::cli::smtField()))) {
       return EXIT_FAILURE;
     }
 

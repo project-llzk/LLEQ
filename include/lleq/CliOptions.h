@@ -19,17 +19,14 @@ extern llvm::cl::OptionCategory lleqCat;
 // Whether to disable the deductive verification phase
 [[nodiscard]] bool disableVerifier();
 
-// Whether to emit an SMTLIB equivalence query instead of running analysis
-[[nodiscard]] bool emitSMTLIBEquiv();
+// Whether to emit an SMTLIB encoding instead of running analysis
+[[nodiscard]] bool emitSMTLIB();
 
-// The selected member for SMTLIB equivalence emission
-[[nodiscard]] std::string &equivMember();
+// The selected struct for SMTLIB emission
+[[nodiscard]] std::string &smtStruct();
 
-// The selected root struct for SMTLIB equivalence emission
-[[nodiscard]] std::string &equivRootStruct();
-
-// Optional prime field name forwarded to LLZK SMT lowering
-[[nodiscard]] std::string &equivField();
+// Prime field name forwarded to LLZK SMT lowering
+[[nodiscard]] std::string &smtField();
 
 // The input file
 [[nodiscard]] std::string &inputFile();

@@ -5,12 +5,15 @@
 
 #include "Verification/SMTLIBEquivalenceEmitter.h"
 
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Analysis/LightweightSignalEquivalenceAnalysis.h>
+#include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <mlir/IR/Diagnostics.h>
+#include <mlir/IR/SymbolTable.h>
 #include <mlir/Support/LLVM.h>
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,11 +24,20 @@
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/Func/IR/FuncOps.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/IR/IRMapping.h>
+#include <mlir/Pass/Pass.h>
+#include <mlir/Pass/PassManager.h>
+#include <mlir/Transforms/Passes.h>
 
 #include <llvm/ADT/TypeSwitch.h>
 
 using namespace mlir;
 using namespace llzk;
+
+namespace llzk::smt {
+std::unique_ptr<mlir::Pass> createSMTLoweringPass();
+std::unique_ptr<mlir::Pass> createSMTCFLoweringPass();
+} // namespace llzk::smt
 
 namespace {
 
@@ -53,11 +65,10 @@ public:
   explicit SMTLIBFunctionEmitter(raw_ostream &os) : os(os) {}
 
   LogicalResult emit(func::FuncOp func) {
-    auto diag = func.emitError();
     for (auto [index, arg] : llvm::enumerate(func.getArguments())) {
       std::string name = "arg" + std::to_string(index);
       values[arg] = name;
-      os << "(declare-const " << name << " " << sortForType(arg.getType(), diag)
+      os << "(declare-const " << name << " " << sortForType(arg.getType())
          << ")\n";
     }
 
@@ -119,8 +130,7 @@ private:
 
     values[op.getResult()] = symbol;
 
-    auto diag = op->emitError();
-    os << "(declare-fun " << symbol << " " << sortForType(op.getType(), diag)
+    os << "(declare-fun " << symbol << " " << sortForType(op.getType())
        << ")\n";
     return success();
   }
@@ -150,28 +160,16 @@ private:
     return success();
   }
 
-  // LogicalResult processBlockWithState(Block &block,
-  //                                     llvm::DenseMap<Value, std::string>
-  //                                     &state, const
-  //                                     std::optional<std::string> &guard) {
-  //   auto oldValues = std::move(values);
-  //   values = std::move(state);
-  //   LogicalResult result = processBlock(block, guard);
-  //   state = std::move(values);
-  //   values = std::move(oldValues);
-  //   return result;
-  // }
-
   FailureOr<std::string> buildExpression(Operation *op) {
 
     static DenseMap<StringRef, StringRef> opToSmtOp = {
         {"smt.int.neg", "-"},      {"smt.not", "not"},
         {"smt.int.add", "+"},      {"smt.int.mul", "*"},
         {"smt.int.sub", "-"},      {"smt.int.mod", "mod"},
-        {"smt.int.eq", "="},       {"smt.int.and", "and"},
+        {"smt.eq", "="},           {"smt.int.and", "and"},
         {"smt.int.or", "or"},      {"smt.int.xor", "xor"},
         {"smt.int.implies", "=>"}, {"smt.int.not", "not"},
-        {"smt.int.ite", "ite"},
+        {"smt.ite", "ite"},
     };
 
     return TypeSwitch<Operation *, FailureOr<std::string>>(op)
@@ -250,16 +248,15 @@ private:
     crash();
   }
 
-  FailureOr<std::string> sortForType(Type type, InFlightDiagnostic &diag) {
-    return TypeSwitch<Type, FailureOr<std::string>>(type)
-        .Case<smt::IntType>([](auto) { return success("Int"); })
-        .Case<smt::BoolType>([](auto) { return success("Bool"); })
-        .Default([&diag](Type type) -> FailureOr<std::string> {
+  std::string sortForType(Type type) {
+    return TypeSwitch<Type, std::string>(type)
+        .Case<smt::IntType>([](auto) { return "Int"; })
+        .Case<smt::BoolType>([](auto) { return "Bool"; })
+        .Default([](Type type) {
           if (type.isInteger(1)) {
-            return success("Bool");
+            return "Bool";
           }
-          diag << "unsupported SMT sort: " << type;
-          return failure();
+          llvm::report_fatal_error("unsupported SMT sort");
         });
   }
 
@@ -269,90 +266,145 @@ private:
   unsigned nextTempId = 0;
 };
 
-#if LLEQ_HAS_SMT_BACKEND
+LogicalResult ensureProductFunc(ModuleOp module,
+                                component::StructDefOp structDef) {
+  if (structDef.getProductFuncOp()) {
+    return success();
+  }
 
-// LogicalResult lowerStructToSMT(ModuleOp module, llvm::StringRef
-// rootStructName,
-//                                const std::optional<std::string> &fieldName) {
-//   llvm::StringRef normalizedRoot = stripSigil(rootStructName);
-//   auto rootStruct =
-//       module.lookupSymbol<llzk::component::StructDefOp>(normalizedRoot);
-//   if (!rootStruct) {
-//     return module.emitError()
-//            << "could not find root struct @" << normalizedRoot;
-//   }
+  auto computeFunc = structDef.getComputeFuncOp();
+  auto constrainFunc = structDef.getConstrainFuncOp();
+  if (!computeFunc || !constrainFunc) {
+    return structDef.emitError()
+           << "expected the selected struct to define either @product or both "
+              "@compute and @constrain";
+  }
 
-//   if (failed(ensureProductFunc(module, rootStruct))) {
-//     return failure();
-//   }
+  SymbolTableCollection tables;
+  LightweightSignalEquivalenceAnalysis equivalence(module);
+  ProductAligner aligner(tables, equivalence);
+  auto productFunc = aligner.alignFuncs(structDef, computeFunc, constrainFunc);
+  if (!productFunc) {
+    return structDef.emitError()
+           << "failed to align @compute/@constrain into @product";
+  }
 
-//   PassManager pm(module.getContext(), PassManager::getAnyOpAnchorName(),
-//                  PassManager::Nesting::Implicit);
-//   pm.enableVerifier(false);
+  return aligner.alignCalls(productFunc);
+}
 
-//   auto smtPass = llzk::smt::createSMTLoweringPass();
-//   if (fieldName) {
-//     std::string options = "field=" + *fieldName;
-//     if (failed(smtPass->initializeOptions(options, [&](const llvm::Twine
-//     &err) {
-//           return module.emitError() << err;
-//         }))) {
-//       return failure();
-//     }
-//   }
-//   pm.addPass(std::move(smtPass));
-//   pm.addPass(createCanonicalizerPass());
-//   pm.addPass(createCSEPass());
+FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
+                                   llvm::StringRef fieldName) {
+  auto *ctx = structDef.getContext();
+  auto module = structDef->getParentOfType<ModuleOp>();
+  if (!module) {
+    return failure();
+  }
 
-//   return pm.run(module);
-// }
-#endif
+  auto cloned = cast<ModuleOp>(module->clone());
+  auto clonedStruct =
+      cloned.lookupSymbol<component::StructDefOp>(structDef.getSymName());
+  if (!clonedStruct) {
+    cloned.emitError() << "selected struct disappeared while cloning module";
+    return failure();
+  }
+
+  if (failed(ensureProductFunc(cloned, clonedStruct))) {
+    return failure();
+  }
+
+  auto smtPass = llzk::smt::createSMTLoweringPass();
+  std::string options = ("field=" + fieldName).str();
+  if (failed(smtPass->initializeOptions(options, [&](const llvm::Twine &err) {
+        return cloned.emitError() << err;
+      }))) {
+    return failure();
+  }
+
+  PassManager nonCFPM(ctx, PassManager::getAnyOpAnchorName(),
+                      PassManager::Nesting::Implicit);
+  nonCFPM.enableVerifier(false);
+  nonCFPM.addPass(std::move(smtPass));
+  nonCFPM.addPass(createCanonicalizerPass());
+  nonCFPM.addPass(createCSEPass());
+
+  if (failed(nonCFPM.run(cloned))) {
+    return failure();
+  }
+
+  SmallVector<scf::IfOp> ifOps;
+  cloned.walk([&](scf::IfOp ifOp) { ifOps.push_back(ifOp); });
+
+  auto cloneBranch = [&](OpBuilder &builder, Block &block,
+                         IRMapping &mapping) -> FailureOr<Value> {
+    for (Operation &op : block.without_terminator()) {
+      builder.clone(op, mapping);
+    }
+
+    auto yieldOp = dyn_cast<scf::YieldOp>(block.getTerminator());
+    if (!yieldOp || yieldOp.getNumOperands() != 1) {
+      return failure();
+    }
+
+    return mapping.lookupOrDefault(yieldOp.getOperand(0));
+  };
+
+  for (scf::IfOp ifOp : llvm::reverse(ifOps)) {
+    if (ifOp.getNumResults() != 1 || ifOp.getElseRegion().empty()) {
+      return ifOp.emitError()
+             << "unsupported scf.if shape while preparing SMT emission";
+    }
+
+    OpBuilder builder(ifOp);
+    IRMapping thenMapping;
+    IRMapping elseMapping;
+
+    FailureOr<Value> thenValue =
+        cloneBranch(builder, ifOp.getThenRegion().front(), thenMapping);
+    FailureOr<Value> elseValue =
+        cloneBranch(builder, ifOp.getElseRegion().front(), elseMapping);
+    if (failed(thenValue) || failed(elseValue)) {
+      return ifOp.emitError()
+             << "expected each scf.if branch to yield exactly one value";
+    }
+
+    Value cond = ifOp.getCondition();
+    if (cond.getType().isInteger(1)) {
+      cond = builder
+                 .create<UnrealizedConversionCastOp>(
+                     ifOp.getLoc(), TypeRange{smt::BoolType::get(ctx)},
+                     ValueRange{cond})
+                 .getResult(0);
+    }
+
+    auto iteOp =
+        builder.create<smt::IteOp>(ifOp.getLoc(), cond, *thenValue, *elseValue);
+    ifOp.getResult(0).replaceAllUsesWith(iteOp.getResult());
+    ifOp.erase();
+  }
+
+  std::string loweredName = ("smt_" + structDef.getSymName()).str();
+  auto loweredFunc = cloned.lookupSymbol<func::FuncOp>(loweredName);
+  if (!loweredFunc) {
+    cloned.emitError() << "could not find lowered SMT function @"
+                       << loweredName;
+    return failure();
+  }
+
+  return loweredFunc;
+}
 
 namespace lleq {
 
-// LogicalResult
-// emitSMTLIBEquivalence(mlir::ModuleOp module, llvm::raw_ostream &os,
-//                       llvm::StringRef memberName,
-//                       llvm::StringRef rootStructName,
-//                       const std::optional<std::string> &fieldName) {
-//   llvm::StringRef normalizedRoot = stripSigil(rootStructName);
-//   auto rootStruct =
-//       module.lookupSymbol<llzk::component::StructDefOp>(normalizedRoot);
-//   if (!rootStruct) {
-//     return module.emitError()
-//            << "could not find root struct @" << normalizedRoot;
-//   }
+LogicalResult emitSMTLIBEncoding(component::StructDefOp structDef,
+                                 llvm::raw_ostream &os,
+                                 llvm::StringRef fieldName) {
+  FailureOr<func::FuncOp> loweredFunc = lowerToSMT(structDef, fieldName);
+  if (failed(loweredFunc)) {
+    return failure();
+  }
 
-//   llvm::StringRef normalizedMember = stripSigil(memberName);
-//   if (!rootStruct.getMemberDef(
-//           StringAttr::get(module.getContext(), normalizedMember))) {
-//     return rootStruct.emitError()
-//            << "could not find member @" << normalizedMember << " in struct @"
-//            << normalizedRoot;
-//   }
-
-// #if !LLEQ_HAS_SMT_BACKEND
-//   (void)fieldName;
-//   return module.emitError()
-//          << "SMT equivalence emission is unavailable in this build because
-//          the "
-//             "active LLZK package does not expose the SMT lowering backend";
-// #else
-//   auto cloned = cast<ModuleOp>(module->clone());
-//   if (failed(lowerStructToSMT(cloned, normalizedRoot, fieldName))) {
-//     return failure();
-//   }
-
-//   std::string loweredName = ("smt_" + normalizedRoot).str();
-//   auto loweredFunc = cloned.lookupSymbol<func::FuncOp>(loweredName);
-//   if (!loweredFunc) {
-//     return cloned.emitError()
-//            << "could not find lowered SMT function @" << loweredName;
-//   }
-
-//   SMTLIBFunctionEmitter emitter(os);
-//   return emitter.emit(loweredFunc, normalizedMember);
-// #endif
-// }
+  SMTLIBFunctionEmitter emitter(os);
+  return emitter.emit(*loweredFunc);
+}
 
 } // namespace lleq
