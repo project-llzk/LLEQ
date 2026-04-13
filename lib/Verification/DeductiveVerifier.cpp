@@ -4,36 +4,165 @@
  */
 
 #include "Verification/DeductiveVerifier.h"
+#include "Verification/SMTLIBEquivalenceEmitter.h"
 
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <llvm/ADT/APInt.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Debug.h>
+#include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/Format.h>
+#include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/SMTAPI.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/SMT/IR/SMTOps.h>
+#include <llzk/Util/ErrorHelper.h>
+
+#include <llvm/Support/Program.h>
+#include <optional>
 
 using namespace mlir;
 using namespace llzk::smt;
 
 namespace lleq {
 
-template <class SMTOp>
-llvm::SMTExprRef (llvm::SMTSolver::*mkBVOp)(const llvm::SMTExprRef &,
-                                            const llvm::SMTExprRef &);
+namespace {
 
-template <> auto mkBVOp<llzk::smt::IntAddOp> = &llvm::SMTSolver::mkBVAdd;
-template <> auto mkBVOp<llzk::smt::IntSubOp> = &llvm::SMTSolver::mkBVSub;
-template <> auto mkBVOp<llzk::smt::IntMulOp> = &llvm::SMTSolver::mkBVMul;
-template <> auto mkBVOp<llzk::smt::IntModOp> = &llvm::SMTSolver::mkBVURem;
-
-LogicalResult DeductiveVerifier::_process_op(mlir::Operation *op) {
-  llvm::TypeSwitch<Operation *, void>(op)
-      .Case<llzk::smt::IntAddOp>([this](llzk::smt::IntAddOp addOp) {
-        SmallVector<Value> args = addOp.getInputs();
-        smtExprs[addOp.getResult()] =
-            solver->mkBVAdd(smtExprs[args[0]], smtExprs[args[1]]);
-      })
-      .Case<llzk::smt::IntSubOp>([this](llzk::smt::IntSubOp subOp) {
-
-      });
+// The StringRef is passed again by reference so that `consume_front(...)`
+// actually mutates the string we're parsing outside the function
+LogicalResult consumeValue(StringRef &model, StringRef var,
+                           Counterexample &cex) {
+  model = model.ltrim();
+  if (!model.consume_front("(")) {
+    return failure();
+  }
+  if (!model.consume_front(var)) {
+    return failure();
+  }
+  if (model.consume_front("_c ")) {
+    model.consumeInteger(10, cex.constraintModel);
+  } else if (model.consume_front("_w ")) {
+    model.consumeInteger(10, cex.witnessModel);
+  } else {
+    return failure();
+  }
+  if (!model.consume_front(")")) {
+    return failure();
+  }
   return success();
+}
+
+FailureOr<Counterexample> _parse_model(StringRef model, StringRef var) {
+  Counterexample cex;
+
+  if (!model.consume_front("(")) {
+    return failure();
+  }
+  if (failed(consumeValue(model, var, cex))) {
+    return failure();
+  }
+  if (failed(consumeValue(model, var, cex))) {
+    return failure();
+  }
+
+  if (!model.consume_front(")")) {
+    return failure();
+  }
+  return cex;
+}
+
+FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
+                                                  StringRef var) {
+  // Write the query to a temp file
+  auto tempDir = std::filesystem::temp_directory_path();
+  auto tempStdin = tempDir / "query";
+  auto tempStdout = tempDir / "output";
+
+  std::ofstream os{tempStdin};
+  os << query.data();
+  os.close();
+
+  SmallVector<StringRef> args{"cvc5", "--produce-models"};
+
+  std::string error;
+  auto code = llvm::sys::ExecuteAndWait(
+      "/usr/local/bin/cvc5", args,
+      /*Env=*/std::nullopt,
+      /*Redirects=*/
+      {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);
+  if (code) {
+    llvm::report_fatal_error(error.c_str());
+    return failure();
+  }
+
+  std::ifstream is{tempStdout};
+  std::string result;
+  is >> result;
+
+  if (result == "unsat") {
+    return success(MemberEquivalenceResult{});
+  } else if (result == "sat") {
+    char model[256];
+    // Skip the newline after the unsat/sat result
+    is.getline(model, 256);
+    is.getline(model, 256);
+    return _parse_model(model, var);
+  }
+  return failure();
+}
+} // namespace
+
+LogicalResult DeductiveVerifier::generateBaseQuery() {
+  if (baseQuery.has_value()) {
+    baseQuery.reset();
+  }
+  baseQuery.emplace();
+  llvm::raw_string_ostream os{*baseQuery};
+  return emitSMTLIBEncoding(structDef, os, field.name());
+}
+
+FailureOr<MemberEquivalenceResult>
+DeductiveVerifier::proveEquivalence(StringRef memberName) const {
+  llzk::ensure(baseQuery.has_value(), "generateBaseQuery() not called");
+
+  std::string query = *baseQuery;
+  llvm::raw_string_ostream queryStream{query};
+  queryStream << "(assert (not (= (mod " << memberName << "_w " << field.prime()
+              << ") (mod " << memberName << "_c " << field.prime() << "))))\n";
+  queryStream << "(check-sat)\n";
+  queryStream << "(get-value (" << memberName << "_c " << memberName
+              << "_w))\n";
+
+  return _invoke_solver(query, memberName);
+}
+
+StructVerificationResult DeductiveVerifier::verifyStruct() {
+  StructVerificationResult result;
+  // I'm pretty sure llzk::ensure isn't compiled out in release builds
+  llzk::ensure(succeeded(generateBaseQuery()),
+               "failed to generate SMT query for struct @" +
+                   structDef.getSymName());
+
+  for (auto memberDef : structDef.getMemberDefs()) {
+    StringRef memberName = memberDef.getSymName();
+    auto memberResult = proveEquivalence(memberName);
+    llzk::ensure(succeeded(memberResult),
+                 "failed to prove equivalence/inequivalence for member @" +
+                     structDef.getSymName() + "::" + memberName);
+
+    if (memberResult->equivalent) {
+      // No counterexample, so they're equivalent
+      result.equivalentMembers.insert(memberName);
+    } else {
+      // Map the inequivalent members to the counterexample
+      result.inequivalentMembers.insert(
+          {memberName, *memberResult->counterexample});
+    }
+  }
+  return result;
 }
 
 } // namespace lleq

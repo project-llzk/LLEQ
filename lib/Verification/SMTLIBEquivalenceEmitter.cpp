@@ -10,6 +10,8 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Analysis/LightweightSignalEquivalenceAnalysis.h>
 #include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
+#include <llzk/Util/SymbolHelper.h>
+#include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/SymbolTable.h>
@@ -65,6 +67,8 @@ public:
   explicit SMTLIBFunctionEmitter(raw_ostream &os) : os(os) {}
 
   LogicalResult emit(func::FuncOp func) {
+    // Can probably do better here
+    os << "(set-logic ALL)\n";
     for (auto [index, arg] : llvm::enumerate(func.getArguments())) {
       std::string name = "arg" + std::to_string(index);
       values[arg] = name;
@@ -130,7 +134,7 @@ private:
 
     values[op.getResult()] = symbol;
 
-    os << "(declare-fun " << symbol << " " << sortForType(op.getType())
+    os << "(declare-fun " << symbol << " () " << sortForType(op.getType())
        << ")\n";
     return success();
   }
@@ -300,9 +304,10 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
     return failure();
   }
 
+  auto structRef = structDef.getFullyQualifiedName();
+
   auto cloned = cast<ModuleOp>(module->clone());
-  auto clonedStruct =
-      cloned.lookupSymbol<component::StructDefOp>(structDef.getSymName());
+  auto clonedStruct = cloned.lookupSymbol<component::StructDefOp>(structRef);
   if (!clonedStruct) {
     cloned.emitError() << "selected struct disappeared while cloning module";
     return failure();
@@ -383,10 +388,12 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
   }
 
   std::string loweredName = ("smt_" + structDef.getSymName()).str();
-  auto loweredFunc = cloned.lookupSymbol<func::FuncOp>(loweredName);
+  auto smtFuncRef = llzk::replaceLeaf(
+      structRef, StringAttr::get(structDef.getContext(), loweredName));
+
+  auto loweredFunc = cloned.lookupSymbol<func::FuncOp>(smtFuncRef);
   if (!loweredFunc) {
-    cloned.emitError() << "could not find lowered SMT function @"
-                       << loweredName;
+    cloned.emitError() << "could not find lowered SMT function " << loweredName;
     return failure();
   }
 
