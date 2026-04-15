@@ -15,8 +15,8 @@
 namespace lleq {
 
 /// Lower the selected LLZK struct to SMT and print its SMTLIB encoding.
-llvm::LogicalResult
-emitSMTLIBEncoding(llzk::component::StructDefOp structDef,
-                   llvm::raw_ostream &os, llvm::StringRef fieldName);
+llvm::LogicalResult emitSMTLIBEncoding(llzk::component::StructDefOp structDef,
+                                       llvm::raw_ostream &os,
+                                       llvm::StringRef fieldName);
 
 } // namespace lleq

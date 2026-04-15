@@ -23,17 +23,16 @@ static llvm::cl::opt<bool>
 
 static llvm::cl::opt<bool> emitSMTLIBOpt(
     "emit-smtlib",
-    llvm::cl::desc(
-        "Print the SMTLIB encoding of the selected struct and stop"),
+    llvm::cl::desc("Print the SMTLIB encoding of the selected struct and stop"),
     llvm::cl::cat(lleqCat));
 
-static llvm::cl::opt<std::string> smtStructOpt(
-    "struct", llvm::cl::desc("The struct to lower before emitting SMTLIB"),
-    llvm::cl::init(""), llvm::cl::cat(lleqCat));
+static llvm::cl::opt<std::string>
+    smtStructOpt("struct",
+                 llvm::cl::desc("The struct to lower before emitting SMTLIB"),
+                 llvm::cl::init(""), llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<std::string> smtFieldOpt(
-    "field",
-    llvm::cl::desc("Prime field name forwarded to LLZK SMT lowering"),
+    "field", llvm::cl::desc("Prime field name forwarded to LLZK SMT lowering"),
     llvm::cl::init(""), llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<std::string> inputFileOpt(llvm::cl::Positional,
