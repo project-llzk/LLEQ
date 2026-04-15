@@ -101,19 +101,19 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  if (lleq::cli::emitSMTLIB()) {
+  if (lleq::cli::emitSMTLIB() || lleq::cli::disableStore()) {
     if (lleq::cli::dumpStore()) {
-      llvm::errs() << "--dump-store cannot be combined with --emit-smtlib\n";
+      llvm::errs() << "--dump-store cannot be combined with this option\n";
       return EXIT_FAILURE;
     }
 
     if (lleq::cli::smtStruct().empty()) {
-      llvm::errs() << "--struct is required with --emit-smtlib\n";
+      llvm::errs() << "--struct is required with this option\n";
       return EXIT_FAILURE;
     }
 
     if (lleq::cli::smtField().empty()) {
-      llvm::errs() << "--field is required with --emit-smtlib\n";
+      llvm::errs() << "--field is required with this option\n";
       return EXIT_FAILURE;
     }
 
@@ -130,26 +130,31 @@ int main(int argc, char **argv) {
       return EXIT_FAILURE;
     }
 
-    lleq::DeductiveVerifier verifier{
-        structDef, llzk::Field::getField(lleq::cli::smtField())};
+    auto field = llzk::Field::getField(lleq::cli::smtField());
 
+    if (lleq::cli::emitSMTLIB()) {
+      if (failed(lleq::emitSMTLIBEncoding(structDef, llvm::outs(),
+                                          field.name()))) {
+        llvm::errs() << "failed to emit SMTLIB for struct @"
+                     << lleq::cli::smtStruct() << '\n';
+        return EXIT_FAILURE;
+      }
+      return EXIT_SUCCESS;
+    }
+
+    lleq::DeductiveVerifier verifier{structDef, field};
     lleq::StructVerificationResult result = verifier.verifyStruct();
     llvm::outs() << "The following members were proven equivalent:\n";
     for (auto member : result.equivalentMembers) {
-      llvm::outs() << "+ " << member << "\n";
+      llvm::outs() << "+ @" << structDef.getSymName() << "::" << member << "\n";
     }
     llvm::outs() << "The following members were proven inequivalent:\n";
     for (auto [member, counterexample] : result.inequivalentMembers) {
       auto [w, c] = counterexample;
-      llvm::outs() << "- " << member << "\n";
+      llvm::outs() << "- @" << structDef.getSymName() << "::" << member << "\n";
       llvm::outs() << "\twitness: " << w << "\n";
       llvm::outs() << "\tconstraint: " << c << "\n";
     }
-
-    // if (failed(lleq::emitSMTLIBEncoding(structDef, llvm::outs(),
-    //                                     lleq::cli::smtField()))) {
-    //   return EXIT_FAILURE;
-    // }
 
     return EXIT_SUCCESS;
   }

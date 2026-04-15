@@ -147,6 +147,7 @@ StructVerificationResult DeductiveVerifier::verifyStruct() {
                    structDef.getSymName());
 
   for (auto memberDef : structDef.getMemberDefs()) {
+    SmallVector<char> _memberName;
     StringRef memberName = memberDef.getSymName();
     auto memberResult = proveEquivalence(memberName);
     llzk::ensure(succeeded(memberResult),

@@ -13,7 +13,7 @@ static llvm::cl::opt<bool> dumpStoreOpt(
 static llvm::cl::opt<bool> disableStoreOpt(
     "disable-store",
     llvm::cl::desc(
-        "Disable the symbolic store construction/lightweight static analysis"),
+        "Skip symbolic-store construction and run only the deductive verifier"),
     llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<bool>
@@ -24,7 +24,7 @@ static llvm::cl::opt<bool>
 static llvm::cl::opt<bool> emitSMTLIBOpt(
     "emit-smtlib",
     llvm::cl::desc(
-        "Lower the selected struct to SMT and print its SMTLIB encoding"),
+        "Print the SMTLIB encoding of the selected struct and stop"),
     llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<std::string> smtStructOpt(
