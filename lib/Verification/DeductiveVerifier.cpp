@@ -7,13 +7,8 @@
 #include "Verification/SMTLIBEquivalenceEmitter.h"
 
 #include <fstream>
-#include <llvm/ADT/APInt.h>
-#include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
-#include <llvm/Support/ErrorHandling.h>
-#include <llvm/Support/Format.h>
 #include <llvm/Support/LogicalResult.h>
-#include <llvm/Support/SMTAPI.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Util/ErrorHelper.h>
@@ -73,7 +68,8 @@ FailureOr<Counterexample> _parse_model(StringRef model, StringRef var) {
 
 FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
                                                   StringRef var) {
-  // Write the query to a temp file
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   // TODO: std::tmpnam is deprecated, because between generating the filename
   // and opening it via `ExecuteAndWait`, another process may claim the same
   // name and create a race condition. Modern variants that atomically open the
@@ -81,7 +77,9 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
   // handle; we should implement a workaround at some point
   auto tempStdin = std::tmpnam(nullptr);
   auto tempStdout = std::tmpnam(nullptr);
+#pragma clang diagnostic pop
 
+  // Write the query to a temp file
   std::ofstream os{tempStdin};
   os << query.data();
   os.close();
