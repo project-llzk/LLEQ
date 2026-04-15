@@ -6,9 +6,6 @@
 #include "Verification/DeductiveVerifier.h"
 #include "Verification/SMTLIBEquivalenceEmitter.h"
 
-#include <cstdlib>
-#include <cstring>
-#include <filesystem>
 #include <fstream>
 #include <llvm/ADT/APInt.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -77,9 +74,13 @@ FailureOr<Counterexample> _parse_model(StringRef model, StringRef var) {
 FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
                                                   StringRef var) {
   // Write the query to a temp file
-  auto tempDir = std::filesystem::temp_directory_path();
-  auto tempStdin = tempDir / "query";
-  auto tempStdout = tempDir / "output";
+  // TODO: std::tmpnam is deprecated, because between generating the filename
+  // and opening it via `ExecuteAndWait`, another process may claim the same
+  // name and create a race condition. Modern variants that atomically open the
+  // file don't work here because `ExecuteAndWait` exepcts a filename and not a
+  // handle; we should implement a workaround at some point
+  auto tempStdin = std::tmpnam(nullptr);
+  auto tempStdout = std::tmpnam(nullptr);
 
   std::ofstream os{tempStdin};
   os << query.data();
