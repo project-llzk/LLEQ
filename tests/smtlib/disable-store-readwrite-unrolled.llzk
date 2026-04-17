@@ -1,0 +1,44 @@
+// REQUIRES: smt-equiv
+// RUN: lleq --disable-store --struct ReadWriteUnrolled --field babybear %s | FileCheck %s
+
+module attributes {llzk.lang} {
+    struct.def @ReadWriteUnrolled {
+        struct.member @arr1_0 : !felt.type
+        struct.member @arr1_1 : !felt.type
+        struct.member @arr2_0 : !felt.type
+
+        function.def @compute(%a: !felt.type, %b: !felt.type, %c: !felt.type) -> !struct.type<@ReadWriteUnrolled> {
+            %self = struct.new : !struct.type<@ReadWriteUnrolled>
+
+            %sum = felt.add %a, %b
+            %diff = felt.sub %a, %b
+            %prod = felt.mul %sum, %c
+
+            struct.writem %self[@arr1_0] = %sum : !struct.type<@ReadWriteUnrolled>, !felt.type
+            struct.writem %self[@arr1_1] = %diff : !struct.type<@ReadWriteUnrolled>, !felt.type
+            struct.writem %self[@arr2_0] = %prod : !struct.type<@ReadWriteUnrolled>, !felt.type
+            function.return %self : !struct.type<@ReadWriteUnrolled>
+        }
+
+        function.def @constrain(%self: !struct.type<@ReadWriteUnrolled>, %a: !felt.type, %b: !felt.type, %c: !felt.type) {
+            %arr1_0 = struct.readm %self[@arr1_0] : !struct.type<@ReadWriteUnrolled>, !felt.type
+            %arr1_1 = struct.readm %self[@arr1_1] : !struct.type<@ReadWriteUnrolled>, !felt.type
+            %arr2_0 = struct.readm %self[@arr2_0] : !struct.type<@ReadWriteUnrolled>, !felt.type
+
+            %sum = felt.add %a, %b
+            %diff = felt.sub %a, %b
+            %prod = felt.mul %sum, %c
+
+            constrain.eq %arr1_0, %sum : !felt.type
+            constrain.eq %arr1_1, %diff : !felt.type
+            constrain.eq %arr2_0, %prod : !felt.type
+            function.return
+        }
+    }
+}
+
+// CHECK-LABEL: The following members were proven equivalent:
+// CHECK-DAG: + @ReadWriteUnrolled::arr1_0
+// CHECK-DAG: + @ReadWriteUnrolled::arr1_1
+// CHECK-DAG: + @ReadWriteUnrolled::arr2_0
+// CHECK: The following members were proven inequivalent:
