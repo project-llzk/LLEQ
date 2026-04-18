@@ -8,7 +8,10 @@
 
 #include <fstream>
 #include <llvm/Support/Debug.h>
+#include <llvm/Support/ErrorOr.h>
+#include <llvm/Support/FileSystem.h>
 #include <llvm/Support/LogicalResult.h>
+#include <llvm/Support/Process.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Util/ErrorHelper.h>
@@ -66,6 +69,32 @@ FailureOr<Counterexample> _parse_model(StringRef model, StringRef var) {
   return cex;
 }
 
+FailureOr<std::string> resolveSolverPath(std::string &errorMessage) {
+  if (std::optional<std::string> envPath =
+          llvm::sys::Process::GetEnv("LLEQ_CVC5")) {
+    if (llvm::sys::fs::can_execute(*envPath)) {
+      return *envPath;
+    }
+    errorMessage = "LLEQ_CVC5 is set to '" + *envPath +
+                   "', but that path is not executable";
+    return failure();
+  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // llvm::ErrorOr<std::string> appears to be deprecated, but silence the
+  // warning for now
+  auto solverPath = llvm::sys::findProgramByName("cvc5");
+#pragma clang diagnostic pop
+  if (!solverPath) {
+    errorMessage =
+        "could not find an executable cvc5 binary; install cvc5 or set "
+        "LLEQ_CVC5 to the full path of the solver binary";
+    return failure();
+  }
+  return *solverPath;
+}
+
 FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
                                                   StringRef var) {
 #pragma clang diagnostic push
@@ -84,11 +113,17 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
   os << query.data();
   os.close();
 
+  std::string solverError;
+  FailureOr<std::string> solverPath = resolveSolverPath(solverError);
+  if (failed(solverPath)) {
+    llvm::report_fatal_error(solverError.c_str());
+  }
+
   SmallVector<StringRef> args{"cvc5", "--produce-models"};
 
   std::string error;
   auto code = llvm::sys::ExecuteAndWait(
-      "/usr/local/bin/cvc5", args,
+      *solverPath, args,
       /*Env=*/std::nullopt,
       /*Redirects=*/
       {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);

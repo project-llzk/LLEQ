@@ -12,6 +12,7 @@ config.python_executable = "@Python3_EXECUTABLE@"
 # config.enable_bindings_python = @LLEQ_ENABLE_BINDINGS_PYTHON_STRING@
 config.lleq_src_root = "@CMAKE_SOURCE_DIR@"
 config.lleq_obj_root = "@CMAKE_BINARY_DIR@"
+config.cvc5_executable = "@LLEQ_CVC5_EXECUTABLE@"
 config.enable_smt_equiv = @LLEQ_ENABLE_SMT_EQUIV@
 # config.per_test_coverage = @LLEQ_LIT_COMPATIBLE_COVERAGE_STRING@
 
