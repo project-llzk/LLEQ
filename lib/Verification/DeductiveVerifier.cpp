@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <llvm/Support/Debug.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/ErrorOr.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/LogicalResult.h>
@@ -69,15 +70,14 @@ FailureOr<Counterexample> _parse_model(StringRef model, StringRef var) {
   return cex;
 }
 
-FailureOr<std::string> resolveSolverPath(std::string &errorMessage) {
+std::string resolveSolverPath() {
   if (std::optional<std::string> envPath =
           llvm::sys::Process::GetEnv("LLEQ_CVC5")) {
     if (llvm::sys::fs::can_execute(*envPath)) {
       return *envPath;
     }
-    errorMessage = "LLEQ_CVC5 is set to '" + *envPath +
-                   "', but that path is not executable";
-    return failure();
+    llvm::report_fatal_error(StringRef{"LLEQ_CVC5 is set to '"} + *envPath +
+                             "', but that path is not executable");
   }
 
 #pragma clang diagnostic push
@@ -87,10 +87,9 @@ FailureOr<std::string> resolveSolverPath(std::string &errorMessage) {
   auto solverPath = llvm::sys::findProgramByName("cvc5");
 #pragma clang diagnostic pop
   if (!solverPath) {
-    errorMessage =
+    llvm::report_fatal_error(
         "could not find an executable cvc5 binary; install cvc5 or set "
-        "LLEQ_CVC5 to the full path of the solver binary";
-    return failure();
+        "LLEQ_CVC5 to the full path of the solver binary");
   }
   return *solverPath;
 }
@@ -113,17 +112,12 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
   os << query.data();
   os.close();
 
-  std::string solverError;
-  FailureOr<std::string> solverPath = resolveSolverPath(solverError);
-  if (failed(solverPath)) {
-    llvm::report_fatal_error(solverError.c_str());
-  }
-
+  auto solverPath = resolveSolverPath();
   SmallVector<StringRef> args{"cvc5", "--produce-models"};
 
   std::string error;
   auto code = llvm::sys::ExecuteAndWait(
-      *solverPath, args,
+      solverPath, args,
       /*Env=*/std::nullopt,
       /*Redirects=*/
       {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);
