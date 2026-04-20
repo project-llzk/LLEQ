@@ -169,7 +169,6 @@ DeductiveVerifier::proveEquivalence(StringRef memberName) const {
 
 StructVerificationResult DeductiveVerifier::verifyStruct() {
   StructVerificationResult result;
-  // I'm pretty sure llzk::ensure isn't compiled out in release builds
   llzk::ensure(succeeded(generateBaseQuery()),
                "failed to generate SMT query for struct @" +
                    structDef.getSymName());

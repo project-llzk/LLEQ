@@ -67,7 +67,7 @@ public:
   explicit SMTLIBFunctionEmitter(raw_ostream &os) : os(os) {}
 
   LogicalResult emit(func::FuncOp func) {
-    // Can probably do better here
+    // TODO: actually check what logics we need instead of (set-logic ALL)
     os << "(set-logic ALL)\n";
     for (auto [index, arg] : llvm::enumerate(func.getArguments())) {
       std::string name = "arg" + std::to_string(index);
@@ -334,57 +334,6 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
 
   if (failed(nonCFPM.run(cloned))) {
     return failure();
-  }
-
-  SmallVector<scf::IfOp> ifOps;
-  cloned.walk([&](scf::IfOp ifOp) { ifOps.push_back(ifOp); });
-
-  auto cloneBranch = [&](OpBuilder &builder, Block &block,
-                         IRMapping &mapping) -> FailureOr<Value> {
-    for (Operation &op : block.without_terminator()) {
-      builder.clone(op, mapping);
-    }
-
-    auto yieldOp = dyn_cast<scf::YieldOp>(block.getTerminator());
-    if (!yieldOp || yieldOp.getNumOperands() != 1) {
-      return failure();
-    }
-
-    return mapping.lookupOrDefault(yieldOp.getOperand(0));
-  };
-
-  for (scf::IfOp ifOp : llvm::reverse(ifOps)) {
-    if (ifOp.getNumResults() != 1 || ifOp.getElseRegion().empty()) {
-      return ifOp.emitError()
-             << "unsupported scf.if shape while preparing SMT emission";
-    }
-
-    OpBuilder builder(ifOp);
-    IRMapping thenMapping;
-    IRMapping elseMapping;
-
-    FailureOr<Value> thenValue =
-        cloneBranch(builder, ifOp.getThenRegion().front(), thenMapping);
-    FailureOr<Value> elseValue =
-        cloneBranch(builder, ifOp.getElseRegion().front(), elseMapping);
-    if (failed(thenValue) || failed(elseValue)) {
-      return ifOp.emitError()
-             << "expected each scf.if branch to yield exactly one value";
-    }
-
-    Value cond = ifOp.getCondition();
-    if (cond.getType().isInteger(1)) {
-      cond = builder
-                 .create<UnrealizedConversionCastOp>(
-                     ifOp.getLoc(), TypeRange{smt::BoolType::get(ctx)},
-                     ValueRange{cond})
-                 .getResult(0);
-    }
-
-    auto iteOp =
-        builder.create<smt::IteOp>(ifOp.getLoc(), cond, *thenValue, *elseValue);
-    ifOp.getResult(0).replaceAllUsesWith(iteOp.getResult());
-    ifOp.erase();
   }
 
   std::string loweredName = ("smt_" + structDef.getSymName()).str();
