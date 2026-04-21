@@ -167,12 +167,10 @@ private:
   FailureOr<std::string> buildExpression(Operation *op) {
 
     static DenseMap<StringRef, StringRef> opToSmtOp = {
-        {"smt.int.neg", "-"},      {"smt.not", "not"},
-        {"smt.int.add", "+"},      {"smt.int.mul", "*"},
-        {"smt.int.sub", "-"},      {"smt.int.mod", "mod"},
-        {"smt.eq", "="},           {"smt.int.and", "and"},
-        {"smt.int.or", "or"},      {"smt.int.xor", "xor"},
-        {"smt.int.implies", "=>"}, {"smt.int.not", "not"},
+        {"smt.int.neg", "-"},   {"smt.not", "not"},     {"smt.int.add", "+"},
+        {"smt.int.mul", "*"},   {"smt.int.sub", "-"},   {"smt.int.mod", "mod"},
+        {"smt.eq", "="},        {"smt.int.and", "and"}, {"smt.int.or", "or"},
+        {"smt.int.xor", "xor"}, {"smt.implies", "=>"},  {"smt.int.not", "not"},
         {"smt.ite", "ite"},
     };
 
@@ -325,14 +323,15 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
     return failure();
   }
 
-  PassManager nonCFPM(ctx, PassManager::getAnyOpAnchorName(),
-                      PassManager::Nesting::Implicit);
-  nonCFPM.enableVerifier(false);
-  nonCFPM.addPass(std::move(smtPass));
-  nonCFPM.addPass(createCanonicalizerPass());
-  nonCFPM.addPass(createCSEPass());
+  PassManager pm(ctx, PassManager::getAnyOpAnchorName(),
+                 PassManager::Nesting::Implicit);
+  pm.enableVerifier(false);
+  pm.addPass(std::move(smtPass));
+  pm.addPass(std::move(llzk::smt::createSMTCFLoweringPass()));
+  pm.addPass(createCanonicalizerPass());
+  pm.addPass(createCSEPass());
 
-  if (failed(nonCFPM.run(cloned))) {
+  if (failed(pm.run(cloned))) {
     return failure();
   }
 

@@ -113,7 +113,9 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
   os.close();
 
   auto solverPath = resolveSolverPath();
-  SmallVector<StringRef> args{"cvc5", "--produce-models"};
+  // Set a one second timeout for each check-sat query for now
+  SmallVector<StringRef> args{"cvc5", "--produce-models", "--tlimit-per",
+                              "1000"};
 
   std::string error;
   auto code = llvm::sys::ExecuteAndWait(

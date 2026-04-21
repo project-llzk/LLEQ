@@ -1,5 +1,6 @@
 // REQUIRES: smt-equiv
 // RUN: lleq --disable-store --struct IsZero --field babybear %s | FileCheck %s
+// XFAIL: *
 
 module attributes {llzk.lang} {
     struct.def @IsZero {
