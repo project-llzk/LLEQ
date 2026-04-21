@@ -89,8 +89,9 @@ private:
 
       LogicalResult result =
           TypeSwitch<Operation *, LogicalResult>(&op)
-              .Case<scf::IfOp>([](scf::IfOp ifOp) {
-                ifOp.emitError() << "control flow not supported in SMT emitter";
+              .Case<scf::IfOp, scf::ForOp, scf::WhileOp>([](auto controlOp) {
+                controlOp.emitError()
+                    << "control flow not supported in SMT emitter";
                 return failure();
               })
               .Case<smt::DeclareFunOp>([this](auto declFunOp) {
