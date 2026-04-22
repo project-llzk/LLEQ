@@ -1,11 +1,12 @@
 // REQUIRES: smt-equiv
 // RUN: lleq --disable-store --struct IsZero --field babybear %s | FileCheck %s
 // XFAIL: *
+// Currently fails due to timeout. Range analysis optimizations should fix this
 
 module attributes {llzk.lang} {
     struct.def @IsZero {
-        struct.member @out : !felt.type
-        struct.member @inv : !felt.type
+        struct.member @out : !felt.type {signal}
+        struct.member @inv : !felt.type {signal}
 
         function.def @compute(%in: !felt.type) -> !struct.type<@IsZero> attributes {function.allow_non_native_field_ops} {
             %self = struct.new : !struct.type<@IsZero>
