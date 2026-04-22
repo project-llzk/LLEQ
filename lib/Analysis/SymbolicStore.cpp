@@ -56,7 +56,7 @@ void SymbolicStore::dump(llvm::raw_ostream &os) const {
 }
 
 mlir::LogicalResult
-SymbolicStore::build_store(llzk::component::StructDefOp structDef) {
+SymbolicStore::buildStore(llzk::component::StructDefOp structDef) {
   component = structDef;
 
   if (component.getComputeFuncOp() != nullptr) {

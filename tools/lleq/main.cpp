@@ -43,7 +43,7 @@
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
   llvm::outs() << "-- " << structDef.getSymName() << " --\n";
   lleq::SymbolicStore store;
-  if (mlir::failed(store.build_store(structDef))) {
+  if (mlir::failed(store.buildStore(structDef))) {
     llvm::report_fatal_error("symbolic store construction failed");
   }
   store.dump(llvm::outs());

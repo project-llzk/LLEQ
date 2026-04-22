@@ -42,7 +42,7 @@ public:
 
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef
-  mlir::LogicalResult build_store(llzk::component::StructDefOp structDef);
+  mlir::LogicalResult buildStore(llzk::component::StructDefOp structDef);
 
   /// @brief Generate a symbolic expression corresponding to an MLIR SSA value,
   /// possibly looking up values in the store to do so
