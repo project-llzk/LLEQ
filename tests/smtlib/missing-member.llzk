@@ -1,0 +1,19 @@
+// RUN: not lleq --emit-smtlib --struct missing --field babybear %s 2>&1 | FileCheck %s
+
+module attributes {llzk.lang} {
+    struct.def @A {
+        struct.member @sum : !felt.type
+
+        function.def @compute(%a: !felt.type) -> !struct.type<@A> {
+            %self = struct.new : !struct.type<@A>
+            struct.writem %self[@sum] = %a : !struct.type<@A>, !felt.type
+            function.return %self : !struct.type<@A>
+        }
+
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type) {
+            function.return
+        }
+    }
+}
+
+// CHECK: could not find struct @missing

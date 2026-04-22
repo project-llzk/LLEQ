@@ -39,10 +39,20 @@ message(STATUS "Using MLIR in: ${MLIR_DIR}")
 find_package(LLZK REQUIRED CONFIG)
 message(STATUS "Using LLZK in: ${LLZK_DIR}")
 
+if(TARGET LLZK::LLZKDialectRegistration)
+  set(LLEQ_LLZK_DIALECT_REGISTRATION_TARGET LLZK::LLZKDialectRegistration)
+elseif(TARGET LLZK::DialectRegistration)
+  set(LLEQ_LLZK_DIALECT_REGISTRATION_TARGET LLZK::DialectRegistration)
+else()
+  message(FATAL_ERROR "Could not find an LLZK dialect registration target")
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
 include(AddLLVM)
 include(AddMLIR)
+
+set(LLEQ_ENABLE_SMT_EQUIV 1)
 
 add_custom_target(check DEPENDS $<$<BOOL:BUILD_TESTING>:check-lit>)
 

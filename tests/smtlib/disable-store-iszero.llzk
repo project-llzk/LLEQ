@@ -1,0 +1,64 @@
+// REQUIRES: smt-equiv
+// RUN: lleq --disable-store --struct IsZero --field babybear %s | FileCheck %s
+// XFAIL: *
+// Currently fails due to timeout. Range analysis optimizations should fix this
+
+module attributes {llzk.lang} {
+    struct.def @IsZero {
+        struct.member @out : !felt.type {signal}
+        struct.member @inv : !felt.type {signal}
+
+        function.def @compute(%in: !felt.type) -> !struct.type<@IsZero> attributes {function.allow_non_native_field_ops} {
+            %self = struct.new : !struct.type<@IsZero>
+
+            %c0 = felt.const 0
+            %is_nonzero = bool.cmp ne(%in, %c0)
+            %inv = scf.if %is_nonzero -> !felt.type {
+                %c1_then = felt.const 1
+                %div = felt.div %c1_then, %in : !felt.type, !felt.type
+                struct.writem %self[@inv] = %div : !struct.type<@IsZero>, !felt.type
+                scf.yield %div : !felt.type
+            } else {
+                %c0_else = felt.const 0
+                struct.writem %self[@inv] = %c0_else : !struct.type<@IsZero>, !felt.type
+                scf.yield %c0_else : !felt.type
+            }
+
+            %neg = felt.neg %in
+            %prod = felt.mul %neg, %inv
+            %c1 = felt.const 1
+            %out = felt.add %prod, %c1
+            struct.writem %self[@out] = %out : !struct.type<@IsZero>, !felt.type
+            function.return %self : !struct.type<@IsZero>
+        }
+
+        function.def @constrain(%self: !struct.type<@IsZero>, %in: !felt.type) attributes {function.allow_non_native_field_ops} {
+            %out = struct.readm %self[@out] : !struct.type<@IsZero>, !felt.type
+            %inv = struct.readm %self[@inv] : !struct.type<@IsZero>, !felt.type
+
+            %c0 = felt.const 0
+            %is_nonzero = bool.cmp ne(%in, %c0)
+            scf.if %is_nonzero {
+            } else {
+            }
+
+            %neg = felt.neg %in
+            %prod = felt.mul %neg, %inv
+            %c1 = felt.const 1
+            %rhs = felt.add %prod, %c1
+            constrain.eq %out, %rhs : !felt.type
+
+            %zero = felt.mul %in, %out
+            %c0_2 = felt.const 0
+            constrain.eq %zero, %c0_2 : !felt.type
+            function.return
+        }
+    }
+}
+
+// CHECK-LABEL: The following members were proven equivalent:
+// CHECK-NEXT: + @IsZero::out
+// CHECK-NEXT: The following members were proven inequivalent:
+// CHECK-NEXT: - @IsZero::inv
+// CHECK-NEXT: witness: 0
+// CHECK-NEXT: constraint: 1

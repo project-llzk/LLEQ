@@ -1,0 +1,37 @@
+// REQUIRES: smt-equiv
+// RUN: lleq --disable-store --struct SumArr2 --field babybear %s | FileCheck %s
+
+module attributes {llzk.lang} {
+    struct.def @SumArr2 {
+        struct.member @sum0 : !felt.type {signal}
+        struct.member @sum1 : !felt.type {signal}
+
+        function.def @compute(%a0: !felt.type, %a1: !felt.type, %b0: !felt.type, %b1: !felt.type) -> !struct.type<@SumArr2> {
+            %self = struct.new : !struct.type<@SumArr2>
+
+            %sum0 = felt.add %a0, %b0
+            %sum1 = felt.add %a1, %b1
+
+            struct.writem %self[@sum0] = %sum0 : !struct.type<@SumArr2>, !felt.type
+            struct.writem %self[@sum1] = %sum1 : !struct.type<@SumArr2>, !felt.type
+            function.return %self : !struct.type<@SumArr2>
+        }
+
+        function.def @constrain(%self: !struct.type<@SumArr2>, %a0: !felt.type, %a1: !felt.type, %b0: !felt.type, %b1: !felt.type) {
+            %sum0 = struct.readm %self[@sum0] : !struct.type<@SumArr2>, !felt.type
+            %sum1 = struct.readm %self[@sum1] : !struct.type<@SumArr2>, !felt.type
+
+            %exp0 = felt.add %a0, %b0
+            %exp1 = felt.add %a1, %b1
+
+            constrain.eq %sum0, %exp0 : !felt.type
+            constrain.eq %sum1, %exp1 : !felt.type
+            function.return
+        }
+    }
+}
+
+// CHECK-LABEL: The following members were proven equivalent:
+// CHECK-DAG: + @SumArr2::sum0
+// CHECK-DAG: + @SumArr2::sum1
+// CHECK: The following members were proven inequivalent:

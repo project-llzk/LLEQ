@@ -13,13 +13,27 @@ static llvm::cl::opt<bool> dumpStoreOpt(
 static llvm::cl::opt<bool> disableStoreOpt(
     "disable-store",
     llvm::cl::desc(
-        "Disable the symbolic store construction/lightweight static analysis"),
+        "Skip symbolic-store construction and run only the deductive verifier"),
     llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<bool>
     disableVerifierOpt("disable-verifier",
                        llvm::cl::desc("Disable the deductive verifier"),
                        llvm::cl::cat(lleqCat));
+
+static llvm::cl::opt<bool> emitSMTLIBOpt(
+    "emit-smtlib",
+    llvm::cl::desc("Print the SMTLIB encoding of the selected struct and stop"),
+    llvm::cl::cat(lleqCat));
+
+static llvm::cl::opt<std::string>
+    smtStructOpt("struct",
+                 llvm::cl::desc("The struct to lower before emitting SMTLIB"),
+                 llvm::cl::init(""), llvm::cl::cat(lleqCat));
+
+static llvm::cl::opt<std::string> smtFieldOpt(
+    "field", llvm::cl::desc("Prime field name forwarded to LLZK SMT lowering"),
+    llvm::cl::init(""), llvm::cl::cat(lleqCat));
 
 static llvm::cl::opt<std::string> inputFileOpt(llvm::cl::Positional,
                                                llvm::cl::desc("[.llzk file]"),
@@ -30,6 +44,12 @@ bool dumpStore() { return dumpStoreOpt; }
 bool disableStore() { return disableStoreOpt; }
 
 bool disableVerifier() { return disableVerifierOpt; }
+
+bool emitSMTLIB() { return emitSMTLIBOpt; }
+
+std::string &smtStruct() { return smtStructOpt; }
+
+std::string &smtField() { return smtFieldOpt; }
 
 std::string &inputFile() { return inputFileOpt; }
 

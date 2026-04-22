@@ -1,0 +1,34 @@
+// REQUIRES: smt-equiv
+// RUN: lleq --emit-smtlib --struct A --field babybear %s | FileCheck %s
+
+module attributes {llzk.lang} {
+    struct.def @A {
+        struct.member @x : !felt.type
+        struct.member @y : !felt.type
+
+        function.def @compute(%a: !felt.type, %b: !felt.type) -> !struct.type<@A> {
+            %self = struct.new : <@A>
+            %sum = felt.add %a, %b
+            %prod = felt.mul %a, %sum
+            struct.writem %self[@x] = %prod : !struct.type<@A>, !felt.type
+
+            %x = struct.readm %self[@x] : !struct.type<@A>, !felt.type
+            %sq = felt.mul %x, %x
+            struct.writem %self[@y] = %sq : !struct.type<@A>, !felt.type
+            function.return %self : !struct.type<@A>
+        }
+
+        function.def @constrain(%self: !struct.type<@A>, %a: !felt.type, %b: !felt.type) {
+            function.return
+        }
+    }
+}
+
+// CHECK: (set-logic ALL)
+// CHECK-DAG: (declare-const arg0 Int)
+// CHECK-DAG: (declare-const arg1 Int)
+// CHECK-DAG: (declare-fun x_c () Int)
+// CHECK-DAG: (declare-fun x_w () Int)
+// CHECK-DAG: (declare-fun y_w () Int)
+// CHECK: (assert (= (mod x_w 2013265921) (mod (* arg0 (+ arg0 arg1)) 2013265921)))
+// CHECK-DAG: (assert (= (mod y_w 2013265921) (mod (* x_c x_c) 2013265921)))

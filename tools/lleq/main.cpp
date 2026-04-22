@@ -4,6 +4,8 @@
  */
 
 #include "Analysis/SymbolicStore.h"
+#include "Verification/DeductiveVerifier.h"
+#include "Verification/SMTLIBEquivalenceEmitter.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
@@ -20,15 +22,17 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/SymbolHelper.h>
+#include <llzk/Util/SymbolLookup.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
-#include <mlir/IR/Builders.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/DialectRegistry.h>
 #include <mlir/IR/MLIRContext.h>
 #include <mlir/IR/PatternMatch.h>
+#include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
@@ -89,19 +93,74 @@ int main(int argc, char **argv) {
     return llvm::success();
   });
 
-  mlir::OpBuilder builder(&context);
-  auto mod = builder.create<mlir::ModuleOp>(
-      mlir::NameLoc::get(builder.getStringAttr("LLEQ")));
-
   auto parserConfig = mlir::ParserConfig(&context);
-  if (llvm::failed(mlir::parseSourceFile(lleq::cli::inputFile(), mod.getBody(),
-                                         parserConfig))) {
+  auto mod = mlir::parseSourceFile<mlir::ModuleOp>(lleq::cli::inputFile(),
+                                                   parserConfig);
+  if (!mod) {
     llvm::errs() << "Failed to parse " << lleq::cli::inputFile() << '\n';
     return EXIT_FAILURE;
   }
 
+  if (lleq::cli::emitSMTLIB() || lleq::cli::disableStore()) {
+    if (lleq::cli::dumpStore()) {
+      llvm::errs() << "--dump-store cannot be combined with this option\n";
+      return EXIT_FAILURE;
+    }
+
+    if (lleq::cli::smtStruct().empty()) {
+      llvm::errs() << "--struct is required with this option\n";
+      return EXIT_FAILURE;
+    }
+
+    if (lleq::cli::smtField().empty()) {
+      llvm::errs() << "--field is required with this option\n";
+      return EXIT_FAILURE;
+    }
+
+    llzk::component::StructDefOp structDef;
+    mod->walk([&structDef](llzk::component::StructDefOp s) {
+      if (s.getSymName() == lleq::cli::smtStruct()) {
+        structDef = s;
+      }
+    });
+
+    if (!structDef) {
+      llvm::errs() << "could not find struct @" << lleq::cli::smtStruct()
+                   << '\n';
+      return EXIT_FAILURE;
+    }
+
+    auto field = llzk::Field::getField(lleq::cli::smtField());
+
+    if (lleq::cli::emitSMTLIB()) {
+      if (failed(lleq::emitSMTLIBEncoding(structDef, llvm::outs(),
+                                          field.name()))) {
+        llvm::errs() << "failed to emit SMTLIB for struct @"
+                     << lleq::cli::smtStruct() << '\n';
+        return EXIT_FAILURE;
+      }
+      return EXIT_SUCCESS;
+    }
+
+    lleq::DeductiveVerifier verifier{structDef, field};
+    lleq::StructVerificationResult result = verifier.verifyStruct();
+    llvm::outs() << "The following members were proven equivalent:\n";
+    for (auto member : result.equivalentMembers) {
+      llvm::outs() << "+ @" << structDef.getSymName() << "::" << member << "\n";
+    }
+    llvm::outs() << "The following members were proven inequivalent:\n";
+    for (auto [member, counterexample] : result.inequivalentMembers) {
+      auto [w, c] = counterexample;
+      llvm::outs() << "- @" << structDef.getSymName() << "::" << member << "\n";
+      llvm::outs() << "\twitness: " << w << "\n";
+      llvm::outs() << "\tconstraint: " << c << "\n";
+    }
+
+    return EXIT_SUCCESS;
+  }
+
   if (lleq::cli::dumpStore()) {
-    mod.walk(
+    mod->walk(
         [](llzk::component::StructDefOp structDef) { dumpStore(structDef); });
   }
 

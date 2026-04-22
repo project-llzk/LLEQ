@@ -8,7 +8,7 @@
   llzk,
 
   # test dependencies
-  gtest, python3, lit, z3, # cvc5 ??
+  gtest, python3, lit, z3, cvc5,
 }:
 stdenv.mkDerivation {
   name = "lleq";
@@ -30,7 +30,7 @@ stdenv.mkDerivation {
         src = src0;
       };
 
-  nativeBuildInputs = [clang cmake ninja z3.lib z3];
+  nativeBuildInputs = [clang cmake ninja z3.lib z3 cvc5];
   buildInputs = [mlir llzk z3.lib];
 
   preBuild = ''
@@ -50,7 +50,7 @@ stdenv.mkDerivation {
 
   doCheck = true;
   checkTarget = "check";
-  checkInputs = [clang python3 lit];
+  checkInputs = [clang python3 lit cvc5];
 
   # Currently LLEQ doesn't have anything to install, but the
   # derivation wants an install phase anyway with an output directory.

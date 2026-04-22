@@ -49,6 +49,8 @@ config.lleq_tools_dir = os.path.join(config.lleq_obj_root, 'tools/lleq')
 # Tweak the PATH to include the tools dir.
 llvm_config.with_environment('PATH', config.lleq_tools_dir, append_path=True)
 llvm_config.with_environment('PATH', config.llvm_tools_dir, append_path=True)
+if config.cvc5_executable:
+    llvm_config.with_environment('LLEQ_CVC5', config.cvc5_executable)
 
 tool_dirs = [config.lleq_tools_dir, config.llvm_tools_dir]
 tools = [
@@ -56,6 +58,8 @@ tools = [
 ]
 
 llvm_config.add_tool_substitutions(tools, tool_dirs)
+
+config.available_features.add('smt-equiv')
 
 # Limit testing time in the case of non-converging analyses
 config.maxIndividualTestTime = 60
