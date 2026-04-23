@@ -113,7 +113,9 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
   os.close();
 
   auto solverPath = resolveSolverPath();
-  SmallVector<StringRef> args{"cvc5", "--produce-models"};
+  // Set a one second timeout for each check-sat query for now
+  SmallVector<StringRef> args{"cvc5", "--produce-models", "--tlimit-per",
+                              "1000"};
 
   std::string error;
   auto code = llvm::sys::ExecuteAndWait(
@@ -169,12 +171,17 @@ DeductiveVerifier::proveEquivalence(StringRef memberName) const {
 
 StructVerificationResult DeductiveVerifier::verifyStruct() {
   StructVerificationResult result;
-  // I'm pretty sure llzk::ensure isn't compiled out in release builds
   llzk::ensure(succeeded(generateBaseQuery()),
                "failed to generate SMT query for struct @" +
                    structDef.getSymName());
 
   for (auto memberDef : structDef.getMemberDefs()) {
+    llvm::dbgs() << memberDef.getSignal() << " "
+                 << memberDef.getSignalAttrName() << "\n";
+    if (!memberDef.getSignal()) {
+      // Only need to verify equivalence of signals
+      continue;
+    }
     SmallVector<char> _memberName;
     StringRef memberName = memberDef.getSymName();
     auto memberResult = proveEquivalence(memberName);

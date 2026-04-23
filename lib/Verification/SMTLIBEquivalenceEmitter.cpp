@@ -67,7 +67,7 @@ public:
   explicit SMTLIBFunctionEmitter(raw_ostream &os) : os(os) {}
 
   LogicalResult emit(func::FuncOp func) {
-    // Can probably do better here
+    // TODO: actually check what logics we need instead of (set-logic ALL)
     os << "(set-logic ALL)\n";
     for (auto [index, arg] : llvm::enumerate(func.getArguments())) {
       std::string name = "arg" + std::to_string(index);
@@ -89,8 +89,9 @@ private:
 
       LogicalResult result =
           TypeSwitch<Operation *, LogicalResult>(&op)
-              .Case<scf::IfOp>([](scf::IfOp ifOp) {
-                ifOp.emitError() << "control flow not supported in SMT emitter";
+              .Case<scf::IfOp, scf::ForOp, scf::WhileOp>([](auto controlOp) {
+                controlOp.emitError()
+                    << "control flow not supported in SMT emitter";
                 return failure();
               })
               .Case<smt::DeclareFunOp>([this](auto declFunOp) {
@@ -167,12 +168,10 @@ private:
   FailureOr<std::string> buildExpression(Operation *op) {
 
     static DenseMap<StringRef, StringRef> opToSmtOp = {
-        {"smt.int.neg", "-"},      {"smt.not", "not"},
-        {"smt.int.add", "+"},      {"smt.int.mul", "*"},
-        {"smt.int.sub", "-"},      {"smt.int.mod", "mod"},
-        {"smt.eq", "="},           {"smt.int.and", "and"},
-        {"smt.int.or", "or"},      {"smt.int.xor", "xor"},
-        {"smt.int.implies", "=>"}, {"smt.int.not", "not"},
+        {"smt.int.neg", "-"},   {"smt.not", "not"},     {"smt.int.add", "+"},
+        {"smt.int.mul", "*"},   {"smt.int.sub", "-"},   {"smt.int.mod", "mod"},
+        {"smt.eq", "="},        {"smt.int.and", "and"}, {"smt.int.or", "or"},
+        {"smt.int.xor", "xor"}, {"smt.implies", "=>"},  {"smt.int.not", "not"},
         {"smt.ite", "ite"},
     };
 
@@ -325,66 +324,16 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
     return failure();
   }
 
-  PassManager nonCFPM(ctx, PassManager::getAnyOpAnchorName(),
-                      PassManager::Nesting::Implicit);
-  nonCFPM.enableVerifier(false);
-  nonCFPM.addPass(std::move(smtPass));
-  nonCFPM.addPass(createCanonicalizerPass());
-  nonCFPM.addPass(createCSEPass());
+  PassManager pm(ctx, PassManager::getAnyOpAnchorName(),
+                 PassManager::Nesting::Implicit);
+  pm.enableVerifier(false);
+  pm.addPass(std::move(smtPass));
+  pm.addPass(std::move(llzk::smt::createSMTCFLoweringPass()));
+  pm.addPass(createCanonicalizerPass());
+  pm.addPass(createCSEPass());
 
-  if (failed(nonCFPM.run(cloned))) {
+  if (failed(pm.run(cloned))) {
     return failure();
-  }
-
-  SmallVector<scf::IfOp> ifOps;
-  cloned.walk([&](scf::IfOp ifOp) { ifOps.push_back(ifOp); });
-
-  auto cloneBranch = [&](OpBuilder &builder, Block &block,
-                         IRMapping &mapping) -> FailureOr<Value> {
-    for (Operation &op : block.without_terminator()) {
-      builder.clone(op, mapping);
-    }
-
-    auto yieldOp = dyn_cast<scf::YieldOp>(block.getTerminator());
-    if (!yieldOp || yieldOp.getNumOperands() != 1) {
-      return failure();
-    }
-
-    return mapping.lookupOrDefault(yieldOp.getOperand(0));
-  };
-
-  for (scf::IfOp ifOp : llvm::reverse(ifOps)) {
-    if (ifOp.getNumResults() != 1 || ifOp.getElseRegion().empty()) {
-      return ifOp.emitError()
-             << "unsupported scf.if shape while preparing SMT emission";
-    }
-
-    OpBuilder builder(ifOp);
-    IRMapping thenMapping;
-    IRMapping elseMapping;
-
-    FailureOr<Value> thenValue =
-        cloneBranch(builder, ifOp.getThenRegion().front(), thenMapping);
-    FailureOr<Value> elseValue =
-        cloneBranch(builder, ifOp.getElseRegion().front(), elseMapping);
-    if (failed(thenValue) || failed(elseValue)) {
-      return ifOp.emitError()
-             << "expected each scf.if branch to yield exactly one value";
-    }
-
-    Value cond = ifOp.getCondition();
-    if (cond.getType().isInteger(1)) {
-      cond = builder
-                 .create<UnrealizedConversionCastOp>(
-                     ifOp.getLoc(), TypeRange{smt::BoolType::get(ctx)},
-                     ValueRange{cond})
-                 .getResult(0);
-    }
-
-    auto iteOp =
-        builder.create<smt::IteOp>(ifOp.getLoc(), cond, *thenValue, *elseValue);
-    ifOp.getResult(0).replaceAllUsesWith(iteOp.getResult());
-    ifOp.erase();
   }
 
   std::string loweredName = ("smt_" + structDef.getSymName()).str();

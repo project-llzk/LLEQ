@@ -3,8 +3,13 @@
 
 module attributes {llzk.lang} {
     struct.def @SumArr2 {
+<<<<<<< HEAD
         struct.member @sum0 : !felt.type
         struct.member @sum1 : !felt.type
+=======
+        struct.member @sum0 : !felt.type {signal}
+        struct.member @sum1 : !felt.type {signal}
+>>>>>>> main
 
         function.def @compute(%a0: !felt.type, %a1: !felt.type, %b0: !felt.type, %b1: !felt.type) -> !struct.type<@SumArr2> {
             %self = struct.new : !struct.type<@SumArr2>

@@ -25,7 +25,6 @@ struct Counterexample {
 /// Represents the result of verifying a single struct member. If `equivalent`
 /// is true, the witness/constraint versions of the member are equivalent.
 /// Otherwise, `counterexample` is populated.
-
 struct MemberEquivalenceResult {
   bool equivalent;
   std::optional<Counterexample> counterexample;
@@ -44,7 +43,7 @@ struct StructVerificationResult {
 
 /// The main driver class for the deductive verifier, this generates an SMT
 /// query to prove equivalence of each struct member. A new instance of this
-/// class should be constructed for each struct
+/// class should be constructed for each struct.
 class DeductiveVerifier {
   llzk::component::StructDefOp structDef;
   std::optional<std::string> baseQuery;
