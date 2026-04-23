@@ -30,13 +30,13 @@ public:
 
   /// Attempt to prove symbolic equivalence of a given member's
   /// witness/constraint pair
-  llvm::FailureOr<bool> areEquivalent(llvm::StringRef memberName);
+  bool areEquivalent(llvm::StringRef memberName);
 
   /// Generate symbolic equivalence assertions for the deductive verifier. Note
   /// that this generates assertions for *all members* (not just signals), since
   /// equivalence of some intermediate member might end up being a useful
   /// theorem for the solver
-  llvm::SmallVector<std::string> generateAssertions(llzk::Field field) const;
+  llvm::SmallVector<std::string> generateAssertions(llzk::Field field);
 };
 
 } // namespace lleq

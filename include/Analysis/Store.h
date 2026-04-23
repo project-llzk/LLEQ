@@ -19,6 +19,42 @@ namespace lleq {
 
 // A symbolic multidimensional index into an array
 using StoreIndex = llvm::SmallVector<Symbol>;
+} // namespace lleq
+
+namespace llvm {
+template <> struct DenseMapInfo<lleq::StoreIndex> {
+  static inline lleq::StoreIndex getEmptyKey() {
+    return {DenseMapInfo<lleq::Symbol>::getEmptyKey()};
+  }
+
+  static inline lleq::StoreIndex getTombstoneKey() {
+    return {DenseMapInfo<lleq::Symbol>::getTombstoneKey()};
+  }
+
+  static unsigned getHashValue(const lleq::StoreIndex &index) {
+    return llvm::hash_combine(
+        index.size(), llvm::hash_combine_range(index.begin(), index.end()));
+  }
+
+  static bool isEqual(const lleq::StoreIndex &lhs,
+                      const lleq::StoreIndex &rhs) {
+    auto emptyKey = DenseMapInfo<lleq::Symbol>::getEmptyKey();
+    auto tombstoneKey = DenseMapInfo<lleq::Symbol>::getTombstoneKey();
+    auto isSentinel = [&](const lleq::StoreIndex &index, lleq::Symbol key) {
+      return index.size() == 1 && index.front() == key;
+    };
+
+    if (isSentinel(lhs, emptyKey) || isSentinel(lhs, tombstoneKey) ||
+        isSentinel(rhs, emptyKey) || isSentinel(rhs, tombstoneKey)) {
+      return lhs == rhs;
+    }
+
+    return lhs.size() == rhs.size() &&
+           std::equal(lhs.begin(), lhs.end(), rhs.begin(), lleq::impl::equal);
+  }
+};
+} // namespace llvm
+namespace lleq {
 
 // Represents a location in the store with a "name" pointing to a
 // multidimensional array, and a symbolic index into each dimension

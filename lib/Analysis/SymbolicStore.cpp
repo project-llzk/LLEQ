@@ -121,14 +121,14 @@ Symbol SymbolicStore::lookup(Signal signal, ArrayRef<Symbol> indices) {
   return pool->fresh_unknown();
 }
 
-SmallVector<StoreIndex> SymbolicStore::getWrittenIndices(Signal signal) {
+DenseSet<StoreIndex> SymbolicStore::getWrittenIndices(Signal signal) {
   llzk::ensure(signalStore != nullptr,
                "getWrittenIndices() called before buildStore()");
 
-  SmallVector<StoreIndex> indices;
+  DenseSet<StoreIndex> indices;
   for (auto [ref, value] : *signalStore) {
     if (ref.name == signal) {
-      indices.push_back(ref.index);
+      indices.insert(ref.index);
     }
   }
   return indices;

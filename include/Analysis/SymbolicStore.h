@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include "Analysis/ScalarSymbolAnalysis.h"
 #include "Analysis/SymbolExpr.h"
-#include "Analysis/SymbolicStoreAnalysis.h"
+#include "Store.h"
 
 #include <cassert>
 #include <llvm/ADT/ArrayRef.h>
@@ -60,7 +59,7 @@ public:
   /// @brief Return a vector containing all symbolic indices written to for the
   /// given signal. If the signal is untracked, returns an empty vector.
   /// @param signal
-  llvm::SmallVector<StoreIndex> getWrittenIndices(Signal signal);
+  llvm::DenseSet<StoreIndex> getWrittenIndices(Signal signal);
 
   /// @brief Pretty-print the contents of the store
   /// @param os
