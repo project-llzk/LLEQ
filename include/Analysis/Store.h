@@ -17,18 +17,21 @@
 
 namespace lleq {
 
+// A symbolic multidimensional index into an array
+using StoreIndex = llvm::SmallVector<Symbol>;
+
 // Represents a location in the store with a "name" pointing to a
 // multidimensional array, and a symbolic index into each dimension
 template <std::equality_comparable NameT> struct IndexedLocation {
   NameT name;
-  llvm::SmallVector<Symbol> indices;
+  StoreIndex index;
 
   // Returns true if the two locations might alias each other (i.e.
   // have the same name, and the symbolic indices could be the same under some
   // valuation)
   bool canAlias(const IndexedLocation<NameT> &other) const {
-    return name == other.name && indices.size() == other.indices.size() &&
-           std::equal(indices.begin(), indices.end(), other.indices.begin(),
+    return name == other.name && index.size() == other.index.size() &&
+           std::equal(index.begin(), index.end(), other.index.begin(),
                       [](auto a, auto b) { return a->canEqual(*b); });
   }
 };
@@ -36,8 +39,8 @@ template <std::equality_comparable NameT> struct IndexedLocation {
 template <std::equality_comparable T>
 static inline bool operator==(const IndexedLocation<T> &a,
                               const IndexedLocation<T> &b) {
-  return a.name == b.name && a.indices.size() == b.indices.size() &&
-         std::equal(a.indices.begin(), a.indices.end(), b.indices.begin(),
+  return a.name == b.name && a.index.size() == b.index.size() &&
+         std::equal(a.index.begin(), a.index.end(), b.index.begin(),
                     impl::equal);
 }
 
@@ -45,7 +48,7 @@ template <class T>
 llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
                               const IndexedLocation<T> &ref) {
   os << ref.name;
-  for (auto idx : ref.indices) {
+  for (auto idx : ref.index) {
     os << '[' << idx << ']';
   }
   return os;
@@ -54,23 +57,21 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &os,
 // Indexing into an ordinary MLIR value
 using IndexedValue = IndexedLocation<mlir::Value>;
 
-// Indexing into a struct signal (either fieldName or blockArgIndex)
-enum class SignalSource { Witness, Constraint };
+// Indexing into a struct member (either memberName or blockArgIndex)
+// Note that we use the term "signal" here generically--the referenced member
+// may not indeed be marked with the `signal` attr.
 struct Signal {
-  SignalSource source; // compute or constrain
+  enum class Source { Witness, Constraint };
+  Source source; // compute or constrain
   llvm::StringRef name;
   bool operator==(const Signal &other) const = default;
   operator std::string() const {
     llvm::Twine twine = name;
-    return twine.concat(source == SignalSource::Witness ? "_w" : "_c").str();
+    return twine.concat(source == Source::Witness ? "_w" : "_c").str();
   }
 };
 
-inline unsigned hash_value(Signal sig) {
-  return llvm::hash_value(sig.name);
-  // return llvm::hash_combine(llvm::hash_value(sig.name),
-  //                           llvm::hash_value(sig._type));
-}
+inline unsigned hash_value(Signal sig) { return llvm::hash_value(sig.name); }
 
 using IndexedSignal = IndexedLocation<Signal>;
 } // namespace lleq
@@ -83,11 +84,11 @@ inline unsigned hash_value(mlir::Value val) {
 
 template <> struct DenseMapInfo<lleq::Signal> {
   static inline auto getEmptyKey() {
-    return lleq::Signal{lleq::SignalSource::Witness,
+    return lleq::Signal{lleq::Signal::Source::Witness,
                         DenseMapInfo<StringRef>::getEmptyKey()};
   }
   static inline auto getTombstoneKey() {
-    return lleq::Signal{lleq::SignalSource::Witness,
+    return lleq::Signal{lleq::Signal::Source::Witness,
                         DenseMapInfo<StringRef>::getTombstoneKey()};
   }
   static bool isEqual(auto LHS, auto RHS) { return LHS == RHS; }
@@ -103,7 +104,7 @@ template <std::equality_comparable T> struct IndexedLocationInfo {
   }
 
   static unsigned getHashValue(const lleq::IndexedLocation<T> &Val) {
-    return llvm::hash_combine(Val.name, Val.indices.size());
+    return llvm::hash_combine(Val.name, Val.index.size());
   }
   static bool isEqual(const lleq::IndexedLocation<T> &LHS,
                       const lleq::IndexedLocation<T> &RHS) {
@@ -148,6 +149,9 @@ template <class T> struct Store {
   auto end() const { return _store.end(); }
   decltype(auto) at(const IndexedLocation<T> &ref) const {
     return _store.at(ref);
+  }
+  decltype(auto) find(const IndexedLocation<T> ref) const {
+    return _store.find(ref);
   }
   bool contains(const IndexedLocation<T> &ref) const {
     return _store.contains(ref);
@@ -204,7 +208,7 @@ template <class T> struct Store {
     for (const auto &[ref, val] : _store) {
       IndexedLocation<T> clonedRef{ref.name, {}};
       for (auto idx : ref.indices) {
-        clonedRef.indices.push_back(pool.copy(idx));
+        clonedRef.index.push_back(pool.copy(idx));
       }
       cloned.write(clonedRef, val);
     }

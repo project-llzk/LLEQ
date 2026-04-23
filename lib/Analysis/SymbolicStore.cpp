@@ -43,8 +43,9 @@
 #define DEBUG_TYPE "symbolic-store"
 
 using namespace lleq;
+using namespace llvm;
 
-void SymbolicStore::dump(llvm::raw_ostream &os) const {
+void SymbolicStore::dump(raw_ostream &os) const {
   if (!signalStore) {
     os << "(null)\n";
     return;
@@ -72,11 +73,11 @@ SymbolicStore::buildStore(llzk::component::StructDefOp structDef) {
   auto productFunc = component.getProductFuncOp();
   llzk::ensure(productFunc, "alignment failed");
 
-  if (llvm::failed(transform::transformWhileToFor(productFunc))) {
-    llvm::report_fatal_error("while->for conversion failed");
+  if (failed(transform::transformWhileToFor(productFunc))) {
+    report_fatal_error("while->for conversion failed");
   }
-  if (llvm::failed(transform::transformIfToIfElse(productFunc))) {
-    llvm::report_fatal_error("default else conversion failed");
+  if (failed(transform::transformIfToIfElse(productFunc))) {
+    report_fatal_error("default else conversion failed");
   }
 
   // Pre-populate the liveness analysis so our custom analyses traverse region
@@ -106,4 +107,29 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
     return pool->uninitialized();
   }
   return latticeElem->getValue();
+}
+
+Symbol SymbolicStore::lookup(Signal signal, ArrayRef<Symbol> indices) {
+  llzk::ensure(signalStore != nullptr, "lookup() called before buildStore()");
+
+  // Its so silly that IndexedLocation<T> has to own the vector of indices so I
+  // have to allocate a new vector here
+  auto indexedSignal = IndexedSignal{signal, SmallVector<Symbol>{indices}};
+  if (auto it = signalStore->find(indexedSignal); it != signalStore->end()) {
+    return it->second;
+  }
+  return pool->fresh_unknown();
+}
+
+SmallVector<StoreIndex> SymbolicStore::getWrittenIndices(Signal signal) {
+  llzk::ensure(signalStore != nullptr,
+               "getWrittenIndices() called before buildStore()");
+
+  SmallVector<StoreIndex> indices;
+  for (auto [ref, value] : *signalStore) {
+    if (ref.name == signal) {
+      indices.push_back(ref.index);
+    }
+  }
+  return indices;
 }

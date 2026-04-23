@@ -10,6 +10,7 @@
 #include "Analysis/SymbolicStoreAnalysis.h"
 
 #include <cassert>
+#include <llvm/ADT/ArrayRef.h>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
 #include <llvm/Support/Debug.h>
@@ -48,6 +49,18 @@ public:
   /// possibly looking up values in the store to do so
   /// @param value
   Symbol lookup(mlir::Value value);
+
+  /// @brief Look up the symbolic expression corresponding to a signal in the
+  /// store at a given index, or return Unknown if the signal is untracked at
+  /// that index
+  /// @param signal
+  /// @param indices
+  Symbol lookup(Signal signal, llvm::ArrayRef<Symbol> indices = {});
+
+  /// @brief Return a vector containing all symbolic indices written to for the
+  /// given signal. If the signal is untracked, returns an empty vector.
+  /// @param signal
+  llvm::SmallVector<StoreIndex> getWrittenIndices(Signal signal);
 
   /// @brief Pretty-print the contents of the store
   /// @param os
