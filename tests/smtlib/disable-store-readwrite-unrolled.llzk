@@ -3,15 +3,9 @@
 
 module attributes {llzk.lang} {
     struct.def @ReadWriteUnrolled {
-<<<<<<< HEAD
-        struct.member @arr1_0 : !felt.type
-        struct.member @arr1_1 : !felt.type
-        struct.member @arr2_0 : !felt.type
-=======
         struct.member @arr1_0 : !felt.type {signal}
         struct.member @arr1_1 : !felt.type {signal}
         struct.member @arr2_0 : !felt.type {signal}
->>>>>>> main
 
         function.def @compute(%a: !felt.type, %b: !felt.type, %c: !felt.type) -> !struct.type<@ReadWriteUnrolled> {
             %self = struct.new : !struct.type<@ReadWriteUnrolled>
