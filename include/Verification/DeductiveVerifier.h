@@ -64,5 +64,7 @@ public:
 
   /// Verify equivalence of all struct members
   StructVerificationResult verifyStruct();
+
+  void addExtraAssertions(llvm::ArrayRef<std::string> assertions);
 };
 } // namespace lleq

@@ -6,6 +6,7 @@
 #include "Analysis/SymbolicStore.h"
 #include "Verification/DeductiveVerifier.h"
 #include "Verification/SMTLIBEquivalenceEmitter.h"
+#include "Verification/SymbolicVerification.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
@@ -142,8 +143,15 @@ int main(int argc, char **argv) {
       return EXIT_SUCCESS;
     }
 
-    lleq::DeductiveVerifier verifier{structDef, field};
-    lleq::StructVerificationResult result = verifier.verifyStruct();
+    lleq::SymbolicVerifier symbolicVerifier{structDef};
+    if (failed(symbolicVerifier.buildStore())) {
+      return EXIT_FAILURE;
+    }
+
+    lleq::DeductiveVerifier deductiveVerifier{structDef, field};
+    deductiveVerifier.addExtraAssertions(
+        symbolicVerifier.generateAssertions(field));
+    lleq::StructVerificationResult result = deductiveVerifier.verifyStruct();
     llvm::outs() << "The following members were proven equivalent:\n";
     for (auto member : result.equivalentMembers) {
       llvm::outs() << "+ @" << structDef.getSymName() << "::" << member << "\n";

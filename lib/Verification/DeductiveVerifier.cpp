@@ -194,4 +194,13 @@ StructVerificationResult DeductiveVerifier::verifyStruct() {
   return result;
 }
 
+void DeductiveVerifier::addExtraAssertions(ArrayRef<std::string> assertions) {
+  if (!baseQuery.has_value()) {
+    baseQuery.emplace();
+  }
+  for (auto assertion : assertions) {
+    *baseQuery += (assertion + "\n");
+  }
+}
+
 } // namespace lleq
