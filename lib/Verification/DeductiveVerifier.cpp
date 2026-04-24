@@ -176,8 +176,6 @@ StructVerificationResult DeductiveVerifier::verifyStruct() {
                    structDef.getSymName());
 
   for (auto memberDef : structDef.getMemberDefs()) {
-    llvm::dbgs() << memberDef.getSignal() << " "
-                 << memberDef.getSignalAttrName() << "\n";
     if (!memberDef.getSignal()) {
       // Only need to verify equivalence of signals
       continue;

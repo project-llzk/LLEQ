@@ -169,10 +169,10 @@ private:
 
     static DenseMap<StringRef, StringRef> opToSmtOp = {
         {"smt.int.neg", "-"},   {"smt.not", "not"},     {"smt.int.add", "+"},
-        {"smt.int.mul", "*"},   {"smt.int.sub", "-"},   {"smt.int.mod", "mod"},
-        {"smt.eq", "="},        {"smt.int.and", "and"}, {"smt.int.or", "or"},
-        {"smt.int.xor", "xor"}, {"smt.implies", "=>"},  {"smt.int.not", "not"},
-        {"smt.ite", "ite"},
+        {"smt.int.mul", "*"},   {"smt.int.div", "div"}, {"smt.int.sub", "-"},
+        {"smt.int.mod", "mod"}, {"smt.eq", "="},        {"smt.int.and", "and"},
+        {"smt.int.or", "or"},   {"smt.int.xor", "xor"}, {"smt.implies", "=>"},
+        {"smt.int.not", "not"}, {"smt.ite", "ite"},
     };
 
     return TypeSwitch<Operation *, FailureOr<std::string>>(op)
