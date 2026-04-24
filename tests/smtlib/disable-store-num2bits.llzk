@@ -1,0 +1,239 @@
+// RUN: lleq --struct Num2Bits --field babybear %s | FileCheck --enable-var-scope %s
+// XFAIL: *
+// Currently fails due to timeout. Range analysis optimizations should fix this
+
+module attributes {llzk.lang, llzk.main = !struct.type<@Num2BitsTemplate::@Num2Bits>} {
+    poly.template @Num2BitsTemplate {
+        struct.def @Num2Bits {
+            struct.member @out0 : !felt.type {llzk.pub, signal}
+            struct.member @out1 : !felt.type {llzk.pub, signal}
+            struct.member @out2 : !felt.type {llzk.pub, signal}
+            struct.member @out3 : !felt.type {llzk.pub, signal}
+            struct.member @out4 : !felt.type {llzk.pub, signal}
+            struct.member @out5 : !felt.type {llzk.pub, signal}
+            struct.member @out6 : !felt.type {llzk.pub, signal}
+            struct.member @out7 : !felt.type {llzk.pub, signal}
+            struct.member @out8 : !felt.type {llzk.pub, signal}
+            struct.member @out9 : !felt.type {llzk.pub, signal}
+            struct.member @out10 : !felt.type {llzk.pub, signal}
+            struct.member @out11 : !felt.type {llzk.pub, signal}
+            struct.member @out12 : !felt.type {llzk.pub, signal}
+            struct.member @out13 : !felt.type {llzk.pub, signal}
+            struct.member @out14 : !felt.type {llzk.pub, signal}
+            struct.member @out15 : !felt.type {llzk.pub, signal}
+
+            function.def @compute(%in: !felt.type) -> !struct.type<@Num2BitsTemplate::@Num2Bits> attributes {function.allow_non_native_field_ops} {
+                %self = struct.new : <@Num2BitsTemplate::@Num2Bits>
+                %c1 = felt.const 1
+                %c2 = felt.const 2
+                %c4 = felt.const 4
+                %c8 = felt.const 8
+                %c16 = felt.const 16
+                %c32 = felt.const 32
+                %c64 = felt.const 64
+                %c128 = felt.const 128
+                %c256 = felt.const 256
+                %c512 = felt.const 512
+                %c1024 = felt.const 1024
+                %c2048 = felt.const 2048
+                %c4096 = felt.const 4096
+                %c8192 = felt.const 8192
+                %c16384 = felt.const 16384
+                %c32768 = felt.const 32768
+
+                // Witness generation for the unconstrained Circom <-- assignments.
+                %div0 = felt.sintdiv %in, %c1 : !felt.type, !felt.type
+                %out0 = felt.smod %div0, %c2 : !felt.type, !felt.type
+                %div1 = felt.sintdiv %in, %c2 : !felt.type, !felt.type
+                %out1 = felt.smod %div1, %c2 : !felt.type, !felt.type
+                %div2 = felt.sintdiv %in, %c4 : !felt.type, !felt.type
+                %out2 = felt.smod %div2, %c2 : !felt.type, !felt.type
+                %div3 = felt.sintdiv %in, %c8 : !felt.type, !felt.type
+                %out3 = felt.smod %div3, %c2 : !felt.type, !felt.type
+                %div4 = felt.sintdiv %in, %c16 : !felt.type, !felt.type
+                %out4 = felt.smod %div4, %c2 : !felt.type, !felt.type
+                %div5 = felt.sintdiv %in, %c32 : !felt.type, !felt.type
+                %out5 = felt.smod %div5, %c2 : !felt.type, !felt.type
+                %div6 = felt.sintdiv %in, %c64 : !felt.type, !felt.type
+                %out6 = felt.smod %div6, %c2 : !felt.type, !felt.type
+                %div7 = felt.sintdiv %in, %c128 : !felt.type, !felt.type
+                %out7 = felt.smod %div7, %c2 : !felt.type, !felt.type
+                %div8 = felt.sintdiv %in, %c256 : !felt.type, !felt.type
+                %out8 = felt.smod %div8, %c2 : !felt.type, !felt.type
+                %div9 = felt.sintdiv %in, %c512 : !felt.type, !felt.type
+                %out9 = felt.smod %div9, %c2 : !felt.type, !felt.type
+                %div10 = felt.sintdiv %in, %c1024 : !felt.type, !felt.type
+                %out10 = felt.smod %div10, %c2 : !felt.type, !felt.type
+                %div11 = felt.sintdiv %in, %c2048 : !felt.type, !felt.type
+                %out11 = felt.smod %div11, %c2 : !felt.type, !felt.type
+                %div12 = felt.sintdiv %in, %c4096 : !felt.type, !felt.type
+                %out12 = felt.smod %div12, %c2 : !felt.type, !felt.type
+                %div13 = felt.sintdiv %in, %c8192 : !felt.type, !felt.type
+                %out13 = felt.smod %div13, %c2 : !felt.type, !felt.type
+                %div14 = felt.sintdiv %in, %c16384 : !felt.type, !felt.type
+                %out14 = felt.smod %div14, %c2 : !felt.type, !felt.type
+                %div15 = felt.sintdiv %in, %c32768 : !felt.type, !felt.type
+                %out15 = felt.smod %div15, %c2 : !felt.type, !felt.type
+
+                struct.writem %self[@out0] = %out0 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out1] = %out1 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out2] = %out2 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out3] = %out3 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out4] = %out4 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out5] = %out5 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out6] = %out6 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out7] = %out7 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out8] = %out8 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out9] = %out9 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out10] = %out10 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out11] = %out11 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out12] = %out12 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out13] = %out13 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out14] = %out14 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                struct.writem %self[@out15] = %out15 : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                function.return %self : !struct.type<@Num2BitsTemplate::@Num2Bits>
+            }
+
+            function.def @constrain(%self: !struct.type<@Num2BitsTemplate::@Num2Bits>, %in: !felt.type) {
+                %out0 = struct.readm %self[@out0] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out1 = struct.readm %self[@out1] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out2 = struct.readm %self[@out2] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out3 = struct.readm %self[@out3] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out4 = struct.readm %self[@out4] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out5 = struct.readm %self[@out5] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out6 = struct.readm %self[@out6] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out7 = struct.readm %self[@out7] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out8 = struct.readm %self[@out8] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out9 = struct.readm %self[@out9] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out10 = struct.readm %self[@out10] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out11 = struct.readm %self[@out11] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out12 = struct.readm %self[@out12] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out13 = struct.readm %self[@out13] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out14 = struct.readm %self[@out14] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+                %out15 = struct.readm %self[@out15] : !struct.type<@Num2BitsTemplate::@Num2Bits>, !felt.type
+
+                %c0 = felt.const 0
+                %c1 = felt.const 1
+                %c2 = felt.const 2
+                %c4 = felt.const 4
+                %c8 = felt.const 8
+                %c16 = felt.const 16
+                %c32 = felt.const 32
+                %c64 = felt.const 64
+                %c128 = felt.const 128
+                %c256 = felt.const 256
+                %c512 = felt.const 512
+                %c1024 = felt.const 1024
+                %c2048 = felt.const 2048
+                %c4096 = felt.const 4096
+                %c8192 = felt.const 8192
+                %c16384 = felt.const 16384
+                %c32768 = felt.const 32768
+
+                // Enforce each unrolled bit constraint: out[i] * (out[i] - 1) === 0.
+                %out0_minus_one = felt.sub %out0, %c1
+                %bit0_constraint = felt.mul %out0, %out0_minus_one
+                constrain.eq %bit0_constraint, %c0 : !felt.type
+                %out1_minus_one = felt.sub %out1, %c1
+                %bit1_constraint = felt.mul %out1, %out1_minus_one
+                constrain.eq %bit1_constraint, %c0 : !felt.type
+                %out2_minus_one = felt.sub %out2, %c1
+                %bit2_constraint = felt.mul %out2, %out2_minus_one
+                constrain.eq %bit2_constraint, %c0 : !felt.type
+                %out3_minus_one = felt.sub %out3, %c1
+                %bit3_constraint = felt.mul %out3, %out3_minus_one
+                constrain.eq %bit3_constraint, %c0 : !felt.type
+                %out4_minus_one = felt.sub %out4, %c1
+                %bit4_constraint = felt.mul %out4, %out4_minus_one
+                constrain.eq %bit4_constraint, %c0 : !felt.type
+                %out5_minus_one = felt.sub %out5, %c1
+                %bit5_constraint = felt.mul %out5, %out5_minus_one
+                constrain.eq %bit5_constraint, %c0 : !felt.type
+                %out6_minus_one = felt.sub %out6, %c1
+                %bit6_constraint = felt.mul %out6, %out6_minus_one
+                constrain.eq %bit6_constraint, %c0 : !felt.type
+                %out7_minus_one = felt.sub %out7, %c1
+                %bit7_constraint = felt.mul %out7, %out7_minus_one
+                constrain.eq %bit7_constraint, %c0 : !felt.type
+                %out8_minus_one = felt.sub %out8, %c1
+                %bit8_constraint = felt.mul %out8, %out8_minus_one
+                constrain.eq %bit8_constraint, %c0 : !felt.type
+                %out9_minus_one = felt.sub %out9, %c1
+                %bit9_constraint = felt.mul %out9, %out9_minus_one
+                constrain.eq %bit9_constraint, %c0 : !felt.type
+                %out10_minus_one = felt.sub %out10, %c1
+                %bit10_constraint = felt.mul %out10, %out10_minus_one
+                constrain.eq %bit10_constraint, %c0 : !felt.type
+                %out11_minus_one = felt.sub %out11, %c1
+                %bit11_constraint = felt.mul %out11, %out11_minus_one
+                constrain.eq %bit11_constraint, %c0 : !felt.type
+                %out12_minus_one = felt.sub %out12, %c1
+                %bit12_constraint = felt.mul %out12, %out12_minus_one
+                constrain.eq %bit12_constraint, %c0 : !felt.type
+                %out13_minus_one = felt.sub %out13, %c1
+                %bit13_constraint = felt.mul %out13, %out13_minus_one
+                constrain.eq %bit13_constraint, %c0 : !felt.type
+                %out14_minus_one = felt.sub %out14, %c1
+                %bit14_constraint = felt.mul %out14, %out14_minus_one
+                constrain.eq %bit14_constraint, %c0 : !felt.type
+                %out15_minus_one = felt.sub %out15, %c1
+                %bit15_constraint = felt.mul %out15, %out15_minus_one
+                constrain.eq %bit15_constraint, %c0 : !felt.type
+
+                // Reconstruct the hard-coded 16-bit value and constrain it to equal the input.
+                %term0 = felt.mul %out0, %c1
+                %term1 = felt.mul %out1, %c2
+                %term2 = felt.mul %out2, %c4
+                %term3 = felt.mul %out3, %c8
+                %term4 = felt.mul %out4, %c16
+                %term5 = felt.mul %out5, %c32
+                %term6 = felt.mul %out6, %c64
+                %term7 = felt.mul %out7, %c128
+                %term8 = felt.mul %out8, %c256
+                %term9 = felt.mul %out9, %c512
+                %term10 = felt.mul %out10, %c1024
+                %term11 = felt.mul %out11, %c2048
+                %term12 = felt.mul %out12, %c4096
+                %term13 = felt.mul %out13, %c8192
+                %term14 = felt.mul %out14, %c16384
+                %term15 = felt.mul %out15, %c32768
+                %lc0 = felt.add %c0, %term0
+                %lc1 = felt.add %lc0, %term1
+                %lc2 = felt.add %lc1, %term2
+                %lc3 = felt.add %lc2, %term3
+                %lc4 = felt.add %lc3, %term4
+                %lc5 = felt.add %lc4, %term5
+                %lc6 = felt.add %lc5, %term6
+                %lc7 = felt.add %lc6, %term7
+                %lc8 = felt.add %lc7, %term8
+                %lc9 = felt.add %lc8, %term9
+                %lc10 = felt.add %lc9, %term10
+                %lc11 = felt.add %lc10, %term11
+                %lc12 = felt.add %lc11, %term12
+                %lc13 = felt.add %lc12, %term13
+                %lc14 = felt.add %lc13, %term14
+                %lc15 = felt.add %lc14, %term15
+                constrain.eq %lc15, %in : !felt.type
+                function.return
+            }
+        }
+    }
+}
+
+// CHECK-LABEL: The following members were proven equivalent:
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out0
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out1
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out2
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out3
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out4
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out5
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out6
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out7
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out8
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out9
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out10
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out11
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out12
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out13
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out14
+// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out15
