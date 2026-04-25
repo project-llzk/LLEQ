@@ -19,18 +19,17 @@ llvm::cl::SubCommand dumpStoreCmd(
     "Print the symbolic store constructed for the selected struct");
 
 // --struct ...
-static llvm::cl::opt<std::string>
-    structOpt("struct",
-              llvm::cl::desc("The struct to use for verification/debugging"),
-              llvm::cl::sub(llvm::cl::SubCommand::getAll()));
+static llvm::cl::opt<std::string> structOpt(
+    "struct", llvm::cl::desc("The struct to use for verification/debugging"),
+    llvm::cl::sub(llvm::cl::SubCommand::getAll()), llvm::cl::Required);
 
 // --field ...
 static llvm::cl::opt<std::string> smtVerifyFieldNameOpt(
     "field", llvm::cl::desc("The prime field to use for SMT lowering"),
-    llvm::cl::sub(verifyCmd));
+    llvm::cl::sub(verifyCmd), llvm::cl::Required);
 static llvm::cl::opt<std::string> smtDumpFieldNameOpt(
     "field", llvm::cl::desc("The prime field to use for SMT lowering"),
-    llvm::cl::sub(dumpSmtCmd));
+    llvm::cl::sub(dumpSmtCmd), llvm::cl::Required);
 
 // [--enable-store]
 static llvm::cl::opt<bool>

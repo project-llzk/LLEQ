@@ -129,19 +129,22 @@ int main(int argc, char **argv) {
   case cli::SubCmd::Verify:
   case cli::SubCmd::DumpSmt: {
     auto field = llzk::Field::getField(cli::fieldName());
-    DeductiveVerifier deductiveVerifier{structDef, field};
-    if (failed(deductiveVerifier.generateBaseQuery())) {
-      return EXIT_FAILURE;
-    }
 
+    llvm::SmallVector<std::string> extraAssertions;
     if (cli::enableStore()) {
       SymbolicVerifier symbolicVerifier{structDef};
       if (failed(symbolicVerifier.buildStore())) {
         return EXIT_FAILURE;
       }
-      deductiveVerifier.addExtraAssertions(
-          symbolicVerifier.generateAssertions(field));
+      extraAssertions = symbolicVerifier.generateAssertions(field);
     }
+
+    DeductiveVerifier deductiveVerifier{structDef, field};
+    if (failed(deductiveVerifier.generateBaseQuery())) {
+      return EXIT_FAILURE;
+    }
+
+    deductiveVerifier.addExtraAssertions(extraAssertions);
 
     if (cli::subCmd() == cli::SubCmd::DumpSmt) {
       deductiveVerifier.dump(llvm::outs());
