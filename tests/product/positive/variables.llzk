@@ -1,4 +1,4 @@
-// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+// RUN: lleq dump-store --struct A %s | FileCheck --enable-var-scope %s
 
 module attributes {llzk.lang} {
     struct.def @A {

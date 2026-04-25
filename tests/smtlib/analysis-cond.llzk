@@ -1,5 +1,5 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --emit-smtlib --struct A --field babybear %s | FileCheck %s
+// RUN: lleq dump-smt --struct A --field babybear %s | FileCheck %s
 
 module attributes {llzk.lang} {
     struct.def @A {

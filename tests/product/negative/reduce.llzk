@@ -1,4 +1,4 @@
-// RUN: lleq --dump-store %s | FileCheck --enable-var-scope %s
+// RUN: lleq dump-store --struct Reduce %s | FileCheck --enable-var-scope %s
 // XFAIL: *
 // Should pass once loop fusion is merged
 
