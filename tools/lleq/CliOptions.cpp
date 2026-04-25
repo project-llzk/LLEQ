@@ -1,55 +1,68 @@
 #include "lleq/CliOptions.h"
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/ErrorHandling.h>
 
 namespace lleq::cli {
 
 llvm::cl::OptionCategory lleqCat("LLEQ", "Options to configure LLEQ");
 
-static llvm::cl::opt<bool> dumpStoreOpt(
+// lleq verify --struct ... --field ... [--enable-store]
+// lleq dump-smt --struct ... --field ... [--enable-store]
+// lleq dump-store --struct ...
+
+llvm::cl::SubCommand verifyCmd("verify", "Verify struct equivalence");
+
+llvm::cl::SubCommand
+    dumpSmtCmd("dump-smt", "Print the SMTLIB encoding of the selected struct");
+llvm::cl::SubCommand dumpStoreCmd(
     "dump-store",
-    llvm::cl::desc("Stop after constructing the symbolic store and print it"),
-    llvm::cl::cat(lleqCat));
+    "Print the symbolic store constructed for the selected struct");
 
-static llvm::cl::opt<bool> disableStoreOpt(
-    "disable-store",
-    llvm::cl::desc(
-        "Skip symbolic-store construction and run only the deductive verifier"),
-    llvm::cl::cat(lleqCat));
+// --struct ...
+static llvm::cl::opt<std::string>
+    structOpt("struct",
+              llvm::cl::desc("The struct to use for verification/debugging"),
+              llvm::cl::sub(llvm::cl::SubCommand::getAll()));
 
+// --field ...
+static llvm::cl::opt<std::string> smtVerifyFieldNameOpt(
+    "field", llvm::cl::desc("The prime field to use for SMT lowering"),
+    llvm::cl::sub(verifyCmd));
+static llvm::cl::opt<std::string> smtDumpFieldNameOpt(
+    "field", llvm::cl::desc("The prime field to use for SMT lowering"),
+    llvm::cl::sub(dumpSmtCmd));
+
+// [--enable-store]
 static llvm::cl::opt<bool>
-    disableVerifierOpt("disable-verifier",
-                       llvm::cl::desc("Disable the deductive verifier"),
-                       llvm::cl::cat(lleqCat));
-
-static llvm::cl::opt<bool> emitSMTLIBOpt(
-    "emit-smtlib",
-    llvm::cl::desc("Print the SMTLIB encoding of the selected struct and stop"),
-    llvm::cl::cat(lleqCat));
+    verifyEnableStoreOpt("enable-store",
+                         llvm::cl::desc("Enable symbolic store construction"),
+                         llvm::cl::sub(verifyCmd));
+static llvm::cl::opt<bool>
+    dumpEnableStoreOpt("enable-store",
+                       llvm::cl::desc("Enable symbolic store construction"),
+                       llvm::cl::sub(dumpSmtCmd));
 
 static llvm::cl::opt<std::string>
-    smtStructOpt("struct",
-                 llvm::cl::desc("The struct to lower before emitting SMTLIB"),
-                 llvm::cl::init(""), llvm::cl::cat(lleqCat));
+    inputFileOpt(llvm::cl::Positional, llvm::cl::desc("[.llzk file]"),
+                 llvm::cl::sub(llvm::cl::SubCommand::getAll()));
 
-static llvm::cl::opt<std::string> smtFieldOpt(
-    "field", llvm::cl::desc("Prime field name forwarded to LLZK SMT lowering"),
-    llvm::cl::init(""), llvm::cl::cat(lleqCat));
+SubCmd subCmd() {
+  if (verifyCmd) {
+    return SubCmd::Verify;
+  }
+  if (dumpSmtCmd) {
+    return SubCmd::DumpSmt;
+  }
+  return SubCmd::DumpStore;
+}
 
-static llvm::cl::opt<std::string> inputFileOpt(llvm::cl::Positional,
-                                               llvm::cl::desc("[.llzk file]"),
-                                               llvm::cl::cat(lleqCat));
-
-bool dumpStore() { return dumpStoreOpt; }
-
-bool disableStore() { return disableStoreOpt; }
-
-bool disableVerifier() { return disableVerifierOpt; }
-
-bool emitSMTLIB() { return emitSMTLIBOpt; }
-
-std::string &smtStruct() { return smtStructOpt; }
-
-std::string &smtField() { return smtFieldOpt; }
+std::string &smtStruct() { return structOpt; }
+std::string &fieldName() {
+  return verifyCmd ? smtVerifyFieldNameOpt : smtDumpFieldNameOpt;
+}
+bool enableStore() {
+  return verifyCmd ? verifyEnableStoreOpt : dumpEnableStoreOpt;
+}
 
 std::string &inputFile() { return inputFileOpt; }
 

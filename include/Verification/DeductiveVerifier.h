@@ -65,5 +65,11 @@ public:
   StructVerificationResult verifyStruct();
 
   void addExtraAssertions(llvm::ArrayRef<std::string> assertions);
+
+  void dump(llvm::raw_ostream &os) {
+    if (baseQuery.has_value()) {
+      os << *baseQuery << '\n';
+    }
+  }
 };
 } // namespace lleq
