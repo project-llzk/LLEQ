@@ -1,4 +1,4 @@
-// RUN: lleq --struct Num2Bits --field babybear %s | FileCheck --enable-var-scope %s
+// RUN: lleq verify --struct Num2Bits --field babybear %s | FileCheck --enable-var-scope %s
 // XFAIL: *
 // Currently fails due to timeout. Range analysis optimizations should fix this
 

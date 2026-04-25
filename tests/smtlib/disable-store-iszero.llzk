@@ -1,5 +1,5 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --disable-store --struct IsZero --field babybear %s | FileCheck %s
+// RUN: lleq verify --struct IsZero --field babybear %s | FileCheck %s
 // XFAIL: *
 // Currently fails due to timeout. Range analysis optimizations should fix this
 

@@ -1,5 +1,5 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --disable-store --struct SumArr2 --field babybear %s | FileCheck %s
+// RUN: lleq verify --struct SumArr2 --field babybear %s | FileCheck %s
 
 module attributes {llzk.lang} {
     struct.def @SumArr2 {

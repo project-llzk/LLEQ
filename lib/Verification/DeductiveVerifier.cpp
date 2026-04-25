@@ -171,7 +171,7 @@ DeductiveVerifier::proveEquivalence(StringRef memberName) const {
 
 StructVerificationResult DeductiveVerifier::verifyStruct() {
   StructVerificationResult result;
-  llzk::ensure(succeeded(generateBaseQuery()),
+  llzk::ensure(baseQuery.has_value() || succeeded(generateBaseQuery()),
                "failed to generate SMT query for struct @" +
                    structDef.getSymName());
 

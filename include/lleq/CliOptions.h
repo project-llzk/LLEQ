@@ -8,25 +8,20 @@
 #include <llvm/Support/CommandLine.h>
 
 namespace lleq::cli {
-extern llvm::cl::OptionCategory lleqCat;
+// extern llvm::cl::OptionCategory lleqCat;
+enum class SubCmd { Verify, DumpSmt, DumpStore };
 
-// Whether to stop after constructing the symbolic store and dump it
-[[nodiscard]] bool dumpStore();
+// The mode in which to run LLEQ (verify, dump-smt, or dump-store)
+[[nodiscard]] SubCmd subCmd();
 
-// Whether to disable the symbolic store construction phase
-[[nodiscard]] bool disableStore();
-
-// Whether to disable the deductive verification phase
-[[nodiscard]] bool disableVerifier();
-
-// Whether to emit an SMTLIB encoding instead of running analysis
-[[nodiscard]] bool emitSMTLIB();
-
-// The selected struct for SMTLIB emission
+// The name of the struct to use for verification/debugging
 [[nodiscard]] std::string &smtStruct();
 
-// Prime field name forwarded to LLZK SMT lowering
-[[nodiscard]] std::string &smtField();
+// The name of the prime field to use for SMT lowering
+[[nodiscard]] std::string &fieldName();
+
+// Whether to enable symbolic store construction
+[[nodiscard]] bool enableStore();
 
 // The input file
 [[nodiscard]] std::string &inputFile();

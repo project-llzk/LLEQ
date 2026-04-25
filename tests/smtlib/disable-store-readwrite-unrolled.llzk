@@ -1,5 +1,5 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --disable-store --struct ReadWriteUnrolled --field babybear %s | FileCheck %s
+// RUN: lleq verify --struct ReadWriteUnrolled --field babybear %s | FileCheck %s
 
 module attributes {llzk.lang} {
     struct.def @ReadWriteUnrolled {
