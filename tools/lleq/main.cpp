@@ -167,51 +167,5 @@ int main(int argc, char **argv) {
   }
   }
 
-  // if (cli::emitSMTLIB() || cli::disableStore()) {
-  //   if (cli::dumpStore()) {
-  //     llvm::errs() << "--dump-store cannot be combined with this option\n";
-  //     return EXIT_FAILURE;
-  //   }
-
-  //   if (cli::smtStruct().empty()) {
-  //     llvm::errs() << "--struct is required with this option\n";
-  //     return EXIT_FAILURE;
-  //   }
-
-  //   if (cli::smtField().empty()) {
-  //     llvm::errs() << "--field is required with this option\n";
-  //     return EXIT_FAILURE;
-  //   }
-
-  //   auto field = llzk::Field::getField(cli::smtField());
-
-  //   if (cli::emitSMTLIB()) {
-  //     if (failed(emitSMTLIBEncoding(structDef, llvm::outs(),
-  //                                         field.name()))) {
-  //       llvm::errs() << "failed to emit SMTLIB for struct @"
-  //                    << cli::smtStruct() << '\n';
-  //       return EXIT_FAILURE;
-  //     }
-  //     return EXIT_SUCCESS;
-  //   }
-
-  //   SymbolicVerifier symbolicVerifier{structDef};
-  //   if (failed(symbolicVerifier.buildStore())) {
-  //     return EXIT_FAILURE;
-  //   }
-
-  //   DeductiveVerifier deductiveVerifier{structDef, field};
-  //   deductiveVerifier.addExtraAssertions(
-  //       symbolicVerifier.generateAssertions(field));
-
-  //   return EXIT_SUCCESS;
-  // }
-
-  // if (cli::dumpStore()) {
-  //   mod->walk(
-  //       [](llzk::component::StructDefOp structDef) { dumpStore(structDef);
-  //       });
-  // }
-
   return EXIT_SUCCESS;
 }

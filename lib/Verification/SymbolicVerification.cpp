@@ -28,7 +28,7 @@ bool SymbolicVerifier::areEquivalent(llvm::StringRef memberName) {
 
   // Check if the written value at each index matches
   for (auto index : witnessWritten) {
-    if (store.lookup(witness, index) != store.lookup(constraint, index)) {
+    if (*store.lookup(witness, index) != *store.lookup(constraint, index)) {
       return false;
     }
   }
