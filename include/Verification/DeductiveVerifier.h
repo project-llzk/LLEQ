@@ -38,8 +38,8 @@ struct MemberEquivalenceResult {
 /// proven equivalent, models for all member signals proven inequivalent, and
 /// the set of members for which we failed to prove equivalence/inequivalence
 struct StructVerificationResult {
-  llvm::DenseSet<llvm::StringRef> unknownMembers;
-  llvm::DenseSet<llvm::StringRef> equivalentMembers;
+  llvm::SmallVector<llvm::StringRef> unknownMembers;
+  llvm::SmallVector<llvm::StringRef> equivalentMembers;
   llvm::DenseMap<llvm::StringRef, Counterexample> inequivalentMembers;
 };
 
@@ -63,8 +63,11 @@ public:
   llvm::FailureOr<MemberEquivalenceResult>
   proveEquivalence(llvm::StringRef memberName) const;
 
-  /// Verify equivalence of all struct members
-  StructVerificationResult verifyStruct();
+  /// Verify equivalence of all struct members, including non-signals (since
+  /// equivalence/inequivalence of a non-signal could later help prove
+  /// equivalence/inequivalence of a signal)
+  StructVerificationResult
+  verifyStruct(llvm::ArrayRef<llvm::StringRef> members = {});
 
   void addExtraAssertions(llvm::ArrayRef<std::string> assertions);
 

@@ -36,6 +36,7 @@
 #include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
 #include <mlir/Support/IndentedOstream.h>
+#include <mlir/Support/LLVM.h>
 #include <mlir/Support/LogicalResult.h>
 
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
@@ -150,7 +151,12 @@ int main(int argc, char **argv) {
       return EXIT_SUCCESS;
     }
 
-    StructVerificationResult result = deductiveVerifier.verifyStruct();
+    llvm::SmallVector<llvm::StringRef> memberNames;
+    for (auto memberDef : structDef.getMemberDefs()) {
+      memberNames.push_back(memberDef.getSymName());
+    }
+    StructVerificationResult result =
+        deductiveVerifier.verifyStruct(memberNames);
     if (!result.equivalentMembers.empty()) {
       llvm::outs() << "The following members were proven equivalent:\n";
       for (auto member : result.equivalentMembers) {

@@ -169,25 +169,20 @@ DeductiveVerifier::proveEquivalence(StringRef memberName) const {
   return _invoke_solver(query, memberName);
 }
 
-StructVerificationResult DeductiveVerifier::verifyStruct() {
+StructVerificationResult
+DeductiveVerifier::verifyStruct(llvm::ArrayRef<llvm::StringRef> members) {
   StructVerificationResult result;
   llzk::ensure(baseQuery.has_value() || succeeded(generateBaseQuery()),
                "failed to generate SMT query for struct @" +
                    structDef.getSymName());
 
-  for (auto memberDef : structDef.getMemberDefs()) {
-    if (!memberDef.getSignal()) {
-      // Only need to verify equivalence of signals
-      continue;
-    }
-    SmallVector<char> _memberName;
-    StringRef memberName = memberDef.getSymName();
+  for (auto memberName : members) {
     auto memberResult = proveEquivalence(memberName);
     if (failed(memberResult)) {
-      result.unknownMembers.insert(memberName);
+      result.unknownMembers.push_back(memberName);
     } else if (memberResult->equivalent) {
       // No counterexample, so they're equivalent
-      result.equivalentMembers.insert(memberName);
+      result.equivalentMembers.push_back(memberName);
     } else {
       // Map the inequivalent members to the counterexample
       result.inequivalentMembers.insert(
