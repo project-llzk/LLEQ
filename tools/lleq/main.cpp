@@ -152,16 +152,30 @@ int main(int argc, char **argv) {
     }
 
     StructVerificationResult result = deductiveVerifier.verifyStruct();
-    llvm::outs() << "The following members were proven equivalent:\n";
-    for (auto member : result.equivalentMembers) {
-      llvm::outs() << "+ @" << structDef.getSymName() << "::" << member << "\n";
+    if (!result.equivalentMembers.empty()) {
+      llvm::outs() << "The following members were proven equivalent:\n";
+      for (auto member : result.equivalentMembers) {
+        llvm::outs() << "+ @" << structDef.getSymName() << "::" << member
+                     << "\n";
+      }
     }
-    llvm::outs() << "The following members were proven inequivalent:\n";
-    for (auto [member, counterexample] : result.inequivalentMembers) {
-      auto [w, c] = counterexample;
-      llvm::outs() << "- @" << structDef.getSymName() << "::" << member << "\n";
-      llvm::outs() << "\twitness: " << w << "\n";
-      llvm::outs() << "\tconstraint: " << c << "\n";
+    if (!result.inequivalentMembers.empty()) {
+      llvm::outs() << "The following members were proven inequivalent:\n";
+      for (auto [member, counterexample] : result.inequivalentMembers) {
+        auto [w, c] = counterexample;
+        llvm::outs() << "- @" << structDef.getSymName() << "::" << member
+                     << "\n";
+        llvm::outs() << "\twitness: " << w << "\n";
+        llvm::outs() << "\tconstraint: " << c << "\n";
+      }
+    }
+    if (!result.unknownMembers.empty()) {
+      llvm::outs() << "The following members could not be proven equivalent OR "
+                      "inequivalent:\n";
+      for (auto member : result.unknownMembers) {
+        llvm::outs() << "* @" << structDef.getSymName() << "::" << member
+                     << "\n";
+      }
     }
     return EXIT_SUCCESS;
   }

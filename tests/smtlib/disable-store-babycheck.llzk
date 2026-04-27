@@ -1,0 +1,36 @@
+module attributes {llzk.lang, llzk.main = !struct.type<@BabyCheck>} {
+  struct.def @BabyCheck {
+    struct.member @x2 : !felt.type
+    struct.member @y2 : !felt.type
+    function.def @compute(%arg0: !felt.type, %arg1: !felt.type) -> !struct.type<@BabyCheck> attributes {function.allow_non_native_field_ops, function.allow_witness} {
+      %self = struct.new : <@BabyCheck>
+      %felt_const_168700 = felt.const  168700
+      %felt_const_168696 = felt.const  168696
+      %0 = felt.mul %arg0, %arg0 : !felt.type, !felt.type
+      struct.writem %self[@x2] = %0 : <@BabyCheck>, !felt.type
+      %1 = felt.mul %arg1, %arg1 : !felt.type, !felt.type
+      struct.writem %self[@y2] = %1 : <@BabyCheck>, !felt.type
+      function.return %self : !struct.type<@BabyCheck>
+    }
+    function.def @constrain(%arg0: !struct.type<@BabyCheck>, %arg1: !felt.type, %arg2: !felt.type) attributes {function.allow_constraint, function.allow_non_native_field_ops} {
+      %0 = struct.readm %arg0[@x2] : <@BabyCheck>, !felt.type
+      %1 = struct.readm %arg0[@y2] : <@BabyCheck>, !felt.type
+      %felt_const_168700 = felt.const  168700
+      %felt_const_168696 = felt.const  168696
+      %2 = felt.mul %arg1, %arg1 : !felt.type, !felt.type
+      constrain.eq %0, %2 : !felt.type, !felt.type
+      %3 = felt.mul %arg2, %arg2 : !felt.type, !felt.type
+      constrain.eq %1, %3 : !felt.type, !felt.type
+      %felt_const_168700_0 = felt.const  168700
+      %4 = felt.mul %felt_const_168700_0, %0 : !felt.type, !felt.type
+      %5 = felt.add %4, %1 : !felt.type, !felt.type
+      %felt_const_1 = felt.const  1
+      %felt_const_168696_1 = felt.const  168696
+      %6 = felt.mul %felt_const_168696_1, %0 : !felt.type, !felt.type
+      %7 = felt.mul %6, %1 : !felt.type, !felt.type
+      %8 = felt.add %felt_const_1, %7 : !felt.type, !felt.type
+      constrain.eq %5, %8 : !felt.type, !felt.type
+      function.return
+    }
+  }
+}

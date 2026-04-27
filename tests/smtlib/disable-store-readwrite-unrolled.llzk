@@ -41,4 +41,3 @@ module attributes {llzk.lang} {
 // CHECK-DAG: + @ReadWriteUnrolled::arr1_0
 // CHECK-DAG: + @ReadWriteUnrolled::arr1_1
 // CHECK-DAG: + @ReadWriteUnrolled::arr2_0
-// CHECK: The following members were proven inequivalent:
