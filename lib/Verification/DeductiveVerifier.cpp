@@ -183,11 +183,9 @@ StructVerificationResult DeductiveVerifier::verifyStruct() {
     SmallVector<char> _memberName;
     StringRef memberName = memberDef.getSymName();
     auto memberResult = proveEquivalence(memberName);
-    llzk::ensure(succeeded(memberResult),
-                 "failed to prove equivalence/inequivalence for member @" +
-                     structDef.getSymName() + "::" + memberName);
-
-    if (memberResult->equivalent) {
+    if (failed(memberResult)) {
+      result.unknownMembers.insert(memberName);
+    } else if (memberResult->equivalent) {
       // No counterexample, so they're equivalent
       result.equivalentMembers.insert(memberName);
     } else {

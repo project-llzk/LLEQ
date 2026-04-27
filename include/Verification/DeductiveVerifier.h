@@ -35,8 +35,10 @@ struct MemberEquivalenceResult {
 };
 
 /// The result of verifying a struct, holding the set of all member signals
-/// proven equivalent, as well as models for all inequivalent signals.
+/// proven equivalent, models for all member signals proven inequivalent, and
+/// the set of members for which we failed to prove equivalence/inequivalence
 struct StructVerificationResult {
+  llvm::DenseSet<llvm::StringRef> unknownMembers;
   llvm::DenseSet<llvm::StringRef> equivalentMembers;
   llvm::DenseMap<llvm::StringRef, Counterexample> inequivalentMembers;
 };
