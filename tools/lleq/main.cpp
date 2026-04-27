@@ -5,8 +5,7 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Verification/DeductiveVerifier.h"
-#include "Verification/SMTLIBEquivalenceEmitter.h"
-#include "Verification/SymbolicVerification.h"
+#include "Verification/SymbolicVerifier.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
 #include <llvm/ADT/StringExtras.h>
