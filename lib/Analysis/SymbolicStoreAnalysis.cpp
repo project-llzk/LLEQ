@@ -121,8 +121,14 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
-  valueStore->join_with(*rhs->valueStore);
-  signalStore->join_with(*rhs->signalStore);
+  auto anchor = getAnchor().dyn_cast<mlir::ProgramPoint *>();
+  AUTag tag = anchor;
+  if (!anchor->isBlockStart()) {
+    tag = anchor->getPrevOp();
+  }
+
+  valueStore->join_with(*rhs->valueStore, tag);
+  signalStore->join_with(*rhs->signalStore, tag);
 
   return mlir::ChangeResult::Change;
 }

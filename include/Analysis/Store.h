@@ -205,7 +205,8 @@ template <class T> struct Store {
   // Configure behavior when writing to a name that is already present
   // (overwrite vs. anti-unify)
   Symbol write(const IndexedLocation<T> &ref, Symbol val,
-               WriteMode mode = WriteMode::OverwriteExact) {
+               WriteMode mode = WriteMode::OverwriteExact,
+               AUTag tag = nullptr) {
     initialized = true;
     if (&val->pool != &_pool.get()) {
       val = _pool.get().copy(val);
@@ -227,7 +228,7 @@ template <class T> struct Store {
     } else if (!contains(ref) || mode == WriteMode::OverwriteExact) {
       _store[ref] = val;
     } else if (mode == WriteMode::AntiUnify) {
-      _store[ref] = anti_unify(_store[ref], val);
+      _store[ref] = anti_unify(_store[ref], val, tag);
     } else {
       assert(false && "unsupported write mode");
     }
@@ -267,7 +268,7 @@ template <class T> struct Store {
     return true;
   }
 
-  void join_with(const Store<T> &other) {
+  void join_with(const Store<T> &other, AUTag tag = nullptr) {
     if (!initialized || !other.initialized) {
       return;
     }
@@ -279,7 +280,7 @@ template <class T> struct Store {
         auto aliasedEntries = llvm::filter_to_vector(
             other, [key](auto entry) { return key.canAlias(entry.first); });
         for (auto [otherKey, otherVal] : aliasedEntries) {
-          write(key, otherVal, WriteMode::AntiUnify);
+          write(key, otherVal, WriteMode::AntiUnify, tag);
         }
       }
     }
