@@ -170,7 +170,7 @@ DeductiveVerifier::proveEquivalence(StringRef memberName) const {
 }
 
 StructVerificationResult
-DeductiveVerifier::verifyStruct(llvm::ArrayRef<llvm::StringRef> members) {
+DeductiveVerifier::verifyStruct(const DenseSet<StringRef> &members) {
   StructVerificationResult result;
   llzk::ensure(baseQuery.has_value() || succeeded(generateBaseQuery()),
                "failed to generate SMT query for struct @" +
@@ -179,10 +179,10 @@ DeductiveVerifier::verifyStruct(llvm::ArrayRef<llvm::StringRef> members) {
   for (auto memberName : members) {
     auto memberResult = proveEquivalence(memberName);
     if (failed(memberResult)) {
-      result.unknownMembers.push_back(memberName);
+      result.unknownMembers.insert(memberName);
     } else if (memberResult->equivalent) {
       // No counterexample, so they're equivalent
-      result.equivalentMembers.push_back(memberName);
+      result.equivalentMembers.insert(memberName);
     } else {
       // Map the inequivalent members to the counterexample
       result.inequivalentMembers.insert(

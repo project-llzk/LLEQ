@@ -12,6 +12,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/Field.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Support/LLVM.h>
 #include <optional>
 
 namespace lleq {
@@ -38,9 +39,24 @@ struct MemberEquivalenceResult {
 /// proven equivalent, models for all member signals proven inequivalent, and
 /// the set of members for which we failed to prove equivalence/inequivalence
 struct StructVerificationResult {
-  llvm::SmallVector<llvm::StringRef> unknownMembers;
-  llvm::SmallVector<llvm::StringRef> equivalentMembers;
+  llvm::DenseSet<llvm::StringRef> unknownMembers;
+  llvm::DenseSet<llvm::StringRef> equivalentMembers;
   llvm::DenseMap<llvm::StringRef, Counterexample> inequivalentMembers;
+
+  void update(const StructVerificationResult &other) {
+    for (auto member : other.equivalentMembers) {
+      if (unknownMembers.contains(member)) {
+        unknownMembers.erase(member);
+      }
+      equivalentMembers.insert(member);
+    }
+    for (auto [member, cex] : other.inequivalentMembers) {
+      if (unknownMembers.contains(member)) {
+        unknownMembers.erase(member);
+      }
+      inequivalentMembers.insert({member, cex});
+    }
+  }
 };
 
 /// The main driver class for the deductive verifier, this generates an SMT
@@ -67,7 +83,9 @@ public:
   /// equivalence/inequivalence of a non-signal could later help prove
   /// equivalence/inequivalence of a signal)
   StructVerificationResult
-  verifyStruct(llvm::ArrayRef<llvm::StringRef> members = {});
+  verifyStruct(const llvm::DenseSet<llvm::StringRef>
+                   &members); /* I don't like hard-coding a particular container
+                                 here but I don't have a better option */
 
   void addExtraAssertions(llvm::ArrayRef<std::string> assertions);
 

@@ -151,9 +151,9 @@ int main(int argc, char **argv) {
       return EXIT_SUCCESS;
     }
 
-    llvm::SmallVector<llvm::StringRef> memberNames;
+    llvm::DenseSet<llvm::StringRef> memberNames;
     for (auto memberDef : structDef.getMemberDefs()) {
-      memberNames.push_back(memberDef.getSymName());
+      memberNames.insert(memberDef.getSymName());
     }
     StructVerificationResult result =
         deductiveVerifier.verifyStruct(memberNames);
