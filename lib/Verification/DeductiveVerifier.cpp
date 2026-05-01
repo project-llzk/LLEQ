@@ -101,7 +101,7 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
   // TODO: std::tmpnam is deprecated, because between generating the filename
   // and opening it via `ExecuteAndWait`, another process may claim the same
   // name and create a race condition. Modern variants that atomically open the
-  // file don't work here because `ExecuteAndWait` exepcts a filename and not a
+  // file don't work here because `ExecuteAndWait` expects a filename and not a
   // handle; we should implement a workaround at some point
   auto tempStdin = std::tmpnam(nullptr);
   auto tempStdout = std::tmpnam(nullptr);

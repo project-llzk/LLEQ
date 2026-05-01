@@ -162,7 +162,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
       .Case<MemberWriteOp>([this, after, &result,
                             &before](MemberWriteOp write) {
         if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
-          // Its an array so copy from valueStore to signalStore
+          // It's an array so copy from valueStore to signalStore
           if (!before.initialized) {
             // This is weird but there's nothing to copy
             // Hopefully we'll visit this state again when there is
@@ -182,7 +182,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           }
           return;
         }
-        // Otherwise, its a scalar, so lookup the symbol from
+        // Otherwise, it's a scalar, so lookup the symbol from
         // SignalValueAnalysis and write it to the store
         Symbol written = getBoundSymbol(write.getVal());
         result |= after->write(

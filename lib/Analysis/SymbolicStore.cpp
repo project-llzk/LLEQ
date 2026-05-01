@@ -112,7 +112,7 @@ Symbol SymbolicStore::lookup(mlir::Value value) {
 Symbol SymbolicStore::lookup(Signal signal, ArrayRef<Symbol> indices) {
   llzk::ensure(signalStore != nullptr, "lookup() called before buildStore()");
 
-  // Its so silly that IndexedLocation<T> has to own the vector of indices so I
+  // It's so silly that IndexedLocation<T> has to own the vector of indices so I
   // have to allocate a new vector here
   auto indexedSignal = IndexedSignal{signal, SmallVector<Symbol>{indices}};
   if (auto it = signalStore->find(indexedSignal); it != signalStore->end()) {
