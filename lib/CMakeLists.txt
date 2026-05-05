@@ -16,7 +16,8 @@ set(Transforms_SRC
 set(Verification_SRC
     Verification/SMTLIBEquivalenceEmitter.cpp
     Verification/DeductiveVerifier.cpp
-    Verification/SymbolicVerifier.cpp)
+    Verification/SymbolicVerifier.cpp
+    Verification/FixpointVerifier.cpp)
 
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}

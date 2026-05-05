@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
     deductiveVerifier.addExtraAssertions(extraAssertions);
 
     if (cli::subCmd() == cli::SubCmd::DumpSmt) {
-      deductiveVerifier.dump(llvm::outs());
+      deductiveVerifier.dumpQuery(llvm::outs());
       return EXIT_SUCCESS;
     }
 

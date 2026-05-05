@@ -89,7 +89,7 @@ public:
 
   void addExtraAssertions(llvm::ArrayRef<std::string> assertions);
 
-  void dump(llvm::raw_ostream &os) {
+  void dumpQuery(llvm::raw_ostream &os) const {
     if (baseQuery.has_value()) {
       os << *baseQuery << '\n';
     }
