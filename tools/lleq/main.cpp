@@ -136,9 +136,13 @@ int main(int argc, char **argv) {
     if (!cli::fieldName().empty()) {
       fields.insert(llzk::Field::getField(cli::fieldName()));
     }
-    llzk::ensure(succeeded(llzk::collectFields(*mod, fields)),
-                 "failed to collect fields from module");
 
+    // Can safely ignore failure for now, it will be handled if fields.empty()
+    (void)llzk::collectFields(*mod, fields);
+
+    llzk::ensure(
+        !fields.empty(),
+        "failed to infer prime field from module, --field must be specified");
     llzk::ensure(fields.size() == 1, "multiple fields unsupported");
     auto field = *fields.begin();
 

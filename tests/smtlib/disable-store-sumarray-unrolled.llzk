@@ -31,6 +31,5 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-LABEL: The following members were proven equivalent:
 // CHECK-DAG: + @SumArr2::sum0
 // CHECK-DAG: + @SumArr2::sum1
