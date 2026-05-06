@@ -8,18 +8,38 @@
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/iterator_range.h>
+#include <llvm/Config/abi-breaking.h>
+#include <llvm/Support/LogicalResult.h>
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/Utils/StaticValueUtils.h>
-#include <ranges>
 
 namespace lleq {
 using namespace llzk;
 using namespace mlir;
 
-ChangeResult FixpointVerifier::runIteration() {
-  ensure(succeeded(deductiveVerifier.generateBaseQuery()),
-         "failed to generate SMT struct semantics");
+LogicalResult FixpointVerifier::init(bool enableStore) {
+  if (failed(deductiveVerifier.generateBaseQuery())) {
+    return failure();
+  }
 
+  for (auto memberDef : structDef.getMemberDefs()) {
+    currentResult.unknownMembers.insert(memberDef.getSymName());
+  }
+
+  if (!enableStore) {
+    return success();
+  }
+
+  if (failed(symbolicVerifier.buildStore())) {
+    return failure();
+  }
+
+  auto extraAssertions = symbolicVerifier.generateAssertions(field);
+  deductiveVerifier.addExtraAssertions(extraAssertions);
+  return success();
+}
+
+ChangeResult FixpointVerifier::runIteration() {
   StructVerificationResult result =
       deductiveVerifier.verifyStruct(currentResult.unknownMembers);
 
@@ -41,6 +61,7 @@ void FixpointVerifier::report(raw_ostream &os) {
   // containers and somehow blows up
   const StructVerificationResult &result = currentResult;
   auto equivalentSignals = filter_to_vector(result.equivalentMembers, isSignal);
+  auto unknownSignals = filter_to_vector(result.unknownMembers, isSignal);
   auto inequivalentSignals =
       filter_to_vector(result.inequivalentMembers,
                        [&isSignal](auto elem) { return isSignal(elem.first); });
@@ -58,6 +79,15 @@ void FixpointVerifier::report(raw_ostream &os) {
       llvm::outs() << "\tconstraint: " << c << "\n";
     }
   }
+  if (!unknownSignals.empty()) {
+    for (auto member : unknownSignals) {
+      llvm::outs() << "* @" << structDef.getSymName() << "::" << member << "\n";
+    }
+  }
+}
+
+void FixpointVerifier::dumpSmt(raw_ostream &os) {
+  deductiveVerifier.dumpQuery(os);
 }
 
 } // namespace lleq

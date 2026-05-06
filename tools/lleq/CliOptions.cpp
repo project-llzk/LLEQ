@@ -25,11 +25,14 @@ static llvm::cl::opt<std::string> structOpt(
 
 // --field ...
 static llvm::cl::opt<std::string> smtVerifyFieldNameOpt(
-    "field", llvm::cl::desc("The prime field to use for SMT lowering"),
-    llvm::cl::sub(verifyCmd), llvm::cl::Required);
+    "field",
+    llvm::cl::desc("The prime field to use for SMT lowering, if not specified "
+                   "in the LLZK file"),
+    llvm::cl::sub(verifyCmd));
 static llvm::cl::opt<std::string> smtDumpFieldNameOpt(
-    "field", llvm::cl::desc("The prime field to use for SMT lowering"),
-    llvm::cl::sub(dumpSmtCmd), llvm::cl::Required);
+    "field",
+    llvm::cl::desc("The prime field to use for SMT lowering, if not specified"),
+    llvm::cl::sub(dumpSmtCmd));
 
 // [--enable-store]
 static llvm::cl::opt<bool>

@@ -5,6 +5,7 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Verification/DeductiveVerifier.h"
+#include "Verification/FixpointVerifier.h"
 #include "Verification/SymbolicVerifier.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
@@ -22,6 +23,8 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/ErrorHelper.h>
+#include <llzk/Util/Field.h>
 #include <llzk/Util/SymbolHelper.h>
 #include <llzk/Util/SymbolLookup.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
@@ -128,60 +131,29 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
   case cli::SubCmd::Verify:
   case cli::SubCmd::DumpSmt: {
-    auto field = llzk::Field::getField(cli::fieldName());
 
-    llvm::SmallVector<std::string> extraAssertions;
-    if (cli::enableStore()) {
-      SymbolicVerifier symbolicVerifier{structDef};
-      if (failed(symbolicVerifier.buildStore())) {
-        return EXIT_FAILURE;
-      }
-      extraAssertions = symbolicVerifier.generateAssertions(field);
+    llzk::FieldSet fields;
+    if (!cli::fieldName().empty()) {
+      fields.insert(llzk::Field::getField(cli::fieldName()));
     }
+    llzk::ensure(succeeded(llzk::collectFields(*mod, fields)),
+                 "failed to collect fields from module");
 
-    DeductiveVerifier deductiveVerifier{structDef, field};
-    if (failed(deductiveVerifier.generateBaseQuery())) {
-      return EXIT_FAILURE;
-    }
+    llzk::ensure(fields.size() == 1, "multiple fields unsupported");
+    auto field = *fields.begin();
 
-    deductiveVerifier.addExtraAssertions(extraAssertions);
+    FixpointVerifier verifier{structDef, field};
+    llzk::ensure(succeeded(verifier.init(cli::enableStore())),
+                 "failed to generate SMT encoding");
 
     if (cli::subCmd() == cli::SubCmd::DumpSmt) {
-      deductiveVerifier.dumpQuery(llvm::outs());
+      verifier.dumpSmt(llvm::outs());
       return EXIT_SUCCESS;
     }
 
-    llvm::DenseSet<llvm::StringRef> memberNames;
-    for (auto memberDef : structDef.getMemberDefs()) {
-      memberNames.insert(memberDef.getSymName());
-    }
-    StructVerificationResult result =
-        deductiveVerifier.verifyStruct(memberNames);
-    if (!result.equivalentMembers.empty()) {
-      llvm::outs() << "The following members were proven equivalent:\n";
-      for (auto member : result.equivalentMembers) {
-        llvm::outs() << "+ @" << structDef.getSymName() << "::" << member
-                     << "\n";
-      }
-    }
-    if (!result.inequivalentMembers.empty()) {
-      llvm::outs() << "The following members were proven inequivalent:\n";
-      for (auto [member, counterexample] : result.inequivalentMembers) {
-        auto [w, c] = counterexample;
-        llvm::outs() << "- @" << structDef.getSymName() << "::" << member
-                     << "\n";
-        llvm::outs() << "\twitness: " << w << "\n";
-        llvm::outs() << "\tconstraint: " << c << "\n";
-      }
-    }
-    if (!result.unknownMembers.empty()) {
-      llvm::outs() << "The following members could not be proven equivalent OR "
-                      "inequivalent:\n";
-      for (auto member : result.unknownMembers) {
-        llvm::outs() << "* @" << structDef.getSymName() << "::" << member
-                     << "\n";
-      }
-    }
+    while (verifier.runIteration() == mlir::ChangeResult::Change)
+      ;
+    verifier.report(llvm::outs());
     return EXIT_SUCCESS;
   }
   }
