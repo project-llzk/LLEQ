@@ -1,4 +1,4 @@
-// RUN: not lleq --emit-smtlib --struct missing --field babybear %s 2>&1 | FileCheck %s
+// RUN: not lleq dump-smt --struct missing --field babybear %s 2>&1 | FileCheck %s
 
 module attributes {llzk.lang} {
     struct.def @A {

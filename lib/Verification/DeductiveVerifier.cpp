@@ -169,27 +169,18 @@ DeductiveVerifier::proveEquivalence(StringRef memberName) const {
   return _invoke_solver(query, memberName);
 }
 
-StructVerificationResult DeductiveVerifier::verifyStruct() {
+StructVerificationResult
+DeductiveVerifier::verifyStruct(const DenseSet<StringRef> &members) {
   StructVerificationResult result;
-  llzk::ensure(succeeded(generateBaseQuery()),
+  llzk::ensure(baseQuery.has_value() || succeeded(generateBaseQuery()),
                "failed to generate SMT query for struct @" +
                    structDef.getSymName());
 
-  for (auto memberDef : structDef.getMemberDefs()) {
-    llvm::dbgs() << memberDef.getSignal() << " "
-                 << memberDef.getSignalAttrName() << "\n";
-    if (!memberDef.getSignal()) {
-      // Only need to verify equivalence of signals
-      continue;
-    }
-    SmallVector<char> _memberName;
-    StringRef memberName = memberDef.getSymName();
+  for (auto memberName : members) {
     auto memberResult = proveEquivalence(memberName);
-    llzk::ensure(succeeded(memberResult),
-                 "failed to prove equivalence/inequivalence for member @" +
-                     structDef.getSymName() + "::" + memberName);
-
-    if (memberResult->equivalent) {
+    if (failed(memberResult)) {
+      result.unknownMembers.insert(memberName);
+    } else if (memberResult->equivalent) {
       // No counterexample, so they're equivalent
       result.equivalentMembers.insert(memberName);
     } else {
@@ -199,6 +190,15 @@ StructVerificationResult DeductiveVerifier::verifyStruct() {
     }
   }
   return result;
+}
+
+void DeductiveVerifier::addExtraAssertions(ArrayRef<std::string> assertions) {
+  if (!baseQuery.has_value()) {
+    baseQuery.emplace();
+  }
+  for (auto assertion : assertions) {
+    *baseQuery += (assertion + "\n");
+  }
 }
 
 } // namespace lleq

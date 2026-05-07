@@ -1,5 +1,5 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --disable-store --struct SumArr2 --field babybear %s | FileCheck %s
+// RUN: lleq verify --struct SumArr2 --field babybear %s | FileCheck %s
 
 module attributes {llzk.lang} {
     struct.def @SumArr2 {
@@ -31,7 +31,5 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-LABEL: The following members were proven equivalent:
 // CHECK-DAG: + @SumArr2::sum0
 // CHECK-DAG: + @SumArr2::sum1
-// CHECK: The following members were proven inequivalent:

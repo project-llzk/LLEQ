@@ -7,11 +7,13 @@
 
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/SmallString.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/SMTAPI.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/Field.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Support/LLVM.h>
 #include <optional>
 
 namespace lleq {
@@ -35,10 +37,27 @@ struct MemberEquivalenceResult {
 };
 
 /// The result of verifying a struct, holding the set of all member signals
-/// proven equivalent, as well as models for all inequivalent signals.
+/// proven equivalent, models for all member signals proven inequivalent, and
+/// the set of members for which we failed to prove equivalence/inequivalence
 struct StructVerificationResult {
+  llvm::DenseSet<llvm::StringRef> unknownMembers;
   llvm::DenseSet<llvm::StringRef> equivalentMembers;
   llvm::DenseMap<llvm::StringRef, Counterexample> inequivalentMembers;
+
+  void update(const StructVerificationResult &other) {
+    for (auto member : other.equivalentMembers) {
+      if (unknownMembers.contains(member)) {
+        unknownMembers.erase(member);
+      }
+      equivalentMembers.insert(member);
+    }
+    for (auto [member, cex] : other.inequivalentMembers) {
+      if (unknownMembers.contains(member)) {
+        unknownMembers.erase(member);
+      }
+      inequivalentMembers.insert({member, cex});
+    }
+  }
 };
 
 /// The main driver class for the deductive verifier, this generates an SMT
@@ -61,7 +80,20 @@ public:
   llvm::FailureOr<MemberEquivalenceResult>
   proveEquivalence(llvm::StringRef memberName) const;
 
-  /// Verify equivalence of all struct member signals.
-  StructVerificationResult verifyStruct();
+  /// Verify equivalence of all struct members, including non-signals (since
+  /// equivalence/inequivalence of a non-signal could later help prove
+  /// equivalence/inequivalence of a signal)
+  StructVerificationResult
+  verifyStruct(const llvm::DenseSet<llvm::StringRef>
+                   &members); /* I don't like hard-coding a particular container
+                                 here but I don't have a better option */
+
+  void addExtraAssertions(llvm::ArrayRef<std::string> assertions);
+
+  void dumpQuery(llvm::raw_ostream &os) const {
+    if (baseQuery.has_value()) {
+      os << *baseQuery << '\n';
+    }
+  }
 };
 } // namespace lleq

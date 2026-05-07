@@ -170,9 +170,9 @@ inline bool isConstraintOp(mlir::Operation *op) {
              llzk::FUNC_NAME_CONSTRAIN;
 }
 
-inline bool sourceMatchesOp(mlir::Operation *op, SignalSource source) {
-  return (source == SignalSource::Constraint && isConstraintOp(op)) ||
-         (source == SignalSource::Witness && isWitnessOp(op));
+inline bool sourceMatchesOp(mlir::Operation *op, Signal::Source source) {
+  return (source == Signal::Source::Constraint && isConstraintOp(op)) ||
+         (source == Signal::Source::Witness && isWitnessOp(op));
 }
 
 } // namespace lleq

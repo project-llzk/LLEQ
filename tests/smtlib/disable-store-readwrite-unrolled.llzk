@@ -1,5 +1,5 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --disable-store --struct ReadWriteUnrolled --field babybear %s | FileCheck %s
+// RUN: lleq verify --struct ReadWriteUnrolled --field babybear %s | FileCheck %s
 
 module attributes {llzk.lang} {
     struct.def @ReadWriteUnrolled {
@@ -37,8 +37,6 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-LABEL: The following members were proven equivalent:
 // CHECK-DAG: + @ReadWriteUnrolled::arr1_0
 // CHECK-DAG: + @ReadWriteUnrolled::arr1_1
 // CHECK-DAG: + @ReadWriteUnrolled::arr2_0
-// CHECK: The following members were proven inequivalent:

@@ -1,7 +1,7 @@
 // REQUIRES: smt-equiv
-// RUN: lleq --disable-store --struct IsZero --field babybear %s | FileCheck %s
+// RUN: lleq verify --struct IsZero --field babybear %s | FileCheck %s
 // XFAIL: *
-// Currently fails due to timeout. Range analysis optimizations should fix this
+// Currently fails to prove @IsZero::out equivalent due to timeout. Range analysis optimizations should fix this
 
 module attributes {llzk.lang} {
     struct.def @IsZero {
@@ -37,10 +37,6 @@ module attributes {llzk.lang} {
             %inv = struct.readm %self[@inv] : !struct.type<@IsZero>, !felt.type
 
             %c0 = felt.const 0
-            %is_nonzero = bool.cmp ne(%in, %c0)
-            scf.if %is_nonzero {
-            } else {
-            }
 
             %neg = felt.neg %in
             %prod = felt.mul %neg, %inv

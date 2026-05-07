@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "Analysis/ScalarSymbolAnalysis.h"
 #include "Analysis/SymbolExpr.h"
-#include "Analysis/SymbolicStoreAnalysis.h"
+#include "Store.h"
 
 #include <cassert>
+#include <llvm/ADT/ArrayRef.h>
 #include <llvm/ADT/Hashing.h>
 #include <llvm/ADT/PointerUnion.h>
 #include <llvm/Support/Debug.h>
@@ -42,12 +42,24 @@ public:
 
   /// @brief Build a store from a given circuit component (struct)
   /// @param structDef
-  mlir::LogicalResult build_store(llzk::component::StructDefOp structDef);
+  mlir::LogicalResult buildStore(llzk::component::StructDefOp structDef);
 
   /// @brief Generate a symbolic expression corresponding to an MLIR SSA value,
   /// possibly looking up values in the store to do so
   /// @param value
   Symbol lookup(mlir::Value value);
+
+  /// @brief Look up the symbolic expression corresponding to a signal in the
+  /// store at a given index, or return Unknown if the signal is untracked at
+  /// that index
+  /// @param signal
+  /// @param indices
+  Symbol lookup(Signal signal, llvm::ArrayRef<Symbol> indices = {});
+
+  /// @brief Return a vector containing all symbolic indices written to for the
+  /// given signal. If the signal is untracked, returns an empty vector.
+  /// @param signal
+  llvm::DenseSet<StoreIndex> getWrittenIndices(Signal signal);
 
   /// @brief Pretty-print the contents of the store
   /// @param os

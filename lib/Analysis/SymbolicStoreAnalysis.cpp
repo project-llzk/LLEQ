@@ -121,8 +121,14 @@ StoreLattice::join(const mlir::dataflow::AbstractDenseLattice &other) {
     return mlir::ChangeResult::NoChange;
   }
 
-  valueStore->join_with(*rhs->valueStore);
-  signalStore->join_with(*rhs->signalStore);
+  auto anchor = getAnchor().dyn_cast<mlir::ProgramPoint *>();
+  AUTag tag = anchor;
+  if (!anchor->isBlockStart()) {
+    tag = anchor->getPrevOp();
+  }
+
+  valueStore->join_with(*rhs->valueStore, tag);
+  signalStore->join_with(*rhs->signalStore, tag);
 
   return mlir::ChangeResult::Change;
 }
@@ -153,35 +159,35 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
             getProgramPointAfter(yieldOp->getParentOp()));
         propagateIfChanged(afterState, afterState->join(*after));
       })
-      .Case<MemberWriteOp>(
-          [this, after, &result, &before](MemberWriteOp write) {
-            if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
-              // Its an array so copy from valueStore to signalStore
-              if (!before.initialized) {
-                // This is weird but there's nothing to copy
-                // Hopefully we'll visit this state again when there is
-                // something
-                return;
-              }
-              for (auto [ref, sym] : *before.valueStore) {
-                if (ref.name == write.getVal()) {
-                  // `after->write` will correctly clobber any entries
-                  // signalStore already has for this signal
-                  result |=
-                      after->write(IndexedSignal{Signal{SignalSource::Witness,
-                                                        write.getMemberName()},
-                                                 ref.indices},
-                                   sym);
-                }
-              }
-              return;
+      .Case<MemberWriteOp>([this, after, &result,
+                            &before](MemberWriteOp write) {
+        if (llvm::isa<llzk::array::ArrayType>(write.getVal().getType())) {
+          // It's an array so copy from valueStore to signalStore
+          if (!before.initialized) {
+            // This is weird but there's nothing to copy
+            // Hopefully we'll visit this state again when there is
+            // something
+            return;
+          }
+          for (auto [ref, sym] : *before.valueStore) {
+            if (ref.name == write.getVal()) {
+              // `after->write` will correctly clobber any entries
+              // signalStore already has for this signal
+              result |=
+                  after->write(IndexedSignal{Signal{Signal::Source::Witness,
+                                                    write.getMemberName()},
+                                             ref.index},
+                               sym);
             }
-            // Otherwise, its a scalar, so lookup the symbol from
-            // SignalValueAnalysis and write it to the store
-            Symbol written = getBoundSymbol(write.getVal());
-            result |= after->write(
-                Signal{SignalSource::Witness, write.getMemberName()}, written);
-          })
+          }
+          return;
+        }
+        // Otherwise, it's a scalar, so lookup the symbol from
+        // SignalValueAnalysis and write it to the store
+        Symbol written = getBoundSymbol(write.getVal());
+        result |= after->write(
+            Signal{Signal::Source::Witness, write.getMemberName()}, written);
+      })
       .Case<MemberReadOp>([this, &before, &result, after](MemberReadOp read) {
         if (llvm::isa<llzk::array::ArrayType>(read.getType())) {
           // Its an array so copy from signalStore to valueStore
@@ -193,7 +199,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
               // Technically, `after->write` attempts to clobber here, but since
               // `read.getVal()` should be a fresh SSA value, it doesn't matter
               result |=
-                  after->write(IndexedValue{read.getVal(), ref.indices}, sym);
+                  after->write(IndexedValue{read.getVal(), ref.index}, sym);
             }
           }
           return;
@@ -201,8 +207,8 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         // Otherwise, its a scalar, so inject into SignalValueAnalysis
         ScalarLattice *lat = getOrCreate<ScalarLattice>(read.getVal());
         Symbol newSym = before.lookupOrNull(
-            Signal{isWitnessOp(read) ? SignalSource::Witness
-                                     : SignalSource::Constraint,
+            Signal{isWitnessOp(read) ? Signal::Source::Witness
+                                     : Signal::Source::Constraint,
                    read.getMemberName()});
         if (newSym) {
           propagateIfChanged(lat, lat->join(newSym));
@@ -247,7 +253,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           // If the value immediately comes from a constraint `struct.readm`
           if (auto read =
                   llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
-            return {{{SignalSource::Constraint, read.getMemberName()}, {}}};
+            return {{{Signal::Source::Constraint, read.getMemberName()}, {}}};
           }
           if (auto arrRead =
                   llvm::dyn_cast_or_null<ReadArrayOp>(val.getDefiningOp())) {
@@ -257,7 +263,7 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
               for (auto idx : arrRead.getIndices()) {
                 indices.push_back(getBoundSymbol(idx));
               }
-              return {{{SignalSource::Constraint, arr.getMemberName()},
+              return {{{Signal::Source::Constraint, arr.getMemberName()},
                        std::move(indices)}};
             }
           }
