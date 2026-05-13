@@ -33,16 +33,16 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1777054828,
-        "narHash": "sha256-U5OliteIh0mAsMD1bAi6RYLjKkmQi/yRGDb3l4nPWrI=",
+        "lastModified": 1778541676,
+        "narHash": "sha256-weHbsAXG9WuWgG0y4qlD4if/Bd+QckaTuJFdwWiTOuI=",
         "owner": "project-llzk",
         "repo": "llzk-lib",
-        "rev": "85b352eb162d592898af8c0828af29db3edcf0e5",
+        "rev": "a369b66a9da135dad1773f12d6da1843acc93837",
         "type": "github"
       },
       "original": {
         "owner": "project-llzk",
-        "ref": "raghav/smt-lowering-fixes",
+        "ref": "test-merge",
         "repo": "llzk-lib",
         "type": "github"
       }

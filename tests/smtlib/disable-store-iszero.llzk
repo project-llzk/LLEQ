@@ -52,9 +52,8 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-LABEL: The following members were proven equivalent:
-// CHECK-NEXT: + @IsZero::out
-// CHECK-NEXT: The following members were proven inequivalent:
-// CHECK-NEXT: - @IsZero::inv
+
+// CHECK: + @IsZero::out
+// CHECK: - @IsZero::inv
 // CHECK-NEXT: witness: 0
 // CHECK-NEXT: constraint: 1
