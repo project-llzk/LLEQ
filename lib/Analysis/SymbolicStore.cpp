@@ -60,7 +60,7 @@ mlir::LogicalResult
 SymbolicStore::buildStore(llzk::component::StructDefOp structDef) {
   component = structDef;
 
-  if (component.getComputeFuncOp() != nullptr) {
+  if (component.getProductFuncOp() == nullptr) {
     // Make sure we work over a product program
     mlir::SymbolTableCollection tables;
     llzk::LightweightSignalEquivalenceAnalysis equivalence{component};

@@ -10,14 +10,22 @@
 #include <llvm/ADT/iterator_range.h>
 #include <llvm/Config/abi-breaking.h>
 #include <llvm/Support/LogicalResult.h>
+#include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
+#include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/Utils/StaticValueUtils.h>
+#include <mlir/Pass/PassManager.h>
+#include <mlir/Transforms/Passes.h>
 
 namespace lleq {
 using namespace llzk;
 using namespace mlir;
 
 LogicalResult FixpointVerifier::init(bool enableStore) {
+  if (failed(symbolicVerifier.buildStore())) {
+    return failure();
+  }
+
   if (failed(deductiveVerifier.generateBaseQuery())) {
     return failure();
   }
@@ -26,16 +34,11 @@ LogicalResult FixpointVerifier::init(bool enableStore) {
     currentResult.unknownMembers.insert(memberDef.getSymName());
   }
 
-  if (!enableStore) {
-    return success();
+  if (enableStore) {
+    auto extraAssertions = symbolicVerifier.generateAssertions(field);
+    deductiveVerifier.addExtraAssertions(extraAssertions);
   }
 
-  if (failed(symbolicVerifier.buildStore())) {
-    return failure();
-  }
-
-  auto extraAssertions = symbolicVerifier.generateAssertions(field);
-  deductiveVerifier.addExtraAssertions(extraAssertions);
   return success();
 }
 
