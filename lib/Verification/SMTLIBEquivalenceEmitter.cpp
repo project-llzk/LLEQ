@@ -331,10 +331,6 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
   PassManager pm(ctx, PassManager::getAnyOpAnchorName(),
                  PassManager::Nesting::Implicit);
   pm.enableVerifier(false);
-  // pm.addPass(createCanonicalizerPass());
-  // pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
-  // pm.addPass(createCanonicalizerPass());
-  // pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
   pm.addPass(std::move(smtPass));
   pm.addPass(std::move(llzk::smt::createSMTCFLoweringPass()));
   pm.addPass(createCanonicalizerPass());
