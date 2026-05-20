@@ -2,7 +2,7 @@ add_library(LLEQ)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-set(Analysis_SRC
+set(Analysis_SRC 
     Analysis/SymbolExpr.cpp
     Analysis/Unification.cpp
     Analysis/SymbolicStore.cpp
@@ -48,7 +48,7 @@ target_link_libraries(
   LLEQHeaders
   LLZK::LLZKTransforms
   LLZK::LLZKAnalysis
-  LLZK::AllDialects
+  LLZK::LLZKDialect
   LLZK::SMTConversions
   MLIRIR)
 install(TARGETS LLEQ)
