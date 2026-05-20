@@ -5,9 +5,9 @@ target_link_libraries(
   LLEQHeaders
   LLEQ
   ${LLEQ_LLZK_DIALECT_REGISTRATION_TARGET}
-  LLZK::AllDialects
-  LLZK::LLZKAnalysis
   LLZK::LLZKTransforms
+  LLZK::LLZKAnalysis
+  LLZK::AllDialects
   LLZK::SMTConversions
   MLIRParser
   MLIRIR
