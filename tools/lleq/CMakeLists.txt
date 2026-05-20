@@ -6,6 +6,7 @@ target_link_libraries(
   LLEQ
   ${LLEQ_LLZK_DIALECT_REGISTRATION_TARGET}
   LLZK::LLZKDialect
+  LLZK::LLZKPolymorphicDialect
   LLZK::LLZKAnalysis
   LLZK::LLZKTransforms
   LLZK::SMTConversions
