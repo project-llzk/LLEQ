@@ -30,8 +30,8 @@ stdenv.mkDerivation {
         src = src0;
       };
 
-  nativeBuildInputs = [clang cmake ninja z3.lib z3 cvc5];
-  buildInputs = [mlir llzk z3.lib];
+  nativeBuildInputs = [clang cmake ninja z3.lib z3];
+  buildInputs = [mlir llzk z3.lib cvc5];
 
   preBuild = ''
     export LD_LIBRARY_PATH=${z3.lib}/lib:$LD_LIBRARY_PATH
