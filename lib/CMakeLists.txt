@@ -17,7 +17,8 @@ set(Verification_SRC
     Verification/SMTLIBEquivalenceEmitter.cpp
     Verification/DeductiveVerifier.cpp
     Verification/SymbolicVerifier.cpp
-    Verification/FixpointVerifier.cpp)
+    Verification/FixpointVerifier.cpp
+    Verification/WeakestPrecondition.cpp)
 
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}

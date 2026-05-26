@@ -18,6 +18,8 @@ llvm::cl::SubCommand dumpStoreCmd(
     "dump-store",
     "Print the symbolic store constructed for the selected struct");
 
+llvm::cl::SubCommand wpCmd("wp", "Compute and dump weakest precondition");
+
 // --struct ...
 static llvm::cl::opt<std::string> structOpt(
     "struct", llvm::cl::desc("The struct to use for verification/debugging"),
@@ -54,6 +56,9 @@ SubCmd subCmd() {
   }
   if (dumpSmtCmd) {
     return SubCmd::DumpSmt;
+  }
+  if (wpCmd) {
+    return SubCmd::WeakestPrecondition;
   }
   return SubCmd::DumpStore;
 }

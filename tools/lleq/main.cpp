@@ -7,8 +7,10 @@
 #include "Verification/DeductiveVerifier.h"
 #include "Verification/FixpointVerifier.h"
 #include "Verification/SymbolicVerifier.h"
+#include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
+#include <iostream>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
@@ -129,6 +131,12 @@ int main(int argc, char **argv) {
   case cli::SubCmd::DumpStore:
     dumpStore(structDef);
     return EXIT_SUCCESS;
+  case cli::SubCmd::WeakestPrecondition: {
+    cvc5::TermManager mgr;
+    auto term = getPostcondition(structDef, mgr);
+    std::cout << term << "\n";
+    return EXIT_SUCCESS;
+  }
   case cli::SubCmd::Verify:
   case cli::SubCmd::DumpSmt: {
 

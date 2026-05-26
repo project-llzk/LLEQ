@@ -9,7 +9,7 @@
 
 namespace lleq::cli {
 // extern llvm::cl::OptionCategory lleqCat;
-enum class SubCmd { Verify, DumpSmt, DumpStore };
+enum class SubCmd { Verify, DumpSmt, DumpStore, WeakestPrecondition };
 
 // The mode in which to run LLEQ (verify, dump-smt, or dump-store)
 [[nodiscard]] SubCmd subCmd();
