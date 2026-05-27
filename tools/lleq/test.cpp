@@ -13,6 +13,8 @@ cvc5::Term get_sum(cvc5::TermManager &mgr) {
 
 int main() {
   cvc5::TermManager mgr;
-  auto a_plus_b = get_sum(mgr);
-  std::cout << a_plus_b << "\n"; // prints (+ a b)
+  auto term = get_sum(mgr);
+  term = mgr.mkTerm(cvc5::Kind::MULT,
+                    {term, mgr.mkConst(mgr.getIntegerSort(), "c")});
+  std::cout << term << "\n"; // prints (+ a b)
 }

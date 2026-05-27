@@ -4,6 +4,7 @@
  */
 
 #include "Verification/SMTLIBEquivalenceEmitter.h"
+#include "Verification/VerificationUtils.h"
 
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
@@ -269,32 +270,6 @@ private:
   unsigned nextTempId = 0;
 };
 
-LogicalResult ensureProductFunc(ModuleOp module,
-                                component::StructDefOp structDef) {
-  if (structDef.getProductFuncOp()) {
-    return success();
-  }
-
-  auto computeFunc = structDef.getComputeFuncOp();
-  auto constrainFunc = structDef.getConstrainFuncOp();
-  if (!computeFunc || !constrainFunc) {
-    return structDef.emitError()
-           << "expected the selected struct to define either @product or both "
-              "@compute and @constrain";
-  }
-
-  SymbolTableCollection tables;
-  LightweightSignalEquivalenceAnalysis equivalence(module);
-  ProductAligner aligner(tables, equivalence);
-  auto productFunc = aligner.alignFuncs(structDef, computeFunc, constrainFunc);
-  if (!productFunc) {
-    return structDef.emitError()
-           << "failed to align @compute/@constrain into @product";
-  }
-
-  return aligner.alignCalls(productFunc);
-}
-
 FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
                                    llvm::StringRef fieldName) {
   auto *ctx = structDef.getContext();
@@ -312,7 +287,7 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
     return failure();
   }
 
-  if (failed(ensureProductFunc(cloned, clonedStruct))) {
+  if (failed(lleq::ensureProductFunc(cloned, clonedStruct))) {
     return failure();
   }
 

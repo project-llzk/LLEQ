@@ -132,9 +132,8 @@ int main(int argc, char **argv) {
     dumpStore(structDef);
     return EXIT_SUCCESS;
   case cli::SubCmd::WeakestPrecondition: {
-    cvc5::TermManager mgr;
-    auto term = getPostcondition(structDef, mgr);
-    std::cout << term << "\n";
+    WeakestPreconditionAnalysis analysis{structDef};
+    std::cout << analysis.generateVerificationConditions() << '\n';
     return EXIT_SUCCESS;
   }
   case cli::SubCmd::Verify:
