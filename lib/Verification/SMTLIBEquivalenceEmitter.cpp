@@ -346,8 +346,8 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
 
   auto loweredFunc = cloned.lookupSymbol<func::FuncOp>(smtFuncRef);
   if (!loweredFunc) {
-    llvm::dbgs() << "could not find lowered SMT function " << smtFuncRef
-                 << "\n";
+    llvm::errs() << "could not find lowered SMT function " << smtFuncRef
+                 << '\n';
     return failure();
   }
 
