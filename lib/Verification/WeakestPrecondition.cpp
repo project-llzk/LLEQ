@@ -7,6 +7,7 @@
 #include "Analysis/ScalarSymbolAnalysis.h"
 #include "Verification/VerificationUtils.h"
 
+#include <iostream>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -36,7 +37,9 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
   static llvm::DenseMap<StringRef, cvc5::Kind> opToTermKind = {
       {"felt.add", cvc5::Kind::ADD},
       {"felt.sub", cvc5::Kind::SUB},
-      {"felt.mul", cvc5::Kind::MULT}};
+      {"felt.mul", cvc5::Kind::MULT},
+      {"felt.smod", cvc5::Kind::INTS_MODULUS},
+      {"felt.sintdiv", cvc5::Kind::INTS_DIVISION}};
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
@@ -94,52 +97,51 @@ cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::StringRef memberName,
   return newTerm;
 }
 
-cvc5::Term WeakestPreconditionAnalysis::calculateWP(Operation *op,
-                                                    cvc5::Term postcondition) {
-  auto precondition =
-      llvm::TypeSwitch<mlir::Operation *, cvc5::Term>(op)
-          .Case<component::CreateStructOp>(
-              [&postcondition](auto) { return postcondition; })
-          .Case<MemberWriteOp>([this, &postcondition](MemberWriteOp writeOp) {
-            auto assertion = mgr.mkTerm(cvc5::Kind::EQUAL,
-                                        {getConstant(writeOp.getMemberName(),
-                                                     /*isWitness=*/true),
-                                         getConstant(writeOp.getVal())});
-            return mgr.mkTerm(cvc5::Kind::IMPLIES, {assertion, postcondition});
-          })
-          .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
-            llzk::ensure(writeOp.getIndices().size() == 1,
-                         "multidimensional arrays not supported");
-            auto writeExpr = mgr.mkTerm(
-                cvc5::Kind::STORE, {getConstant(writeOp.getArrRef()),
-                                    getConstant(writeOp.getIndices().front()),
-                                    getConstant(writeOp.getRvalue())});
-            return postcondition.substitute(getConstant(writeOp.getArrRef()),
-                                            writeExpr);
-          })
-          .Case<constrain::EmitEqualityOp>([this, &postcondition](
-                                               EmitEqualityOp eqOp) {
+void WeakestPreconditionAnalysis::calculateWP(Operation *op,
+                                              ImplicationTerm &postcondition) {
+  llvm::TypeSwitch<mlir::Operation *, void>(op)
+      .Case<component::CreateStructOp>(
+          [&postcondition](auto) { return postcondition; })
+      .Case<MemberWriteOp>([this, &postcondition](MemberWriteOp writeOp) {
+        auto assertion =
+            mgr.mkTerm(cvc5::Kind::EQUAL, {getConstant(writeOp.getMemberName(),
+                                                       /*isWitness=*/true),
+                                           getConstant(writeOp.getVal())});
+        postcondition.addAntecedent(assertion);
+      })
+      .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
+        llzk::ensure(writeOp.getIndices().size() == 1,
+                     "multidimensional arrays not supported");
+        auto writeExpr = mgr.mkTerm(cvc5::Kind::STORE,
+                                    {getConstant(writeOp.getArrRef()),
+                                     getConstant(writeOp.getIndices().front()),
+                                     getConstant(writeOp.getRvalue())});
+        return postcondition.substitute(getConstant(writeOp.getArrRef()),
+                                        writeExpr);
+      })
+      .Case<constrain::EmitEqualityOp>(
+          [this, &postcondition](EmitEqualityOp eqOp) {
             auto assertion =
                 mgr.mkTerm(cvc5::Kind::EQUAL, {getConstant(eqOp.getLhs()),
                                                getConstant(eqOp.getRhs())});
-            return mgr.mkTerm(cvc5::Kind::IMPLIES, {assertion, postcondition});
+            return postcondition.addAntecedent(assertion);
           })
-          .Default([this, &postcondition](auto op) {
-            auto expression = getExpression(op);
-            return postcondition.substitute(getConstant(op->getResult(0)),
-                                            expression);
-          });
-  return precondition;
+      .Default([this, &postcondition](auto op) {
+        auto expression = getExpression(op);
+        return postcondition.substitute(getConstant(op->getResult(0)),
+                                        expression);
+      });
 }
-cvc5::Term WeakestPreconditionAnalysis::calculateWP(Block *block,
-                                                    cvc5::Term postcondition) {
+
+void WeakestPreconditionAnalysis::calculateWP(Block *block,
+                                              ImplicationTerm &postcondition) {
+  // TODO: also return yielded values
   for (auto &op : llvm::iterator_range(block->rbegin(), block->rend())) {
     if (&op == block->getTerminator()) {
       continue;
     }
-    postcondition = calculateWP(&op, postcondition);
+    calculateWP(&op, postcondition);
   }
-  return postcondition;
 }
 
 cvc5::Term getPostcondition(component::StructDefOp structDef,
@@ -165,8 +167,10 @@ cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(
                    structDef->getParentOfType<ModuleOp>(), structDef)),
                "failed to align product func");
-  return calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
-                     getPostcondition(structDef, mgr));
+  auto postcondition = ImplicationTerm::of(getPostcondition(structDef, mgr));
+  calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
+              postcondition);
+  return postcondition.buildTerm(mgr);
 }
 
 } // namespace lleq
