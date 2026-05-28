@@ -26,15 +26,11 @@ static llvm::cl::opt<std::string> structOpt(
     llvm::cl::sub(llvm::cl::SubCommand::getAll()), llvm::cl::Required);
 
 // --field ...
-static llvm::cl::opt<std::string> smtVerifyFieldNameOpt(
+static llvm::cl::opt<std::string> fieldNameOpt(
     "field",
     llvm::cl::desc("The prime field to use for SMT lowering, if not specified "
                    "in the LLZK file"),
-    llvm::cl::sub(verifyCmd));
-static llvm::cl::opt<std::string> smtDumpFieldNameOpt(
-    "field",
-    llvm::cl::desc("The prime field to use for SMT lowering, if not specified"),
-    llvm::cl::sub(dumpSmtCmd));
+    llvm::cl::sub(llvm::cl::SubCommand::getAll()));
 
 // [--enable-store]
 static llvm::cl::opt<bool>
@@ -64,9 +60,7 @@ SubCmd subCmd() {
 }
 
 std::string &smtStruct() { return structOpt; }
-std::string &fieldName() {
-  return verifyCmd ? smtVerifyFieldNameOpt : smtDumpFieldNameOpt;
-}
+std::string &fieldName() { return fieldNameOpt; }
 bool enableStore() {
   return verifyCmd ? verifyEnableStoreOpt : dumpEnableStoreOpt;
 }

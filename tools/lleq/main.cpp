@@ -4,9 +4,7 @@
  */
 
 #include "Analysis/SymbolicStore.h"
-#include "Verification/DeductiveVerifier.h"
 #include "Verification/FixpointVerifier.h"
-#include "Verification/SymbolicVerifier.h"
 #include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
@@ -47,6 +45,35 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 using namespace lleq;
+using namespace mlir;
+
+// Copied this from LLZK
+FailureOr<llzk::FieldRef> resolveSelectedField(ModuleOp mod,
+                                               StringRef fieldName) {
+  llzk::FieldSet fields;
+  if (!fieldName.empty()) {
+    auto fieldLookupResult = llzk::Field::tryGetField(fieldName);
+    if (failed(fieldLookupResult)) {
+      mod.emitError() << "unknown field \"" << fieldName << "\"";
+      return failure();
+    }
+    fields.insert(fieldLookupResult.value());
+  }
+
+  (void)collectFields(mod, fields);
+
+  if (fields.empty()) {
+    mod.emitError() << "no prime field specified; could not deduce";
+    return failure();
+  }
+
+  if (fields.size() > 1) {
+    mod.emitError() << "multiple fields unsupported";
+    return failure();
+  }
+
+  return *(fields.begin());
+}
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
   llvm::outs() << "-- " << structDef.getSymName() << " --\n";
@@ -127,34 +154,26 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
+  auto field = resolveSelectedField(*mod, cli::fieldName());
+  if (failed(field)) {
+    // already emits an error
+    return EXIT_FAILURE;
+  }
+
   switch (cli::subCmd()) {
   case cli::SubCmd::DumpStore:
     dumpStore(structDef);
     return EXIT_SUCCESS;
   case cli::SubCmd::WeakestPrecondition: {
-    WeakestPreconditionAnalysis analysis{structDef,
-                                         llzk::Field::getField("babybear")};
+    // Hard-code to babybear right now because I'm too lazy to wire up the field
+    // But we can do better
+    WeakestPreconditionAnalysis analysis{structDef, *field};
     std::cout << analysis.generateVerificationConditions() << '\n';
     return EXIT_SUCCESS;
   }
   case cli::SubCmd::Verify:
   case cli::SubCmd::DumpSmt: {
-
-    llzk::FieldSet fields;
-    if (!cli::fieldName().empty()) {
-      fields.insert(llzk::Field::getField(cli::fieldName()));
-    }
-
-    // Can safely ignore failure for now, it will be handled if fields.empty()
-    (void)llzk::collectFields(*mod, fields);
-
-    llzk::ensure(
-        !fields.empty(),
-        "failed to infer prime field from module, --field must be specified");
-    llzk::ensure(fields.size() == 1, "multiple fields unsupported");
-    auto field = *fields.begin();
-
-    FixpointVerifier verifier{structDef, field};
+    FixpointVerifier verifier{structDef, *field};
     llzk::ensure(succeeded(verifier.init(cli::enableStore())),
                  "failed to generate SMT encoding");
 
