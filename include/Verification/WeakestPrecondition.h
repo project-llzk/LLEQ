@@ -15,7 +15,6 @@ namespace lleq {
 class WeakestPreconditionAnalysis {
   llzk::component::StructDefOp structDef;
   cvc5::TermManager mgr;
-  llvm::DenseMap<mlir::Value, cvc5::Term> constants;
 
   cvc5::Term getExpression(mlir::Operation *op);
 
@@ -24,6 +23,11 @@ class WeakestPreconditionAnalysis {
 
   cvc5::Term getConstant(mlir::Value value);
   cvc5::Term getConstant(mlir::StringRef memberName, bool isWitness);
+
+  // Making these function-local and static is problematic because it means the
+  // contained cvc5::Term's get destroyed *after* the owned TermManager
+  llvm::DenseMap<mlir::Value, cvc5::Term> constants;
+  llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
 
 public:
   WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef)

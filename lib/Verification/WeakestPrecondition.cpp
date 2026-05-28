@@ -67,7 +67,6 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
 }
 
 cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::Value value) {
-  static DenseMap<Value, cvc5::Term> constants;
   if (auto it = constants.find(value); it != constants.end()) {
     return it->second;
   }
@@ -84,9 +83,7 @@ cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::Value value) {
 
 cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::StringRef memberName,
                                                     bool isWitness) {
-  static llvm::DenseMap<StringRef, cvc5::Term> witnessMembers;
-  static llvm::DenseMap<StringRef, cvc5::Term> constrainMembers;
-  auto &memberMap = isWitness ? witnessMembers : constrainMembers;
+  auto &memberMap = isWitness ? witnessMembers : constraintMembers;
 
   if (auto it = memberMap.find(memberName); it != memberMap.end()) {
     return it->second;
