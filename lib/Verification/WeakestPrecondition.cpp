@@ -7,7 +7,6 @@
 #include "Analysis/ScalarSymbolAnalysis.h"
 #include "Verification/VerificationUtils.h"
 
-#include <iostream>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -32,7 +31,6 @@ using constrain::EmitEqualityOp;
 using felt::FeltConstantOp;
 
 namespace lleq {
-
 cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
   static llvm::DenseMap<StringRef, cvc5::Kind> opToTermKind = {
       {"felt.add", cvc5::Kind::ADD},
@@ -43,21 +41,21 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
-    SmallVector<cvc5::Term> operandTerms{llvm::map_to_vector(
-        op->getOperands(), [this](Value value) { return getConstant(value); })};
+    SmallVector<cvc5::Term> operandTerms{
+        llvm::map_to_vector(op->getOperands(), [this](Value value) {
+          return builder.getConstant(value);
+        })};
     return mgr.mkTerm(it->second, {operandTerms.begin(), operandTerms.end()});
   }
 
   return llvm::TypeSwitch<Operation *, cvc5::Term>(op)
       .Case<MemberReadOp>([this](MemberReadOp read) {
-        return getConstant(read.getMemberName(), isWitnessOp(read));
+        return builder.getConstant(read.getMemberName(), isWitnessOp(read));
       })
       .Case<ReadArrayOp>([this](ReadArrayOp read) {
         llzk::ensure(read.getIndices().size() == 1,
                      "multidimensional arrays are not supported");
-        return mgr.mkTerm(cvc5::Kind::SELECT,
-                          {getConstant(read.getArrRef()),
-                           getConstant(read.getIndices().front())});
+        return builder.arrayRead(read.getArrRef(), read.getIndices().front());
       })
       .Case<FeltConstantOp>([this](FeltConstantOp constOp) {
         SmallString<64> str;
@@ -69,66 +67,33 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
       });
 }
 
-cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::Value value) {
-  if (auto it = constants.find(value); it != constants.end()) {
-    return it->second;
-  }
-
-  std::optional<std::string> name;
-  if (auto blockArg = dyn_cast<BlockArgument>(value)) {
-    name.emplace("arg" + std::to_string(blockArg.getArgNumber()));
-  }
-
-  auto newConst = mgr.mkConst(mgr.getIntegerSort(), name);
-  constants.insert({value, newConst});
-  return newConst;
-}
-
-cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::StringRef memberName,
-                                                    bool isWitness) {
-  auto &memberMap = isWitness ? witnessMembers : constraintMembers;
-
-  if (auto it = memberMap.find(memberName); it != memberMap.end()) {
-    return it->second;
-  }
-  auto newTerm = mgr.mkConst(mgr.getIntegerSort(),
-                             (memberName + (isWitness ? "_w" : "_c")).str());
-  memberMap.insert({memberName, newTerm});
-  return newTerm;
-}
-
 void WeakestPreconditionAnalysis::calculateWP(Operation *op,
                                               ImplicationTerm &postcondition) {
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<component::CreateStructOp>(
           [&postcondition](auto) { return postcondition; })
       .Case<MemberWriteOp>([this, &postcondition](MemberWriteOp writeOp) {
-        auto assertion =
-            mgr.mkTerm(cvc5::Kind::EQUAL, {getConstant(writeOp.getMemberName(),
-                                                       /*isWitness=*/true),
-                                           getConstant(writeOp.getVal())});
-        postcondition.addAntecedent(assertion);
+        postcondition.addAntecedent(builder.assertEqual(
+            builder.getConstant(writeOp.getMemberName(), /*isWitness=*/true),
+            writeOp.getVal()));
       })
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
         llzk::ensure(writeOp.getIndices().size() == 1,
                      "multidimensional arrays not supported");
-        auto writeExpr = mgr.mkTerm(cvc5::Kind::STORE,
-                                    {getConstant(writeOp.getArrRef()),
-                                     getConstant(writeOp.getIndices().front()),
-                                     getConstant(writeOp.getRvalue())});
-        return postcondition.substitute(getConstant(writeOp.getArrRef()),
-                                        writeExpr);
+        return postcondition.substitute(
+            builder.getConstant(writeOp.getArrRef()),
+            builder.arrayWrite(writeOp.getArrRef(),
+                               writeOp.getIndices().front(),
+                               writeOp.getRvalue()));
       })
       .Case<constrain::EmitEqualityOp>(
           [this, &postcondition](EmitEqualityOp eqOp) {
-            auto assertion =
-                mgr.mkTerm(cvc5::Kind::EQUAL, {getConstant(eqOp.getLhs()),
-                                               getConstant(eqOp.getRhs())});
-            return postcondition.addAntecedent(assertion);
+            return postcondition.addAntecedent(
+                builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
           })
       .Default([this, &postcondition](auto op) {
         auto expression = getExpression(op);
-        return postcondition.substitute(getConstant(op->getResult(0)),
+        return postcondition.substitute(builder.getConstant(op->getResult(0)),
                                         expression);
       });
 }

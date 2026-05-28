@@ -132,7 +132,8 @@ int main(int argc, char **argv) {
     dumpStore(structDef);
     return EXIT_SUCCESS;
   case cli::SubCmd::WeakestPrecondition: {
-    WeakestPreconditionAnalysis analysis{structDef};
+    WeakestPreconditionAnalysis analysis{structDef,
+                                         llzk::Field::getField("babybear")};
     std::cout << analysis.generateVerificationConditions() << '\n';
     return EXIT_SUCCESS;
   }

@@ -5,9 +5,11 @@
 
 #pragma once
 
+#include "Verification/TermBuilderUtils.h"
 #include <cvc5/cvc5.h>
 
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/Field.h>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
@@ -37,21 +39,19 @@ struct ImplicationTerm {
 class WeakestPreconditionAnalysis {
   llzk::component::StructDefOp structDef;
   cvc5::TermManager mgr;
+  llzk::Field field;
+
+  TermBuilder builder;
 
   cvc5::Term getExpression(mlir::Operation *op);
 
   void calculateWP(mlir::Operation *op, ImplicationTerm &postcondition);
   void calculateWP(mlir::Block *block, ImplicationTerm &postcondition);
 
-  cvc5::Term getConstant(mlir::Value value);
-  cvc5::Term getConstant(mlir::StringRef memberName, bool isWitness);
-
-  llvm::DenseMap<mlir::Value, cvc5::Term> constants;
-  llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
-
 public:
-  WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef)
-      : structDef{structDef} {}
+  WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
+                              llzk::Field field)
+      : structDef{structDef}, field{field}, builder{mgr, field} {}
 
   cvc5::Term generateVerificationConditions();
 };
