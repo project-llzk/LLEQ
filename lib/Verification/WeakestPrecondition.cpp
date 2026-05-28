@@ -33,7 +33,7 @@ using felt::FeltConstantOp;
 namespace lleq {
 
 cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
-  static llvm::StringMap<cvc5::Kind> opToTermKind = {
+  static llvm::DenseMap<StringRef, cvc5::Kind> opToTermKind = {
       {"felt.add", cvc5::Kind::ADD},
       {"felt.sub", cvc5::Kind::SUB},
       {"felt.mul", cvc5::Kind::MULT}};
@@ -84,8 +84,8 @@ cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::Value value) {
 
 cvc5::Term WeakestPreconditionAnalysis::getConstant(mlir::StringRef memberName,
                                                     bool isWitness) {
-  static llvm::StringMap<cvc5::Term> witnessMembers;
-  static llvm::StringMap<cvc5::Term> constrainMembers;
+  static llvm::DenseMap<StringRef, cvc5::Term> witnessMembers;
+  static llvm::DenseMap<StringRef, cvc5::Term> constrainMembers;
   auto &memberMap = isWitness ? witnessMembers : constrainMembers;
 
   if (auto it = memberMap.find(memberName); it != memberMap.end()) {
