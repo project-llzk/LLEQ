@@ -9,7 +9,10 @@
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Analysis/LightweightSignalEquivalenceAnalysis.h>
+#include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
+#include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
+#include <llzk/Transforms/LLZKTransformationPasses.h>
 #include <llzk/Util/SymbolHelper.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
@@ -298,19 +301,20 @@ LogicalResult ensureProductFunc(ModuleOp module,
 FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
                                    llvm::StringRef fieldName) {
   auto *ctx = structDef.getContext();
-  auto module = structDef->getParentOfType<ModuleOp>();
-  if (!module) {
+  auto module = getTopRootModule(structDef);
+
+  if (failed(module)) {
     return failure();
   }
 
   auto structRef = structDef.getFullyQualifiedName();
 
-  auto cloned = cast<ModuleOp>(module->clone());
-  auto clonedStruct = cloned.lookupSymbol<component::StructDefOp>(structRef);
-  if (!clonedStruct) {
-    cloned.emitError() << "selected struct disappeared while cloning module";
-    return failure();
-  }
+  IRRewriter rewriter{ctx};
+  IRMapping mapping;
+  auto cloned = cast<ModuleOp>(rewriter.clone(**module, mapping));
+  auto clonedStruct = cast<component::StructDefOp>(mapping.lookup(structDef));
+  llzk::ensure(clonedStruct,
+               "selected struct disappeared while cloning module");
 
   if (failed(ensureProductFunc(cloned, clonedStruct))) {
     return failure();
@@ -342,7 +346,8 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
 
   auto loweredFunc = cloned.lookupSymbol<func::FuncOp>(smtFuncRef);
   if (!loweredFunc) {
-    cloned.emitError() << "could not find lowered SMT function " << loweredName;
+    llvm::errs() << "could not find lowered SMT function " << smtFuncRef
+                 << '\n';
     return failure();
   }
 

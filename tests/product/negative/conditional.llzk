@@ -1,4 +1,6 @@
 // RUN: lleq dump-store --struct A %s | FileCheck --enable-var-scope %s
+// XFAIL: *
+// https://github.com/project-llzk/llzk-lib/issues/494
 
 module attributes {llzk.lang} {
     struct.def @A {
@@ -43,5 +45,5 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: sums_w[0]: felt.add(%arg0, ?0)
-// CHECK-DAG: sums_c[0]: ?1
+// CHECK-DAG: sums_0_w: felt.add(%arg0, ?0)
+// CHECK-DAG: sums_0_c: ?1

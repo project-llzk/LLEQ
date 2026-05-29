@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:project-llzk/llzk-lib?ref=raghav/smt-lowering-fixes";
+      url = "github:project-llzk/llzk-lib?ref=main";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";
@@ -34,7 +34,7 @@
       overlays.default = final: prev: {
 
         # Default lleq build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
-        lleq = (final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk-debug; mlir = final.mlir-debug; }).overrideAttrs(attr: {
+        lleq = (final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk; mlir = final.mlir; }).overrideAttrs(attr: {
           cmakeBuildType = "Debug";
         });
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.

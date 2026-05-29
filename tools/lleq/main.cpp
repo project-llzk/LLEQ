@@ -20,8 +20,10 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Analysis/AnalysisUtil.h>
+#include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
+#include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <llzk/Util/Field.h>
@@ -38,9 +40,11 @@
 #include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Visitors.h>
 #include <mlir/Parser/Parser.h>
+#include <mlir/Pass/PassManager.h>
 #include <mlir/Support/IndentedOstream.h>
 #include <mlir/Support/LLVM.h>
 #include <mlir/Support/LogicalResult.h>
+#include <mlir/Transforms/Passes.h>
 
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
@@ -106,6 +110,19 @@ int main(int argc, char **argv) {
     llvm::errs() << "Failed to parse " << cli::inputFile() << '\n';
     return EXIT_FAILURE;
   }
+
+  // Start by lowering the struct to eliminate scf.for and arrays
+  mlir::PassManager pm(mod->getContext(),
+                       mlir::PassManager::getAnyOpAnchorName(),
+                       mlir::PassManager::Nesting::Implicit);
+  pm.enableVerifier(false);
+  pm.addPass(mlir::createCanonicalizerPass());
+  pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
+  pm.addPass(mlir::createCanonicalizerPass());
+  pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
+
+  llzk::ensure(llvm::succeeded(pm.run(*mod)),
+               "failed to prepare module for verification");
 
   // TODO: split on :: and parse out FQN to use LLZK symbol lookup
   llzk::component::StructDefOp structDef;
