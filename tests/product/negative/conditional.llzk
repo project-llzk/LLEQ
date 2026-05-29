@@ -1,6 +1,6 @@
 // RUN: lleq dump-store --struct A %s | FileCheck --enable-var-scope %s
 // XFAIL: *
-// The LLZK array-to-scalar pass currently can't tell that both array.reads in @constrain are from %c0 to scalarize it, so `sums_0_c` doesn't get added to the store
+// https://github.com/project-llzk/llzk-lib/issues/494
 
 module attributes {llzk.lang} {
     struct.def @A {
