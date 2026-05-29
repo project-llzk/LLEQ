@@ -165,8 +165,6 @@ int main(int argc, char **argv) {
     dumpStore(structDef);
     return EXIT_SUCCESS;
   case cli::SubCmd::WeakestPrecondition: {
-    // Hard-code to babybear right now because I'm too lazy to wire up the field
-    // But we can do better
     WeakestPreconditionAnalysis analysis{structDef, *field};
     std::cout << analysis.generateVerificationConditions() << '\n';
     return EXIT_SUCCESS;
