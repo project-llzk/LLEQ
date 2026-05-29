@@ -46,5 +46,5 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: sums_w[0]: felt.sub(felt.add(%arg0, ?0), felt.add(?0, %arg1))
-// CHECK-DAG: sums_c[0]: felt.sub(felt.add(?1, %arg0), felt.add(?1, %arg1))
+// CHECK-DAG: sums_0_w: felt.sub(felt.add(%arg0, ?0), felt.add(?0, %arg1))
+// CHECK-DAG: sums_0_c: felt.sub(felt.add(?1, %arg0), felt.add(?1, %arg1))
