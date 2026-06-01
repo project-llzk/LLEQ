@@ -171,23 +171,27 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  auto field = resolveSelectedField(*mod, cli::fieldName());
-  if (failed(field)) {
-    // already emits an error
-    return EXIT_FAILURE;
-  }
-
   switch (cli::subCmd()) {
   case cli::SubCmd::DumpStore:
     dumpStore(structDef);
     return EXIT_SUCCESS;
   case cli::SubCmd::WeakestPrecondition: {
+    auto field = resolveSelectedField(*mod, cli::fieldName());
+    if (failed(field)) {
+      // already emits an error
+      return EXIT_FAILURE;
+    }
     WeakestPreconditionAnalysis analysis{structDef, *field};
     std::cout << analysis.generateVerificationConditions() << '\n';
     return EXIT_SUCCESS;
   }
   case cli::SubCmd::Verify:
   case cli::SubCmd::DumpSmt: {
+    auto field = resolveSelectedField(*mod, cli::fieldName());
+    if (failed(field)) {
+      // already emits an error
+      return EXIT_FAILURE;
+    }
     FixpointVerifier verifier{structDef, *field};
     llzk::ensure(succeeded(verifier.init(cli::enableStore())),
                  "failed to generate SMT encoding");
