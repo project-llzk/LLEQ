@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "Verification/TermBuilderUtils.h"
+#include "Verification/TermUtils.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/SmallString.h>
@@ -70,4 +70,17 @@ cvc5::Term TermBuilder::arrayWrite(Value array, Value index, Value value) {
   return mgr.mkTerm(cvc5::Kind::STORE, {getConstant(array), getConstant(index),
                                         reduceMod(value, field.prime())});
 }
+
+cvc5::Term ImplicationTerm::buildTerm(cvc5::TermManager &mgr) {
+  auto antecedent = mgr.mkTerm(cvc5::Kind::AND, antecedents);
+  return mgr.mkTerm(cvc5::Kind::IMPLIES, {antecedent, consequent});
+}
+
+void ImplicationTerm::substitute(cvc5::Term oldTerm, cvc5::Term newTerm) {
+  for (auto &antecedent : antecedents) {
+    antecedent = antecedent.substitute(oldTerm, newTerm);
+  }
+  consequent = consequent.substitute(oldTerm, newTerm);
+}
+
 } // namespace lleq

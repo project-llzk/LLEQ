@@ -36,4 +36,17 @@ struct TermBuilder {
       : mgr{mgr}, field{field} {}
 };
 
+struct ImplicationTerm {
+  std::vector<cvc5::Term> antecedents;
+  cvc5::Term consequent;
+
+  static ImplicationTerm of(cvc5::Term term) {
+    return ImplicationTerm{{}, term};
+  }
+
+  void addAntecedent(cvc5::Term term) { antecedents.push_back(term); }
+  cvc5::Term buildTerm(cvc5::TermManager &mgr);
+  void substitute(cvc5::Term oldTerm, cvc5::Term newTerm);
+};
+
 } // namespace lleq

@@ -80,7 +80,7 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
         llzk::ensure(writeOp.getIndices().size() == 1,
                      "multidimensional arrays not supported");
-        return postcondition.substitute(
+        postcondition.substitute(
             builder.getConstant(writeOp.getArrRef()),
             builder.arrayWrite(writeOp.getArrRef(),
                                writeOp.getIndices().front(),
@@ -88,13 +88,16 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
       })
       .Case<constrain::EmitEqualityOp>(
           [this, &postcondition](EmitEqualityOp eqOp) {
-            return postcondition.addAntecedent(
+            postcondition.addAntecedent(
                 builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
           })
+      .Case<scf::IfOp>([this, &postcondition](scf::IfOp op) {
+        calculateWP(op, postcondition);
+      })
       .Default([this, &postcondition](auto op) {
         auto expression = getExpression(op);
-        return postcondition.substitute(builder.getConstant(op->getResult(0)),
-                                        expression);
+        postcondition.substitute(builder.getConstant(op->getResult(0)),
+                                 expression);
       });
 }
 
@@ -108,6 +111,9 @@ void WeakestPreconditionAnalysis::calculateWP(Block *block,
     calculateWP(&op, postcondition);
   }
 }
+
+void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
+                                              ImplicationTerm &postcondition) {}
 
 cvc5::Term getPostcondition(component::StructDefOp structDef,
                             cvc5::TermManager &mgr) {

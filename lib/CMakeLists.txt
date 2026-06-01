@@ -19,7 +19,7 @@ set(Verification_SRC
     Verification/DeductiveVerifier.cpp
     Verification/SymbolicVerifier.cpp
     Verification/FixpointVerifier.cpp
-    Verification/TermBuilderUtils.cpp
+    Verification/TermUtils.cpp
     Verification/WeakestPrecondition.cpp)
 
 target_sources(LLEQ PRIVATE

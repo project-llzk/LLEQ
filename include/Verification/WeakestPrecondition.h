@@ -5,36 +5,15 @@
 
 #pragma once
 
-#include "Verification/TermBuilderUtils.h"
+#include "Verification/TermUtils.h"
 #include <cvc5/cvc5.h>
 
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/Field.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
-
-struct ImplicationTerm {
-  std::vector<cvc5::Term> antecedents;
-  cvc5::Term consequent;
-
-  static ImplicationTerm of(cvc5::Term term) {
-    return ImplicationTerm{{}, term};
-  }
-
-  void addAntecedent(cvc5::Term term) { antecedents.push_back(term); }
-  cvc5::Term buildTerm(cvc5::TermManager &mgr) {
-    auto antecedent = mgr.mkTerm(cvc5::Kind::AND, antecedents);
-    return mgr.mkTerm(cvc5::Kind::IMPLIES, {antecedent, consequent});
-  }
-
-  void substitute(cvc5::Term oldTerm, cvc5::Term newTerm) {
-    for (auto &antecedent : antecedents) {
-      antecedent = antecedent.substitute(oldTerm, newTerm);
-    }
-    consequent = consequent.substitute(oldTerm, newTerm);
-  }
-};
 
 class WeakestPreconditionAnalysis {
   llzk::component::StructDefOp structDef;
@@ -45,6 +24,7 @@ class WeakestPreconditionAnalysis {
 
   cvc5::Term getExpression(mlir::Operation *op);
 
+  void calculateWP(mlir::scf::IfOp ifOp, ImplicationTerm &postcondition);
   void calculateWP(mlir::Operation *op, ImplicationTerm &postcondition);
   void calculateWP(mlir::Block *block, ImplicationTerm &postcondition);
 
