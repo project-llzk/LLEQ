@@ -23,6 +23,7 @@
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
+#include <unordered_set>
 #include <vector>
 
 using namespace llzk;
@@ -150,6 +151,7 @@ cvc5::Term getPostcondition(component::StructDefOp structDef,
                "cannot build postcondition for struct with empty members");
   std::vector<cvc5::Term> memberEquivs;
 
+  // TODO: reduce mod p
   for (auto memberDef : members) {
     auto memberName = memberDef.getSymName();
     auto witnessSym =
@@ -166,14 +168,18 @@ cvc5::Term getPostcondition(component::StructDefOp structDef,
   return memberEquivs.front();
 }
 
-cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
+std::pair<cvc5::Term, TermBuilder::TermSet>
+WeakestPreconditionAnalysis::generateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(
                    structDef->getParentOfType<ModuleOp>(), structDef)),
                "failed to align product func");
   auto postcondition = ConjunctionTerm::of(getPostcondition(structDef, mgr));
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
-  return postcondition.buildTerm(mgr);
+
+  auto term = postcondition.buildTerm(mgr);
+  auto extraDecls = builder.getExtraDecls(term);
+  return {term, extraDecls};
 }
 
 } // namespace lleq

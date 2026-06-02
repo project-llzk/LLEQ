@@ -5,6 +5,7 @@
 
 #include "Verification/TermUtils.h"
 
+#include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/ADT/SmallVectorExtras.h>
@@ -16,6 +17,34 @@
 using namespace mlir;
 
 namespace lleq {
+
+static inline void traverse(cvc5::Term term, const TermBuilder::TermSet &vars,
+                            TermBuilder::TermSet &acc) {
+  if (vars.find(term) != vars.end()) {
+    acc.insert(term);
+  } else {
+    for (auto child : term) {
+      traverse(child, vars, acc);
+    }
+  }
+}
+
+TermBuilder::TermSet TermBuilder::getExtraDecls(cvc5::Term term) {
+  TermSet vars;
+  for (const auto &[_, c] : constants) {
+    vars.insert(c);
+  }
+  for (const auto &[_, c] : witnessMembers) {
+    vars.insert(c);
+  }
+  for (const auto &[_, c] : constraintMembers) {
+    vars.insert(c);
+  }
+
+  TermSet decls;
+  traverse(term, vars, decls);
+  return decls;
+}
 
 static inline cvc5::Sort sortOfType(Type type, cvc5::TermManager &mgr) {
   if (type.isSignlessInteger() &&
@@ -73,6 +102,7 @@ cvc5::Term TermBuilder::_reduce_mod_impl(cvc5::Term val,
 cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
   if (a.getSort().isArray() && b.getSort().isArray()) {
     auto index = mgr.mkVar(mgr.getIntegerSort(), "i");
+    // TODO: constrain `i` to the array bounds
     return mgr.mkTerm(cvc5::Kind::FORALL,
                       {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {index}),
                        _assert_equal_impl(_array_read_impl(a, index),

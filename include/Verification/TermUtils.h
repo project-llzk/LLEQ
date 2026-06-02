@@ -23,6 +23,8 @@ concept FormulaTerm =
 // A helper class for building common term shapes from MLIR SSA values
 struct TermBuilder {
 
+  using TermSet = std::unordered_set<cvc5::Term, std::hash<cvc5::Term>>;
+
   // Build an integer constant
   cvc5::Term getInteger(llvm::DynamicAPInt val);
 
@@ -32,6 +34,9 @@ struct TermBuilder {
   // Return a constant of the appropriate sort for a struct member
   cvc5::Term getConstant(llzk::component::MemberDefOp memberDef,
                          bool isWitness);
+
+  // Return all free variables in `term` that are tracked as constants
+  TermSet getExtraDecls(cvc5::Term term);
 
   cvc5::Term reduceMod(FormulaTerm auto val, llvm::DynamicAPInt mod) {
     return _reduce_mod_impl(_get_term(val), mod);

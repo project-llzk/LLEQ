@@ -184,7 +184,16 @@ int main(int argc, char **argv) {
       return EXIT_FAILURE;
     }
     WeakestPreconditionAnalysis analysis{structDef, *field};
-    std::cout << analysis.generateVerificationConditions() << '\n';
+    auto [vc, decls] = analysis.generateVerificationConditions();
+    llvm::outs() << "(set-logic ALL)\n";
+    llvm::outs() << "; Extra declarations\n";
+    for (auto decl : decls) {
+      llvm::outs() << "(declare-const " << decl.toString() << " "
+                   << decl.getSort().toString() << ")\n";
+    }
+    llvm::outs() << "; Verification condition\n";
+    llvm::outs() << "(assert " << vc.notTerm().toString() << ")\n";
+    llvm::outs() << "(check-sat)\n(get-model)\n";
     return EXIT_SUCCESS;
   }
   case cli::SubCmd::Verify:
