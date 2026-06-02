@@ -32,6 +32,6 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: arr1_0_w: felt.add(%arg0, %arg1)
-// CHECK-DAG: arr1_1_w: felt.sub(%arg0, %arg1)
-// CHECK-DAG: arr2_2_w: felt.mul(felt.add(%arg0, %arg1), %arg2)
+// CHECK-DAG: arr1_w[0]: felt.add(%arg0, %arg1)
+// CHECK-DAG: arr1_w[1]: felt.sub(%arg0, %arg1)
+// CHECK-DAG: arr2_w[0]: felt.mul(felt.add(%arg0, %arg1), %arg2)

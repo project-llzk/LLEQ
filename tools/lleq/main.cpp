@@ -146,9 +146,11 @@ int main(int argc, char **argv) {
                        mlir::PassManager::Nesting::Implicit);
   pm.enableVerifier(false);
   pm.addPass(mlir::createCanonicalizerPass());
-  pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
-  pm.addPass(mlir::createCanonicalizerPass());
-  // pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
+  if (cli::flattenStruct()) {
+    pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
+    pm.addPass(mlir::createCanonicalizerPass());
+    pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
+  }
 
   llzk::ensure(llvm::succeeded(pm.run(*mod)),
                "failed to prepare module for verification");

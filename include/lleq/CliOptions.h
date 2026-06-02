@@ -23,6 +23,10 @@ enum class SubCmd { Verify, DumpSmt, DumpStore, WeakestPrecondition };
 // Whether to enable symbolic store construction
 [[nodiscard]] bool enableStore();
 
+// Whether to enable the llzk-flatten and array-to-scalar passes before running
+// verification
+[[nodiscard]] bool flattenStruct();
+
 // The input file
 [[nodiscard]] std::string &inputFile();
 

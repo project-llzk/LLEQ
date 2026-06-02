@@ -25,6 +25,12 @@ static llvm::cl::opt<std::string> structOpt(
     "struct", llvm::cl::desc("The struct to use for verification/debugging"),
     llvm::cl::sub(llvm::cl::SubCommand::getAll()), llvm::cl::Required);
 
+// --flatten
+static llvm::cl::opt<bool>
+    flattenOpt("flatten",
+               llvm::cl::desc("Flatten loops/arrays before verification?"),
+               llvm::cl::sub(llvm::cl::SubCommand::getAll()));
+
 // --field ...
 static llvm::cl::opt<std::string> fieldNameOpt(
     "field",
@@ -64,7 +70,7 @@ std::string &fieldName() { return fieldNameOpt; }
 bool enableStore() {
   return verifyCmd ? verifyEnableStoreOpt : dumpEnableStoreOpt;
 }
-
+bool flattenStruct() { return flattenOpt; }
 std::string &inputFile() { return inputFileOpt; }
 
 } // namespace lleq::cli
