@@ -5,18 +5,23 @@
 
 #include "Verification/WeakestPrecondition.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
+#include "Verification/TermUtils.h"
 #include "Verification/VerificationUtils.h"
 
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
 
+#include <llvm/Support/Casting.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/DynamicAPIntHelper.h>
+#include <mlir/Dialect/Arith/IR/Arith.h>
+#include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
 #include <vector>
 
@@ -50,7 +55,8 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
 
   return llvm::TypeSwitch<Operation *, cvc5::Term>(op)
       .Case<MemberReadOp>([this](MemberReadOp read) {
-        return builder.getConstant(read.getMemberName(), isWitnessOp(read));
+        return builder.getConstant(read.getMemberDefOp(tables)->get(),
+                                   isWitnessOp(read));
       })
       .Case<ReadArrayOp>([this](ReadArrayOp read) {
         llzk::ensure(read.getIndices().size() == 1,
@@ -62,19 +68,27 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
         constOp.getValue().getValue().toStringUnsigned(str);
         return mgr.mkInteger(std::string{str});
       })
+      .Case<arith::ConstantIntOp, arith::ConstantIndexOp>([this](auto constOp) {
+        auto val = dyn_cast<IntegerAttr>(constOp.getValue()).getValue();
+        return builder.getInteger(toDynamicAPInt(val));
+      })
+      .Case<array::CreateArrayOp>([this](array::CreateArrayOp createArr) {
+        return builder.getConstant(createArr.getResult());
+      })
       .Default([op](auto) -> cvc5::Term {
         llvm::report_fatal_error("unknown op: " + op->getName().getStringRef());
       });
 }
 
 void WeakestPreconditionAnalysis::calculateWP(Operation *op,
-                                              ImplicationTerm &postcondition) {
+                                              ConjunctionTerm &postcondition) {
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<component::CreateStructOp>(
           [&postcondition](auto) { return postcondition; })
       .Case<MemberWriteOp>([this, &postcondition](MemberWriteOp writeOp) {
         postcondition.addAntecedent(builder.assertEqual(
-            builder.getConstant(writeOp.getMemberName(), /*isWitness=*/true),
+            builder.getConstant(writeOp.getMemberDefOp(tables)->get(),
+                                /*isWitness=*/true),
             writeOp.getVal()));
       })
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
@@ -102,7 +116,7 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
 }
 
 void WeakestPreconditionAnalysis::calculateWP(Block *block,
-                                              ImplicationTerm &postcondition) {
+                                              ConjunctionTerm &postcondition) {
   // TODO: also return yielded values
   for (auto &op : llvm::iterator_range(block->rbegin(), block->rend())) {
     if (&op == block->getTerminator()) {
@@ -113,12 +127,27 @@ void WeakestPreconditionAnalysis::calculateWP(Block *block,
 }
 
 void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
-                                              ImplicationTerm &postcondition) {}
+                                              ConjunctionTerm &postcondition) {
+  auto condition = builder.getConstant(ifOp.getCondition());
+  auto notCondition = mgr.mkTerm(cvc5::Kind::NOT, {condition});
+
+  ConjunctionTerm thenBranch{postcondition}, elseBranch{postcondition};
+  calculateWP(&ifOp.getThenRegion().front(), thenBranch);
+  calculateWP(&ifOp.getElseRegion().front(), elseBranch);
+
+  thenBranch.addAntecedent(condition);
+  elseBranch.addAntecedent(notCondition);
+
+  thenBranch.addConjuncts(elseBranch);
+  postcondition = thenBranch;
+}
 
 cvc5::Term getPostcondition(component::StructDefOp structDef,
                             cvc5::TermManager &mgr) {
 
   auto members = structDef.getMemberDefs();
+  llzk::ensure(!members.empty(),
+               "cannot build postcondition for struct with empty members");
   std::vector<cvc5::Term> memberEquivs;
 
   for (auto memberDef : members) {
@@ -131,14 +160,17 @@ cvc5::Term getPostcondition(component::StructDefOp structDef,
         mgr.mkTerm(cvc5::Kind::EQUAL, {witnessSym, constraintSym}));
   }
 
-  return mgr.mkTerm(cvc5::Kind::AND, memberEquivs);
+  if (memberEquivs.size() > 1) {
+    return mgr.mkTerm(cvc5::Kind::AND, memberEquivs);
+  }
+  return memberEquivs.front();
 }
 
 cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(
                    structDef->getParentOfType<ModuleOp>(), structDef)),
                "failed to align product func");
-  auto postcondition = ImplicationTerm::of(getPostcondition(structDef, mgr));
+  auto postcondition = ConjunctionTerm::of(getPostcondition(structDef, mgr));
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
   return postcondition.buildTerm(mgr);

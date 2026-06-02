@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
   pm.addPass(mlir::createCanonicalizerPass());
   pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
   pm.addPass(mlir::createCanonicalizerPass());
-  pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
+  // pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
 
   llzk::ensure(llvm::succeeded(pm.run(*mod)),
                "failed to prepare module for verification");

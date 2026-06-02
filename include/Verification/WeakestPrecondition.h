@@ -11,6 +11,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/Field.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
@@ -22,11 +23,13 @@ class WeakestPreconditionAnalysis {
 
   TermBuilder builder;
 
+  mlir::SymbolTableCollection tables;
+
   cvc5::Term getExpression(mlir::Operation *op);
 
-  void calculateWP(mlir::scf::IfOp ifOp, ImplicationTerm &postcondition);
-  void calculateWP(mlir::Operation *op, ImplicationTerm &postcondition);
-  void calculateWP(mlir::Block *block, ImplicationTerm &postcondition);
+  void calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
+  void calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
+  void calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
 
 public:
   WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
