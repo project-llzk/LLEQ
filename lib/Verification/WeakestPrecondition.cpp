@@ -162,6 +162,18 @@ cvc5::Term WeakestPreconditionAnalysis::getPostcondition() {
   return memberEquivs.front();
 }
 
+void WeakestPreconditionAnalysis::populateVerificationConditions() {
+  llzk::ensure(succeeded(ensureProductFunc(
+                   structDef->getParentOfType<ModuleOp>(), structDef)),
+               "failed to align product func");
+  auto postcondition = ConjunctionTerm::of(getPostcondition());
+  calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
+              postcondition);
+
+  verificationConditions = postcondition.buildTerm(mgr);
+  extraDecls = builder.getExtraDecls(verificationConditions);
+}
+
 std::pair<cvc5::Term, TermBuilder::TermSet>
 WeakestPreconditionAnalysis::generateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(

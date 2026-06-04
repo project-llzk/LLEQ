@@ -8,7 +8,7 @@
 #include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
-#include <iostream>
+
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>

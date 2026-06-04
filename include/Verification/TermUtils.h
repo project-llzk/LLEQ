@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <cvc5/cvc5.h>
+#include <functional>
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLForwardCompat.h>
 #include <llvm/ADT/StringMap.h>
@@ -76,6 +77,9 @@ private:
   cvc5::Term _assert_equal_impl(cvc5::Term, mlir::Value);
   cvc5::Term _array_read_impl(cvc5::Term, cvc5::Term);
   cvc5::Term _array_write_impl(cvc5::Term, cvc5::Term, cvc5::Term);
+
+  cvc5::Term _array_quantified_term(std::function<cvc5::Term(cvc5::Term)>,
+                                    std::optional<int64_t>);
 
   cvc5::Term _get_term(FormulaTerm auto t) {
     using T = decltype(t);

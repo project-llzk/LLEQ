@@ -132,26 +132,35 @@ static inline std::optional<int64_t> getArraySize(
   return arraySize;
 }
 
+cvc5::Term TermBuilder::_array_quantified_term(
+    std::function<cvc5::Term(cvc5::Term)> builder,
+    std::optional<int64_t> size) {
+
+  auto index = mgr.mkVar(mgr.getIntegerSort(), "i");
+  auto forallBody = builder(index);
+  if (size.has_value()) {
+    auto bounds =
+        mgr.mkTerm(cvc5::Kind::AND,
+                   {mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), index}),
+                    mgr.mkTerm(cvc5::Kind::LT, {index, getInteger(*size)})});
+    forallBody = mgr.mkTerm(cvc5::Kind::IMPLIES, {bounds, forallBody});
+  }
+
+  return mgr.mkTerm(
+      cvc5::Kind::FORALL,
+      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {index}), forallBody});
+}
+
 cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
   Value arrVal;
   if (a.getSort().isArray() && b.getSort().isArray()) {
-    auto index = mgr.mkVar(mgr.getIntegerSort(), "i");
-    // TODO: constrain `i` to the array bounds
     auto size = getArraySize(a, b, termTypes);
-    auto eqTerm = _assert_equal_impl(_array_read_impl(a, index),
-                                     _array_read_impl(b, index));
-    if (size.has_value()) {
-      auto bounds =
-          mgr.mkTerm(cvc5::Kind::AND,
-                     {mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), index}),
-                      mgr.mkTerm(cvc5::Kind::LT, {index, getInteger(*size)})});
-      eqTerm = mgr.mkTerm(cvc5::Kind::IMPLIES, {bounds, eqTerm});
-    }
-    return mgr.mkTerm(cvc5::Kind::FORALL,
-                      {
-                          mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {index}),
-                          eqTerm,
-                      });
+    return _array_quantified_term(
+        [this, &a, &b](cvc5::Term index) {
+          return _assert_equal_impl(_array_read_impl(a, index),
+                                    _array_read_impl(b, index));
+        },
+        size);
   }
 
   return mgr.mkTerm(cvc5::Kind::EQUAL, {_reduce_mod_impl(a, field.prime()),

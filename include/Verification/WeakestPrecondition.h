@@ -22,11 +22,9 @@ class WeakestPreconditionAnalysis {
   llzk::Field field;
 
   TermBuilder builder;
-
   mlir::SymbolTableCollection tables;
 
   cvc5::Term getExpression(mlir::Operation *op);
-
   void calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
   void calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
   void calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
@@ -37,7 +35,12 @@ public:
       : structDef{structDef}, field{field}, builder{mgr, field} {}
 
   cvc5::Term getPostcondition();
+  void populateVerificationConditions();
   std::pair<cvc5::Term, TermBuilder::TermSet> generateVerificationConditions();
+
+  cvc5::Term verificationConditions;
+  TermBuilder::TermSet extraDecls;
+  TermBuilder::TermSet declBounds;
 };
 
 } // namespace lleq
