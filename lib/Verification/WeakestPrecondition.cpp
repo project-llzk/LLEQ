@@ -23,7 +23,7 @@
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
-#include <unordered_set>
+
 #include <vector>
 
 using namespace llzk;
@@ -71,7 +71,7 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
       })
       .Case<arith::ConstantIntOp, arith::ConstantIndexOp>([this](auto constOp) {
         auto val = dyn_cast<IntegerAttr>(constOp.getValue()).getValue();
-        return builder.getInteger(toDynamicAPInt(val));
+        return builder.getInteger(val);
       })
       .Case<array::CreateArrayOp>([this](array::CreateArrayOp createArr) {
         return builder.getConstant(createArr.getResult());
@@ -143,23 +143,17 @@ void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
   postcondition = thenBranch;
 }
 
-cvc5::Term getPostcondition(component::StructDefOp structDef,
-                            cvc5::TermManager &mgr) {
+cvc5::Term WeakestPreconditionAnalysis::getPostcondition() {
 
   auto members = structDef.getMemberDefs();
   llzk::ensure(!members.empty(),
                "cannot build postcondition for struct with empty members");
-  std::vector<cvc5::Term> memberEquivs;
 
-  // TODO: reduce mod p
+  std::vector<cvc5::Term> memberEquivs;
   for (auto memberDef : members) {
-    auto memberName = memberDef.getSymName();
-    auto witnessSym =
-        mgr.mkConst(mgr.getIntegerSort(), (memberName + "_w").str());
-    auto constraintSym =
-        mgr.mkConst(mgr.getIntegerSort(), (memberName + "_c").str());
-    memberEquivs.push_back(
-        mgr.mkTerm(cvc5::Kind::EQUAL, {witnessSym, constraintSym}));
+    auto witnessSym = builder.getConstant(memberDef, true);
+    auto constraintSym = builder.getConstant(memberDef, false);
+    memberEquivs.push_back(builder.assertEqual(witnessSym, constraintSym));
   }
 
   if (memberEquivs.size() > 1) {
@@ -173,7 +167,7 @@ WeakestPreconditionAnalysis::generateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(
                    structDef->getParentOfType<ModuleOp>(), structDef)),
                "failed to align product func");
-  auto postcondition = ConjunctionTerm::of(getPostcondition(structDef, mgr));
+  auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
 

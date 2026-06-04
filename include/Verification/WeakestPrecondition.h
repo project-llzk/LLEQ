@@ -36,8 +36,8 @@ public:
                               llzk::Field field)
       : structDef{structDef}, field{field}, builder{mgr, field} {}
 
+  cvc5::Term getPostcondition();
   std::pair<cvc5::Term, TermBuilder::TermSet> generateVerificationConditions();
 };
 
-cvc5::Term getPostcondition(llzk::component::StructDefOp, cvc5::TermManager &);
 } // namespace lleq

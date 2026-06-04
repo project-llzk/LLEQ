@@ -9,10 +9,13 @@
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/ADT/SmallVectorExtras.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/DynamicAPIntHelper.h>
 #include <mlir/IR/BuiltinAttributes.h>
+#include <mlir/IR/Value.h>
 
 using namespace mlir;
 
@@ -70,6 +73,7 @@ cvc5::Term TermBuilder::getConstant(Value value) {
 
   auto newConst = mgr.mkConst(sortOfType(value.getType(), mgr), name);
   constants.insert({value, newConst});
+  termTypes.insert({newConst, value.getType()});
   return newConst;
 }
 cvc5::Term TermBuilder::getConstant(llzk::component::MemberDefOp memberDef,
@@ -84,6 +88,7 @@ cvc5::Term TermBuilder::getConstant(llzk::component::MemberDefOp memberDef,
   auto newTerm = mgr.mkConst(sortOfType(memberDef.getType(), mgr),
                              (memberName + (isWitness ? "_w" : "_c")).str());
   memberMap.insert({memberName, newTerm});
+  termTypes.insert({newTerm, memberDef.getType()});
   return newTerm;
 }
 
@@ -99,14 +104,54 @@ cvc5::Term TermBuilder::_reduce_mod_impl(cvc5::Term val,
   return mgr.mkTerm(cvc5::Kind::INTS_MODULUS, {val, getInteger(mod)});
 }
 
+// Returns the array length for an ArrayType, or nullopt
+static inline std::optional<int64_t> sizeOfType(Type type) {
+  if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
+    auto shape = arrType.getShape();
+    llzk::ensure(shape.size() == 1, "multidimensional arrays not supported");
+    return shape.front();
+  }
+  return {};
+}
+
+// Returns the array length if either term is an array of known length, nullopt
+// if neither, and asserts failure if the lengths differ
+static inline std::optional<int64_t> getArraySize(
+    cvc5::Term a, cvc5::Term b,
+    std::unordered_map<cvc5::Term, Type, std::hash<cvc5::Term>> termTypes) {
+  std::optional<int64_t> arraySize;
+  if (auto ait = termTypes.find(a); ait != termTypes.end()) {
+    arraySize = sizeOfType(ait->second);
+  }
+  if (auto bit = termTypes.find(b); bit != termTypes.end()) {
+    auto size = sizeOfType(bit->second);
+    llzk::ensure(!arraySize.has_value() || arraySize == size,
+                 "incompatible array sizes");
+    return size;
+  }
+  return arraySize;
+}
+
 cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
+  Value arrVal;
   if (a.getSort().isArray() && b.getSort().isArray()) {
     auto index = mgr.mkVar(mgr.getIntegerSort(), "i");
     // TODO: constrain `i` to the array bounds
+    auto size = getArraySize(a, b, termTypes);
+    auto eqTerm = _assert_equal_impl(_array_read_impl(a, index),
+                                     _array_read_impl(b, index));
+    if (size.has_value()) {
+      auto bounds =
+          mgr.mkTerm(cvc5::Kind::AND,
+                     {mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), index}),
+                      mgr.mkTerm(cvc5::Kind::LT, {index, getInteger(*size)})});
+      eqTerm = mgr.mkTerm(cvc5::Kind::IMPLIES, {bounds, eqTerm});
+    }
     return mgr.mkTerm(cvc5::Kind::FORALL,
-                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {index}),
-                       _assert_equal_impl(_array_read_impl(a, index),
-                                          _array_read_impl(b, index))});
+                      {
+                          mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {index}),
+                          eqTerm,
+                      });
   }
 
   return mgr.mkTerm(cvc5::Kind::EQUAL, {_reduce_mod_impl(a, field.prime()),

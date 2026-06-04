@@ -11,6 +11,7 @@
 #include <llvm/ADT/STLForwardCompat.h>
 #include <llvm/ADT/StringMap.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/Field.h>
 #include <mlir/IR/Value.h>
 
@@ -27,6 +28,9 @@ struct TermBuilder {
 
   // Build an integer constant
   cvc5::Term getInteger(llvm::DynamicAPInt val);
+  cvc5::Term getInteger(auto val) {
+    return getInteger(llzk::toDynamicAPInt(val));
+  }
 
   // Return a constant term of the appropriate sort for an SSA value
   cvc5::Term getConstant(mlir::Value value);
@@ -63,7 +67,11 @@ private:
   llvm::DenseMap<mlir::Value, cvc5::Term> constants;
   llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
 
+  std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
+
   cvc5::Term _reduce_mod_impl(cvc5::Term, llvm::DynamicAPInt);
+  cvc5::Term _assert_array_equal_impl(cvc5::Term, cvc5::Term,
+                                      std::optional<llvm::DynamicAPInt>);
   cvc5::Term _assert_equal_impl(cvc5::Term, cvc5::Term);
   cvc5::Term _assert_equal_impl(cvc5::Term, mlir::Value);
   cvc5::Term _array_read_impl(cvc5::Term, cvc5::Term);
