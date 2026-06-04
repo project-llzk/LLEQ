@@ -49,6 +49,38 @@ TermBuilder::TermSet TermBuilder::getExtraDecls(cvc5::Term term) {
   return decls;
 }
 
+// Returns the array length for an ArrayType, or nullopt
+static inline std::optional<int64_t> sizeOfType(Type type) {
+  if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
+    auto shape = arrType.getShape();
+    llzk::ensure(shape.size() == 1, "multidimensional arrays not supported");
+    return shape.front();
+  }
+  return {};
+}
+
+TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
+                                                llvm::DynamicAPInt prime) {
+  TermSet bounds;
+  for (auto var : decls) {
+    if (var.getSort().isArray()) {
+      std::optional<size_t> size;
+      if (auto it = termTypes.find(var); it != termTypes.end()) {
+        size = sizeOfType(it->second);
+      }
+      auto bound = _array_quantified_term(
+          [this, &var, &prime](cvc5::Term index) {
+            return _is_mod(_array_read_impl(var, index), prime);
+          },
+          size);
+      bounds.insert(bound);
+    } else {
+      bounds.insert(_is_mod(var, prime));
+    }
+  }
+  return bounds;
+}
+
 static inline cvc5::Sort sortOfType(Type type, cvc5::TermManager &mgr) {
   if (type.isSignlessInteger() &&
       dyn_cast<IntegerType>(type).getIntOrFloatBitWidth() == 1) {
@@ -99,19 +131,13 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
   return mgr.mkInteger(str);
 }
 
+cvc5::Term TermBuilder::_is_mod(cvc5::Term val, llvm::DynamicAPInt mod) {
+  return mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), val, getInteger(mod - 1)});
+}
+
 cvc5::Term TermBuilder::_reduce_mod_impl(cvc5::Term val,
                                          llvm::DynamicAPInt mod) {
   return mgr.mkTerm(cvc5::Kind::INTS_MODULUS, {val, getInteger(mod)});
-}
-
-// Returns the array length for an ArrayType, or nullopt
-static inline std::optional<int64_t> sizeOfType(Type type) {
-  if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
-    auto shape = arrType.getShape();
-    llzk::ensure(shape.size() == 1, "multidimensional arrays not supported");
-    return shape.front();
-  }
-  return {};
 }
 
 // Returns the array length if either term is an array of known length, nullopt
@@ -139,11 +165,9 @@ cvc5::Term TermBuilder::_array_quantified_term(
   auto index = mgr.mkVar(mgr.getIntegerSort(), "i");
   auto forallBody = builder(index);
   if (size.has_value()) {
-    auto bounds =
-        mgr.mkTerm(cvc5::Kind::AND,
-                   {mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), index}),
-                    mgr.mkTerm(cvc5::Kind::LT, {index, getInteger(*size)})});
-    forallBody = mgr.mkTerm(cvc5::Kind::IMPLIES, {bounds, forallBody});
+    forallBody =
+        mgr.mkTerm(cvc5::Kind::IMPLIES,
+                   {_is_mod(index, llzk::toDynamicAPInt(*size)), forallBody});
   }
 
   return mgr.mkTerm(

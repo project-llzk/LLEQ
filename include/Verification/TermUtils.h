@@ -43,6 +43,9 @@ struct TermBuilder {
   // Return all free variables in `term` that are tracked as constants
   TermSet getExtraDecls(cvc5::Term term);
 
+  // Build terms bouding each variable in `decls` in the range `[0, p - 1]`
+  TermSet getDeclBounds(TermSet decls, llvm::DynamicAPInt prime);
+
   cvc5::Term reduceMod(FormulaTerm auto val, llvm::DynamicAPInt mod) {
     return _reduce_mod_impl(_get_term(val), mod);
   }
@@ -70,6 +73,7 @@ private:
 
   std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
 
+  cvc5::Term _is_mod(cvc5::Term, llvm::DynamicAPInt);
   cvc5::Term _reduce_mod_impl(cvc5::Term, llvm::DynamicAPInt);
   cvc5::Term _assert_array_equal_impl(cvc5::Term, cvc5::Term,
                                       std::optional<llvm::DynamicAPInt>);

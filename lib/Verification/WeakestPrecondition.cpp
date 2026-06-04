@@ -172,6 +172,7 @@ void WeakestPreconditionAnalysis::populateVerificationConditions() {
 
   verificationConditions = postcondition.buildTerm(mgr);
   extraDecls = builder.getExtraDecls(verificationConditions);
+  declBounds = builder.getDeclBounds(extraDecls, field.prime());
 }
 
 std::pair<cvc5::Term, TermBuilder::TermSet>
