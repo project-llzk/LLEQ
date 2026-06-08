@@ -46,6 +46,14 @@ struct TermBuilder {
   // Build terms bouding each variable in `decls` in the range `[0, p - 1]`
   TermSet getDeclBounds(TermSet decls, llvm::DynamicAPInt prime);
 
+  // Returns a call to `(init-@subcmp args...)`
+  cvc5::Term initSubcmp(llzk::component::StructDefOp subcmp,
+                        llvm::ArrayRef<mlir::Value> args);
+
+  // Returns a call to `(read-"subcmp"-"member" %subcmp)`
+  cvc5::Term readSubcmpMember(mlir::Value subcmp,
+                              llzk::component::MemberDefOp member);
+
   cvc5::Term reduceMod(FormulaTerm auto val, llvm::DynamicAPInt mod) {
     return _reduce_mod_impl(_get_term(val), mod);
   }
@@ -67,12 +75,23 @@ struct TermBuilder {
   TermBuilder(cvc5::TermManager &mgr, llzk::Field field)
       : mgr{mgr}, field{field} {}
 
+  // Generate the auxiliary definitions for a subcomponent
+  void populateSubcomponent(llzk::component::StructDefOp subcmp);
+
 private:
+  cvc5::Sort _sort_of_type(mlir::Type);
+
   llvm::DenseMap<mlir::Value, cvc5::Term> constants;
   llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
 
   std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
 
+  // Auxiliary declarations for subcomponents
+  llvm::DenseMap<llzk::component::StructType, cvc5::Sort> subcmpSorts;
+  llvm::DenseMap<llzk::component::StructDefOp, cvc5::Term> subcmpInits;
+  llvm::DenseMap<llzk::component::MemberDefOp, cvc5::Term> subcmpMembers;
+
+  // Term builder implementations
   cvc5::Term _is_mod(cvc5::Term, llvm::DynamicAPInt);
   cvc5::Term _reduce_mod_impl(cvc5::Term, llvm::DynamicAPInt);
   cvc5::Term _assert_array_equal_impl(cvc5::Term, cvc5::Term,

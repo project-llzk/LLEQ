@@ -29,17 +29,37 @@ class WeakestPreconditionAnalysis {
   void calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
   void calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
 
+  void initSubcomponents() {
+    for (auto memberDef : structDef.getMemberDefs()) {
+
+      if (auto structType = mlir::dyn_cast<llzk::component::StructType>(
+              memberDef.getType())) {
+        auto definition = structType.getDefinition(
+            tables, structDef->getParentOfType<mlir::ModuleOp>());
+        llzk::ensure(mlir::succeeded(definition),
+                     "could not find struct definition for " +
+                         memberDef.getSymName());
+        builder.populateSubcomponent(definition->get());
+      }
+    }
+  }
+
 public:
   WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
                               llzk::Field field)
-      : structDef{structDef}, field{field}, builder{mgr, field} {}
+      : structDef{structDef}, field{field}, builder{mgr, field} {
+    initSubcomponents();
+  }
 
   cvc5::Term getPostcondition();
   void populateVerificationConditions();
   std::pair<cvc5::Term, TermBuilder::TermSet> generateVerificationConditions();
 
+  // Generated VCs after doing weakest precondition analysis
   cvc5::Term verificationConditions;
+  // Toplevel for free variables that appear in the VCs
   TermBuilder::TermSet extraDecls;
+  // Mod-p bounds on the free variable declarations
   TermBuilder::TermSet declBounds;
 };
 

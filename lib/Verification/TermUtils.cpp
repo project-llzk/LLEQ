@@ -12,14 +12,41 @@
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Types.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
+#include <llzk/Util/TypeHelper.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/Value.h>
 
 using namespace mlir;
 
 namespace lleq {
+
+void TermBuilder::populateSubcomponent(llzk::component::StructDefOp subcmp) {
+  std::string subcmpName = subcmp.getSymName().str();
+  // Materialize a sort: `struct.def @B` => `(decl-sort B)`
+  cvc5::Sort sort = mgr.mkUninterpretedSort(subcmpName);
+  subcmpSorts.insert({subcmp.getType(), sort});
+  // `@B::@product(...) -> <@B>` => `(decl-fun create-B (...) B)`
+  std::vector<cvc5::Sort> argumentSorts;
+  for (auto type : subcmp.getComputeFuncOp().getFunctionType().getInputs()) {
+    argumentSorts.push_back(_sort_of_type(type));
+  }
+  cvc5::Sort initFuncSort = mgr.mkFunctionSort(std::move(argumentSorts), sort);
+  cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
+  subcmpInits.insert({subcmp, initFunc});
+
+  // For each `@B::struct.member @foo : T` => `(decl-fun read-B-foo (B) T)`
+  for (auto memberDef : subcmp.getMemberDefs()) {
+    cvc5::Sort memberReadFuncSort =
+        mgr.mkFunctionSort({sort}, _sort_of_type(memberDef.getType()));
+    cvc5::Term memberReadFunc =
+        mgr.mkConst(memberReadFuncSort,
+                    "read-" + subcmpName + "-" + memberDef.getSymName().str());
+    subcmpMembers.insert({memberDef, memberReadFunc});
+  }
+}
 
 static inline void traverse(cvc5::Term term, const TermBuilder::TermSet &vars,
                             TermBuilder::TermSet &acc) {
@@ -74,21 +101,28 @@ TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
           },
           size);
       bounds.insert(bound);
-    } else {
+    } else if (!var.getSort().isUninterpretedSort()) {
+      // Don't need bounds for subcomponents
       bounds.insert(_is_mod(var, prime));
     }
   }
   return bounds;
 }
 
-static inline cvc5::Sort sortOfType(Type type, cvc5::TermManager &mgr) {
+cvc5::Sort TermBuilder::_sort_of_type(Type type) {
+  // TODO: subcomponent
+  if (auto structType = dyn_cast<llzk::component::StructType>(type)) {
+    auto it = subcmpSorts.find(structType);
+    llzk::ensure(it != subcmpSorts.end(), "unknown subcomponent type");
+    return it->second;
+  }
   if (type.isSignlessInteger() &&
       dyn_cast<IntegerType>(type).getIntOrFloatBitWidth() == 1) {
     return mgr.getBooleanSort();
   }
   if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
     return mgr.mkArraySort(mgr.getIntegerSort(),
-                           sortOfType(arrType.getElementType(), mgr));
+                           _sort_of_type(arrType.getElementType()));
   }
   return mgr.getIntegerSort();
 }
@@ -103,7 +137,7 @@ cvc5::Term TermBuilder::getConstant(Value value) {
     name.emplace("arg" + std::to_string(blockArg.getArgNumber()));
   }
 
-  auto newConst = mgr.mkConst(sortOfType(value.getType(), mgr), name);
+  auto newConst = mgr.mkConst(_sort_of_type(value.getType()), name);
   constants.insert({value, newConst});
   termTypes.insert({newConst, value.getType()});
   return newConst;
@@ -117,7 +151,7 @@ cvc5::Term TermBuilder::getConstant(llzk::component::MemberDefOp memberDef,
     return it->second;
   }
 
-  auto newTerm = mgr.mkConst(sortOfType(memberDef.getType(), mgr),
+  auto newTerm = mgr.mkConst(_sort_of_type(memberDef.getType()),
                              (memberName + (isWitness ? "_w" : "_c")).str());
   memberMap.insert({memberName, newTerm});
   termTypes.insert({newTerm, memberDef.getType()});
@@ -129,6 +163,30 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
   llvm::raw_string_ostream os{str};
   val.print(os);
   return mgr.mkInteger(str);
+}
+
+cvc5::Term TermBuilder::initSubcmp(llzk::component::StructDefOp subcmp,
+                                   llvm::ArrayRef<Value> args) {
+  auto it = subcmpInits.find(subcmp);
+  llzk::ensure(it != subcmpInits.end(),
+               "unknown subcomponent: " + subcmp.getSymName().str());
+
+  std::vector<cvc5::Term> termArgs{it->second};
+  termArgs.reserve(args.size() + 1);
+
+  for (auto arg : args) {
+    termArgs.push_back(getConstant(arg));
+  }
+  return mgr.mkTerm(cvc5::Kind::APPLY_UF, termArgs);
+}
+
+cvc5::Term TermBuilder::readSubcmpMember(mlir::Value subcmp,
+                                         llzk::component::MemberDefOp member) {
+  auto it = subcmpMembers.find(member);
+  llzk::ensure(it != subcmpMembers.end(),
+               "unknown subcomponent member: " + member.getSymName().str());
+
+  return mgr.mkTerm(cvc5::Kind::APPLY_UF, {it->second, getConstant(subcmp)});
 }
 
 cvc5::Term TermBuilder::_is_mod(cvc5::Term val, llvm::DynamicAPInt mod) {
@@ -185,6 +243,10 @@ cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
                                     _array_read_impl(b, index));
         },
         size);
+  }
+
+  if (a.getSort().isUninterpretedSort() && b.getSort().isUninterpretedSort()) {
+    return mgr.mkTerm(cvc5::Kind::EQUAL, {a, b});
   }
 
   return mgr.mkTerm(cvc5::Kind::EQUAL, {_reduce_mod_impl(a, field.prime()),
