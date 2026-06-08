@@ -24,6 +24,8 @@
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
 
+#include <mlir/IR/SymbolTable.h>
+#include <mlir/IR/Value.h>
 #include <vector>
 
 using namespace llzk;
@@ -99,6 +101,34 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
       });
 }
 
+static inline bool valueIsSignalRead(Value val, SymbolTableCollection &tables) {
+  if (isa<BlockArgument>(val)) {
+    return false;
+  }
+  if (auto memberRead = val.getDefiningOp<MemberReadOp>()) {
+    auto memberDef = memberRead.getMemberDefOp(tables);
+    if (failed(memberDef)) {
+      return false;
+    }
+    return memberDef->get().getSignal();
+  }
+  return false;
+}
+
+static inline bool valueIsSignalWrite(Value val,
+                                      SymbolTableCollection &tables) {
+  for (auto use : val.getUsers()) {
+    if (auto memberWrite = dyn_cast<MemberWriteOp>(use)) {
+      auto memberDef = memberWrite.getMemberDefOp(tables);
+      if (failed(memberDef)) {
+        return false;
+      }
+      return memberDef->get().getSignal();
+    }
+  }
+  return false;
+}
+
 void WeakestPreconditionAnalysis::calculateWP(Operation *op,
                                               ConjunctionTerm &postcondition) {
   llvm::TypeSwitch<mlir::Operation *, void>(op)
@@ -113,11 +143,16 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
         llzk::ensure(writeOp.getIndices().size() == 1,
                      "multidimensional arrays not supported");
-        postcondition.substitute(
-            builder.getConstant(writeOp.getArrRef()),
-            builder.arrayWrite(writeOp.getArrRef(),
-                               writeOp.getIndices().front(),
-                               writeOp.getRvalue()));
+        auto arr = writeOp.getArrRef();
+        auto index = writeOp.getIndices().front();
+        auto value = writeOp.getRvalue();
+        if (valueIsSignalRead(arr, tables) || valueIsSignalWrite(arr, tables)) {
+          postcondition.addAntecedent(
+              builder.assertEqual(builder.arrayRead(arr, index), value));
+          return;
+        }
+        postcondition.substitute(builder.getConstant(writeOp.getArrRef()),
+                                 builder.arrayWrite(arr, index, value));
       })
       .Case<constrain::EmitEqualityOp>(
           [this, &postcondition](EmitEqualityOp eqOp) {
@@ -141,7 +176,7 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
           postcondition.addAntecedent(
               builder.assertEqual(subcmpVal, builder.initSubcmp(subcmp, args)));
         } else {
-          // Do the default
+          // Do the default (there's gotta be a better way)
           auto expression = getExpression(call);
           postcondition.substitute(builder.getConstant(call->getResult(0)),
                                    expression);
