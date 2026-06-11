@@ -14,6 +14,7 @@
 
 #include <llvm/Support/Casting.h>
 #include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
@@ -147,11 +148,12 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         auto index = writeOp.getIndices().front();
         auto value = writeOp.getRvalue();
         if (valueIsSignalRead(arr, tables) || valueIsSignalWrite(arr, tables)) {
+          // TODO: Make this behavior configurable
           postcondition.addAntecedent(
               builder.assertEqual(builder.arrayRead(arr, index), value));
           return;
         }
-        postcondition.substitute(builder.getConstant(writeOp.getArrRef()),
+        postcondition.substitute(builder.getConstant(arr),
                                  builder.arrayWrite(arr, index, value));
       })
       .Case<constrain::EmitEqualityOp>(
@@ -248,8 +250,7 @@ void WeakestPreconditionAnalysis::populateVerificationConditions() {
   declBounds = builder.getDeclBounds(extraDecls, field.prime());
 }
 
-std::pair<cvc5::Term, TermBuilder::TermSet>
-WeakestPreconditionAnalysis::generateVerificationConditions() {
+cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(
                    structDef->getParentOfType<ModuleOp>(), structDef)),
                "failed to align product func");
@@ -257,9 +258,31 @@ WeakestPreconditionAnalysis::generateVerificationConditions() {
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
 
-  auto term = postcondition.buildTerm(mgr);
-  auto extraDecls = builder.getExtraDecls(term);
-  return {term, extraDecls};
+  return postcondition.buildTerm(mgr);
+}
+
+void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
+  auto verificationConditions = generateVerificationConditions();
+  auto extraDecls = builder.getExtraDecls(verificationConditions);
+  auto bounds = builder.getDeclBounds(extraDecls, field.prime());
+
+  os << "(set-logic ALL)\n";
+  builder.emitSubcmpDeclarations(os);
+
+  os << "; Extra declarations\n";
+  for (auto decl : extraDecls) {
+    os << "(declare-const " << decl.toString() << " "
+       << decl.getSort().toString() << ")\n";
+  }
+
+  os << "; Extra bounds\n";
+  for (auto bound : bounds) {
+    os << "(assert " << bound.toString() << ")\n";
+  }
+
+  os << "; Verification condition\n";
+  os << "(assert " << verificationConditions.notTerm().toString() << ")\n";
+  os << "(check-sat)\n(get-model)\n";
 }
 
 } // namespace lleq

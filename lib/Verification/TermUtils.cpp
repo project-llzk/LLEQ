@@ -7,6 +7,7 @@
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/Support/Debug.h>
@@ -35,7 +36,7 @@ void TermBuilder::populateSubcomponent(llzk::component::StructDefOp subcmp) {
   }
   cvc5::Sort initFuncSort = mgr.mkFunctionSort(std::move(argumentSorts), sort);
   cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
-  subcmpInits.insert({subcmp, initFunc});
+  subcmpInits.insert({subcmp.getType(), initFunc});
 
   // For each `@B::struct.member @foo : T` => `(decl-fun read-B-foo (B) T)`
   for (auto memberDef : subcmp.getMemberDefs()) {
@@ -109,6 +110,31 @@ TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
   return bounds;
 }
 
+void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
+  if (subcmpSorts.empty()) {
+    return;
+  }
+  os << "; Subcomponents\n";
+  for (const auto &[subcmp, sort] : subcmpSorts) {
+    os << "(declare-sort " << sort.toString() << " 0)\n";
+    auto it = subcmpInits.find(subcmp);
+    llzk::ensure(it != subcmpInits.end(), "unknown subcomponent type");
+    auto initFunc = it->second;
+    auto argTypes = initFunc.getSort().getFunctionDomainSorts();
+    os << "(declare-fun " << initFunc.toString() << " (";
+    llvm::interleave(
+        argTypes, os, [&os](cvc5::Sort sort) { os << sort.toString(); }, " ");
+    os << ") " << sort.toString() << ")\n";
+  }
+
+  for (const auto &[_, memberRead] : subcmpMembers) {
+    auto fnSort = memberRead.getSort();
+    os << "(declare-fun " << memberRead.toString() << " ("
+       << fnSort.getFunctionDomainSorts().front().toString() << ") "
+       << fnSort.getFunctionCodomainSort().toString() << ")\n";
+  }
+}
+
 cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   // TODO: subcomponent
   if (auto structType = dyn_cast<llzk::component::StructType>(type)) {
@@ -167,7 +193,7 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
 
 cvc5::Term TermBuilder::initSubcmp(llzk::component::StructDefOp subcmp,
                                    llvm::ArrayRef<Value> args) {
-  auto it = subcmpInits.find(subcmp);
+  auto it = subcmpInits.find(subcmp.getType());
   llzk::ensure(it != subcmpInits.end(),
                "unknown subcomponent: " + subcmp.getSymName().str());
 

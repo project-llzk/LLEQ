@@ -11,6 +11,7 @@
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLForwardCompat.h>
 #include <llvm/ADT/StringMap.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/Field.h>
@@ -43,8 +44,11 @@ struct TermBuilder {
   // Return all free variables in `term` that are tracked as constants
   TermSet getExtraDecls(cvc5::Term term);
 
-  // Build terms bouding each variable in `decls` in the range `[0, p - 1]`
+  // Build terms bounding each variable in `decls` in the range `[0, p - 1]`
   TermSet getDeclBounds(TermSet decls, llvm::DynamicAPInt prime);
+
+  // Emit auxiliary declarations for subcomponents
+  void emitSubcmpDeclarations(llvm::raw_ostream &os);
 
   // Returns a call to `(init-@subcmp args...)`
   cvc5::Term initSubcmp(llzk::component::StructDefOp subcmp,
@@ -88,7 +92,7 @@ private:
 
   // Auxiliary declarations for subcomponents
   llvm::DenseMap<llzk::component::StructType, cvc5::Sort> subcmpSorts;
-  llvm::DenseMap<llzk::component::StructDefOp, cvc5::Term> subcmpInits;
+  llvm::DenseMap<llzk::component::StructType, cvc5::Term> subcmpInits;
   llvm::DenseMap<llzk::component::MemberDefOp, cvc5::Term> subcmpMembers;
 
   // Term builder implementations

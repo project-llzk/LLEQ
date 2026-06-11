@@ -8,6 +8,7 @@
 #include "Verification/TermUtils.h"
 #include <cvc5/cvc5.h>
 
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/Field.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
@@ -53,7 +54,9 @@ public:
 
   cvc5::Term getPostcondition();
   void populateVerificationConditions();
-  std::pair<cvc5::Term, TermBuilder::TermSet> generateVerificationConditions();
+  cvc5::Term generateVerificationConditions();
+
+  void emit(llvm::raw_ostream &os);
 
   // Generated VCs after doing weakest precondition analysis
   cvc5::Term verificationConditions;
