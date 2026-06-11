@@ -96,7 +96,7 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                   }
                   return {pool.get().index(readArr.getArrRef(), indices)};
                 }
-                // Otherwise, do the same thing as FieldReadOp
+                // Otherwise, do the same thing as MemberReadOp
                 return {pool.get().uninitialized()};
               })
           .Case<mlir::scf::YieldOp>([this, operands](mlir::scf::YieldOp yield)
