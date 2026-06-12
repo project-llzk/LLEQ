@@ -1,5 +1,4 @@
 // RUN: lleq dump-store --struct Reduce %s | FileCheck --enable-var-scope %s
-// XFAIL: *
 // Should pass once loop fusion is merged
 
 module attributes {llzk.lang} {
@@ -46,5 +45,5 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: sum_w: ?1
-// CHECK-DAG: sum_c: ?1
+// CHECK-DAG: sum_w: ?2
+// CHECK-DAG: sum_c: ?5

@@ -1,7 +1,5 @@
 // REQUIRES: smt-equiv
 // RUN: lleq verify --struct IsZero --field babybear %s | FileCheck %s
-// XFAIL: *
-// Currently fails to prove @IsZero::out equivalent due to timeout. Range analysis optimizations should fix this
 
 module attributes {llzk.lang} {
     struct.def @IsZero {
