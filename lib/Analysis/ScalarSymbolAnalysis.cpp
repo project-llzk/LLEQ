@@ -105,8 +105,17 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                     call.getCallee().getLeafReference(), args)};
               })
           .Case<llzk::component::MemberReadOp>(
-              [this](llzk::component::MemberReadOp readOp)
+              [this, operands](llzk::component::MemberReadOp readOp)
                   -> llvm::SmallVector<Symbol> {
+                // If this is a subcomponent read, it won't be populated later
+                // so just fill it with a symbol representing the subcomponent
+                // member
+                if (isSubcmpRead(readOp)) {
+                  return {pool.get().func_call(
+                      ("read-" + readOp.getMemberName()).str(),
+                      {operands[0]->getValue()})};
+                }
+
                 // We don't have any store information yet, so just set it to
                 // uninitialized. When this op is picked up by
                 // SymbolicStoreAnalysis it will read from the store and

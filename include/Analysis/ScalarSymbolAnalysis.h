@@ -183,4 +183,9 @@ inline bool sourceMatchesOp(mlir::Operation *op, Signal::Source source) {
          (source == Signal::Source::Witness && isWitnessOp(op));
 }
 
+inline bool isSubcmpRead(llzk::component::MemberReadOp read) {
+  return read.getComponent().getType() !=
+         read->getParentOfType<llzk::component::StructDefOp>().getType();
+}
+
 } // namespace lleq

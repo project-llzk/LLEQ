@@ -15,6 +15,7 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
+#include <llzk/Util/TypeHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Value.h>
@@ -254,6 +255,10 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           // If the value immediately comes from a constraint `struct.readm`
           if (auto read =
                   llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
+            // No sense constraining a member of a subcomponent
+            if (isSubcmpRead(read)) {
+              return {};
+            }
             return {{{Signal::Source::Constraint, read.getMemberName()}, {}}};
           }
           if (auto arrRead =
