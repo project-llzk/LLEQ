@@ -1,0 +1,52 @@
+// RUN: lleq dump-store --struct A %s | FileCheck --enable-var-scope %s
+
+// Test when subcomponent @compute and @constrain calls get aligned to @product
+
+module attributes {llzk.lang} {
+  struct.def @B {
+    struct.member @val : !felt.type {llzk.pub, signal}
+    function.def @compute(%x: !felt.type) -> !struct.type<@B> {
+      %self = struct.new : <@B>
+      %c1 = felt.const 1
+      %val = felt.add %x, %c1
+      struct.writem %self[@val] = %val: <@B>, !felt.type
+      function.return %self : !struct.type<@B>
+    }
+    function.def @constrain(%self : !struct.type<@B>, %x: !felt.type) {
+      %c1 = felt.const 1
+      %val = felt.add %x, %c1
+      %self_val = struct.readm %self[@val] : <@B>, !felt.type
+      constrain.eq %val, %self_val : !felt.type
+      function.return
+    }
+  }
+
+  struct.def @A {
+    struct.member @b : !struct.type<@B>
+    struct.member @inc : !felt.type
+
+    function.def @compute(%foo: !felt.type) -> !struct.type<@A> {
+     %self = struct.new : <@A>
+     %b = function.call @B::@compute(%foo) : (!felt.type) -> !struct.type<@B>
+     struct.writem %self[@b] = %b : <@A>, !struct.type<@B> {product_source = "compute"}
+
+     %b_val = struct.readm %b[@val] : <@B>, !felt.type
+     struct.writem %self[@inc] = %b_val : <@A>, !felt.type
+     function.return %self : !struct.type<@A>
+    }
+
+    function.def @constrain(%self: !struct.type<@A>, %foo: !felt.type) {
+     %b = struct.readm %self[@b] : <@A>, !struct.type<@B>
+     function.call @B::@constrain(%b, %foo) : (!struct.type<@B>, !felt.type) -> ()
+
+     %b_val = struct.readm %b[@val] : <@B>, !felt.type
+     %val = struct.readm %self[@inc] : <@A>, !felt.type
+     constrain.eq %b_val, %val : !felt.type
+     function.return
+    }
+  }
+}
+
+// CHECK-LABEL: -- A --
+// CHECK: inc_w: read-@val(!struct.type<@B>(%arg0))
+// CHECK: inc_c: read-@val(!struct.type<@B>(%arg0))

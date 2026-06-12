@@ -20,6 +20,7 @@
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Interfaces/CallInterfaces.h>
 
 namespace lleq {
 
@@ -135,6 +136,11 @@ public:
   mlir::LogicalResult
   visitOperation(mlir::Operation *op, llvm::ArrayRef<const Lattice *> operands,
                  llvm::ArrayRef<Lattice *> results) override;
+
+  void visitExternalCall(mlir::CallOpInterface call,
+                         llvm::ArrayRef<const Lattice *> arguments,
+                         llvm::ArrayRef<Lattice *> results) override;
+
   void setToEntryState(Lattice *lattice) override {
     lattice->getValue().initPool(&pool.get());
     mlir::Value anchor = lattice->getAnchor();
@@ -143,19 +149,21 @@ public:
       // since all the symbolic expressions are relative to these
       if (llvm::isa<llzk::function::FuncDefOp>(
               blockArg.getOwner()->getParentOp())) {
-        propagateIfChanged(
+        return propagateIfChanged(
             lattice, lattice->join(pool.get().index(lattice->getAnchor(), {})));
-        return;
       }
       // Apparently setToEntryState gets called on loop induction vars too, but
       // these should just be set to Unknown because `i` and `i + step` will
       // never antiunify to anything interesting
       if (llvm::isa<mlir::scf::ForOp>(blockArg.getOwner()->getParentOp())) {
-        propagateIfChanged(lattice, lattice->join(pool.get().fresh_unknown()));
+        return propagateIfChanged(lattice,
+                                  lattice->join(pool.get().fresh_unknown()));
       }
     }
+
     // If nothing else is known, a default of `uninitialized` is fine
-    propagateIfChanged(lattice, lattice->join(pool.get().uninitialized()));
+    return propagateIfChanged(lattice,
+                              lattice->join(pool.get().uninitialized()));
   }
 };
 
@@ -173,6 +181,11 @@ inline bool isConstraintOp(mlir::Operation *op) {
 inline bool sourceMatchesOp(mlir::Operation *op, Signal::Source source) {
   return (source == Signal::Source::Constraint && isConstraintOp(op)) ||
          (source == Signal::Source::Witness && isWitnessOp(op));
+}
+
+inline bool isSubcmpRead(llzk::component::MemberReadOp read) {
+  return read.getComponent().getType() !=
+         read->getParentOfType<llzk::component::StructDefOp>().getType();
 }
 
 } // namespace lleq
