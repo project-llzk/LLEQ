@@ -10,6 +10,7 @@
 #include <llvm/ADT/SlowDynamicAPInt.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
@@ -24,6 +25,34 @@
 #define DEBUG_TYPE "scalar-symbol-analysis"
 
 namespace lleq {
+
+void ScalarSymbolAnalysis::visitExternalCall(
+    mlir::CallOpInterface _call, llvm::ArrayRef<const Lattice *> arguments,
+    llvm::ArrayRef<Lattice *> results) {
+  auto call = dyn_cast<llzk::function::CallOp>(_call.getOperation());
+  if (!call || !(call.calleeIsCompute() || call.calleeIsConstrain())) {
+    return Base::visitExternalCall(_call, arguments, results);
+  }
+
+  const auto &[subcmp, args] =
+      call.calleeIsCompute()
+          ? std::tuple{call.getResult(0), arguments}
+          : std::tuple{call.getArgOperands().front(), arguments.drop_front()};
+
+  std::string name;
+  llvm::raw_string_ostream ss{name};
+  ss << subcmp.getType();
+
+  Symbol x = args.front()->getValue();
+
+  Symbol subcmpSym = pool.get().func_call(
+      name, llvm::map_to_vector(args, [this](const Lattice *lat) -> Symbol {
+        return lat->getValue();
+      }));
+
+  auto lat = getOrCreate<ScalarLattice>(subcmp);
+  propagateIfChanged(lat, lat->join(subcmpSym));
+}
 
 mlir::LogicalResult
 ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,

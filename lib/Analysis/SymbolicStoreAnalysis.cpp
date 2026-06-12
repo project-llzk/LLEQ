@@ -12,6 +12,7 @@
 #include <llvm/Support/Debug.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
@@ -289,6 +290,16 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
           propagateIfChanged(lat, lat->join(leftSym));
         }
+      })
+      .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
+        if (!(call.calleeIsCompute() || call.calleeIsConstrain())) {
+          return;
+        }
+        auto subcmp = (call.calleeIsCompute() ? call.getResult(0)
+                                              : call.getArgOperands().front());
+        llvm::dbgs() << "In call: " << call << "\n\t";
+        llvm::dbgs() << "Subcomponent symbol is: "
+                     << getOrCreate<ScalarLattice>(subcmp);
       });
   LLVM_DEBUG({
     after->print(llvm::dbgs());
