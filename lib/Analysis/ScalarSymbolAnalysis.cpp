@@ -16,6 +16,7 @@
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/Constants.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
@@ -29,13 +30,23 @@ namespace lleq {
 void ScalarSymbolAnalysis::visitExternalCall(
     mlir::CallOpInterface _call, llvm::ArrayRef<const Lattice *> arguments,
     llvm::ArrayRef<Lattice *> results) {
+  LLVM_DEBUG({
+    llvm::dbgs() << "Operation: " << _call << "\n";
+    for (auto operand : arguments) {
+      llvm::dbgs() << "* operand: " << operand->getValue() << "\n";
+    }
+  });
+
   auto call = dyn_cast<llzk::function::CallOp>(_call.getOperation());
-  if (!call || !(call.calleeIsCompute() || call.calleeIsConstrain())) {
+  if (!call ||
+      !(call.calleeIsCompute() || call.calleeIsConstrain() ||
+        call.getCallee().getLeafReference() == llzk::FUNC_NAME_PRODUCT)) {
     return Base::visitExternalCall(_call, arguments, results);
   }
 
   const auto &[subcmp, args] =
-      call.calleeIsCompute()
+      (call.calleeIsCompute() ||
+       call.getCallee().getLeafReference() == llzk::FUNC_NAME_PRODUCT)
           ? std::tuple{call.getResult(0), arguments}
           : std::tuple{call.getArgOperands().front(), arguments.drop_front()};
 
