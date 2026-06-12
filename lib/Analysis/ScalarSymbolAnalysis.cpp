@@ -112,7 +112,7 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                 // member
                 if (isSubcmpRead(readOp)) {
                   return {pool.get().func_call(
-                      ("read-" + readOp.getMemberName()).str(),
+                      ("read-@" + readOp.getMemberName()).str(),
                       {operands[0]->getValue()})};
                 }
 

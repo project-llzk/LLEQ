@@ -286,10 +286,6 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           propagateIfChanged(lat, lat->join(rightSym));
         } else if (llvm::succeeded(rightLoc)) {
           auto leftSym = getBoundSymbol(eq.getLhs());
-          // llvm::dbgs() << "Bound symbol is: " << leftSym << "\n";
-          // llvm::dbgs() << "Writing to loc: " << *rightLoc << "\n";
-          // llvm::dbgs() << "Before writing, store is: \n";
-          // after->print(llvm::dbgs());
           result |= after->write(*rightLoc, leftSym);
           // Update the ScalarSymbolAnalysis with the value for rightLoc
           auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
