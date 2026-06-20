@@ -5,20 +5,27 @@
 
 #include "Verification/WeakestPrecondition.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
+#include "Transforms/LLEQWhileToFor.h"
 #include "Verification/TermUtils.h"
 #include "Verification/VerificationUtils.h"
 
+#include <fstream>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
 
 #include <llvm/Support/Casting.h>
+#include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/Process.h>
+#include <llvm/Support/Program.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
+#include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
@@ -27,6 +34,7 @@
 
 #include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
+#include <optional>
 #include <vector>
 
 using namespace llzk;
@@ -41,30 +49,214 @@ using felt::FeltConstantOp;
 
 namespace lleq {
 
+using transform::ForOpInfo;
+
+namespace {
+
+std::string resolveZ3Path() {
+  if (std::optional<std::string> envPath =
+          llvm::sys::Process::GetEnv("LLEQ_Z3")) {
+    if (llvm::sys::fs::can_execute(*envPath)) {
+      return *envPath;
+    }
+    llvm::report_fatal_error(StringRef{"LLEQ_Z3 is set to '"} + *envPath +
+                             "', but that path is not executable");
+  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  auto solverPath = llvm::sys::findProgramByName("z3");
+#pragma clang diagnostic pop
+  if (!solverPath) {
+    llvm::report_fatal_error(
+        "could not find an executable z3 binary; install z3 or set LLEQ_Z3 "
+        "to the full path of the solver binary");
+  }
+  return *solverPath;
+}
+
+std::string buildSMTQuery(cvc5::Term query, TermBuilder &builder,
+                          llzk::Field field) {
+  auto extraDecls = builder.getExtraDecls(query);
+  auto bounds = builder.getDeclBounds(extraDecls, field.prime());
+  std::string queryStr;
+  llvm::raw_string_ostream os{queryStr};
+
+  os << "(set-logic ALL)\n";
+  builder.emitSubcmpDeclarations(os);
+  for (auto decl : extraDecls) {
+    os << "(declare-const " << decl.toString() << " "
+       << decl.getSort().toString() << ")\n";
+  }
+  for (auto bound : bounds) {
+    os << "(assert " << bound.toString() << ")\n";
+  }
+  os << "(assert " << query.notTerm().toString() << ")\n";
+  os << "(check-sat)\n";
+  return queryStr;
+}
+
+bool checkUnsatWithZ3(StringRef query) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  auto tempStdin = std::tmpnam(nullptr);
+  auto tempStdout = std::tmpnam(nullptr);
+#pragma clang diagnostic pop
+
+  std::ofstream os{tempStdin};
+  os << query.data();
+  os.close();
+
+  auto solverPath = resolveZ3Path();
+  SmallVector<StringRef> args{"z3", "-in", "-smt2"};
+
+  std::string error;
+  auto code = llvm::sys::ExecuteAndWait(
+      solverPath, args,
+      /*Env=*/std::nullopt,
+      /*Redirects=*/
+      {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);
+  if (code) {
+    llvm::report_fatal_error(error.c_str());
+  }
+
+  std::ifstream is{tempStdout};
+  std::string result;
+  is >> result;
+  return result == "unsat";
+}
+
+Block *nestedLoopBody(scf::ForOp loop, SmallVector<ForOpInfo> &loopInfo) {
+  loopInfo.push_back({loop.getLowerBound(), loop.getUpperBound(),
+                      loop.getStep(), loop.getInductionVar(), 0});
+  if (auto first = dyn_cast<scf::ForOp>(loop.getBody()->front())) {
+    return nestedLoopBody(first, loopInfo);
+  }
+  return loop.getBody();
+}
+
+} // namespace
+
+TermBuilder::TermSet
+WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
+  SmallVector<ForOpInfo> loopInfo;
+  auto *body = nestedLoopBody(loop, loopInfo);
+
+  // Maps a witness *array* that's written in the loop to the index at which its
+  // written
+  DenseMap<component::MemberWriteOp, Value> witnessWrites;
+  body->walk([&witnessWrites](array::WriteArrayOp write) {
+    llzk::ensure(write.getIndices().size() == 1,
+                 "multidimensional arrays not yet supported");
+    auto dest = getArrayDestination(write.getArrRef());
+    if (dest.has_value()) {
+      witnessWrites.insert({*dest, write.getIndices().front()});
+    }
+  });
+
+  llzk::ensure(loopInfo.size() == 1, "nested loop support in-progress");
+
+  std::vector<cvc5::Term> predicates;
+  for (auto [write, index] : witnessWrites) {
+    auto arr_w_i = builder.arrayRead(
+        builder.getConstant(write.getMemberDefOp(tables)->get(), true),
+        builder.getExpression(index));
+    auto arr_c_i = builder.arrayRead(
+        builder.getConstant(write.getMemberDefOp(tables)->get(), false),
+        builder.getExpression(index));
+    predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
+  }
+
+  TermBuilder::TermSet invariants;
+  auto i = builder.getConstant(*loopInfo.front().ivar);
+  auto lb = builder.getExpression(*loopInfo.front().lb);
+  auto ub = builder.getExpression(*loopInfo.front().ub);
+  auto step = builder.getExpression(*loopInfo.front().step);
+
+  // all signals are equal at i
+  auto allEqualUpToCurrent = predicates.size() == 1
+                                 ? predicates.front()
+                                 : mgr.mkTerm(cvc5::Kind::AND, predicates);
+
+  // Turn `P(i)` into `forall lb <= x < ub and step | (x - lb), P(x)`
+  auto quantifyPredicate = [this, &lb, &step](cvc5::Term predicate,
+                                              cvc5::Term var, cvc5::Term ub) {
+    auto x = mgr.mkVar(mgr.getIntegerSort(), "x");
+    auto boundPos = mgr.mkTerm(cvc5::Kind::LEQ, {lb, x});
+    auto boundInv = mgr.mkTerm(cvc5::Kind::LT, {x, ub});
+
+    auto boundStep =
+        mgr.mkTerm(cvc5::Kind::EQUAL,
+                   {mgr.mkTerm(cvc5::Kind::INTS_MODULUS,
+                               {mgr.mkTerm(cvc5::Kind::SUB, {x, lb}), step}),
+                    builder.getInteger(0)});
+    auto bound = mgr.mkTerm(cvc5::Kind::AND, {boundPos, boundInv, boundStep});
+
+    return mgr.mkTerm(cvc5::Kind::FORALL,
+                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {x}),
+                       mgr.mkTerm(cvc5::Kind::IMPLIES,
+                                  {bound, predicate.substitute(var, x)})});
+  };
+
+  // Turn "all signals equal at i" to "all signals equal at all x < i"
+  allEqualUpToCurrent = quantifyPredicate(allEqualUpToCurrent, i, i);
+
+  // Now, filter out the ones that aren't loop invariants
+  for (auto invariant : predicates) {
+    // P(i) is an invariant if:
+    //  {C /\ forall x < i, P(x)} B {forall x < i + step, P(x)}
+    // holds
+    auto invariantHeld =
+        mgr.mkTerm(cvc5::Kind::AND,
+                   {mgr.mkTerm(cvc5::Kind::LT, {i, ub}), allEqualUpToCurrent});
+
+    // Calculate wp(B, I)
+    auto precondition = ConjunctionTerm::of(quantifyPredicate(
+        invariant, i, mgr.mkTerm(cvc5::Kind::ADD, {i, step})));
+    calculateWP(body, precondition);
+
+    // Check C /\ AllI => wp(B, I)
+    auto isInvariant = mgr.mkTerm(cvc5::Kind::IMPLIES,
+                                  {invariantHeld, precondition.buildTerm(mgr)});
+
+    auto query = buildSMTQuery(isInvariant, builder, field);
+    if (checkUnsatWithZ3(query)) {
+      // Assume the invariant holds after exiting the loop
+      invariants.insert(quantifyPredicate(invariant, i, ub));
+    } else {
+      return invariants;
+    }
+  }
+
+  return invariants;
+}
+
 // TODO: I *think* its enough to implement subcmp calls to @compute/@constrain
 // in here since writing to the subcmp member should handle the assertion, and:
 // (1) If the top struct was aligned mechanically the SSA values being written
 // to _w and _c should be distinct, and
 // (2) Otherwise if they aren't distinct, it should still be correct to assert
 // these two (init-...) invocations equal?
-cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
+mlir::FailureOr<cvc5::Term>
+WeakestPreconditionAnalysis::getExpression(Operation *op) {
   static llvm::DenseMap<StringRef, cvc5::Kind> opToTermKind = {
       {"felt.add", cvc5::Kind::ADD},
       {"felt.sub", cvc5::Kind::SUB},
       {"felt.mul", cvc5::Kind::MULT},
       {"felt.smod", cvc5::Kind::INTS_MODULUS},
-      {"felt.sintdiv", cvc5::Kind::INTS_DIVISION}};
+      {"felt.sintdiv", cvc5::Kind::INTS_DIVISION},
+      {"felt.div", cvc5::Kind::INTS_DIVISION}};
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
     SmallVector<cvc5::Term> operandTerms{
         llvm::map_to_vector(op->getOperands(), [this](Value value) {
-          return builder.getConstant(value);
+          return getExpression(value);
         })};
     return mgr.mkTerm(it->second, {operandTerms.begin(), operandTerms.end()});
   }
 
-  return llvm::TypeSwitch<Operation *, cvc5::Term>(op)
+  return llvm::TypeSwitch<Operation *, FailureOr<cvc5::Term>>(op)
       .Case<MemberReadOp>([this](MemberReadOp read) {
         return builder.getConstant(read.getMemberDefOp(tables)->get(),
                                    isWitnessOp(read));
@@ -72,7 +264,9 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
       .Case<ReadArrayOp>([this](ReadArrayOp read) {
         llzk::ensure(read.getIndices().size() == 1,
                      "multidimensional arrays are not supported");
-        return builder.arrayRead(read.getArrRef(), read.getIndices().front());
+        return builder.arrayRead(
+            builder.getExpression(read.getArrRef()),
+            builder.getExpression(read.getIndices().front()));
       })
       .Case<FeltConstantOp>([this](FeltConstantOp constOp) {
         SmallString<64> str;
@@ -84,6 +278,13 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
         return builder.getInteger(val);
       })
       .Case<array::CreateArrayOp>([this](array::CreateArrayOp createArr) {
+        // If the array is written to exactly one struct member later, just
+        // materialize a symbol for that directly
+        auto destination = getArrayDestination(createArr.getResult());
+        if (destination.has_value()) {
+          return builder.getConstant(destination->getMemberName(),
+                                     createArr.getType(), true);
+        }
         return builder.getConstant(createArr.getResult());
       })
       .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
@@ -97,8 +298,10 @@ cvc5::Term WeakestPreconditionAnalysis::getExpression(Operation *op) {
         return builder.initSubcmp(
             target->get()->getParentOfType<component::StructDefOp>(), args);
       })
-      .Default([op](auto) -> cvc5::Term {
-        llvm::report_fatal_error("unknown op: " + op->getName().getStringRef());
+      .Default([op](auto) {
+        return failure();
+        // llvm::report_fatal_error("unknown op: " +
+        // op->getName().getStringRef());
       });
 }
 
@@ -111,7 +314,8 @@ static inline bool valueIsSignalRead(Value val, SymbolTableCollection &tables) {
     if (failed(memberDef)) {
       return false;
     }
-    return memberDef->get().getSignal();
+    return true;
+    // return memberDef->get().getSignal();
   }
   return false;
 }
@@ -124,12 +328,14 @@ static inline bool valueIsSignalWrite(Value val,
       if (failed(memberDef)) {
         return false;
       }
-      return memberDef->get().getSignal();
+      return true;
+      // return memberDef->get().getSignal();
     }
   }
   return false;
 }
 
+// TODO: Use TermBuilder to populate expressions instead of substitution
 void WeakestPreconditionAnalysis::calculateWP(Operation *op,
                                               ConjunctionTerm &postcondition) {
   llvm::TypeSwitch<mlir::Operation *, void>(op)
@@ -164,6 +370,16 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
       .Case<scf::IfOp>([this, &postcondition](scf::IfOp op) {
         calculateWP(op, postcondition);
       })
+      .Case<UnrealizedConversionCastOp>([this](auto) { return; })
+      .Case<scf::ForOp>([this, &postcondition](scf::ForOp op) {
+        for (auto invariant : conjecturePredicates(op)) {
+          llvm::dbgs() << "; Conjecturing " << invariant.toString() << "\n";
+          postcondition.addAntecedent(invariant);
+        }
+      })
+      .Case<smt::AssertOp>([this, &postcondition](smt::AssertOp op) {
+        postcondition.addAntecedent(builder.getExpression(op.getInput()));
+      })
       .Case<llzk::function::CallOp>([this, &postcondition](
                                         llzk::function::CallOp call) {
         if (call.calleeIsConstrain()) {
@@ -180,12 +396,16 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         } else {
           // Do the default (there's gotta be a better way)
           auto expression = getExpression(call);
+          llzk::ensure(succeeded(expression),
+                       "unknown op: " + call->getName().getStringRef());
           postcondition.substitute(builder.getConstant(call->getResult(0)),
-                                   expression);
+                                   *expression);
         }
       })
       .Default([this, &postcondition](auto op) {
-        auto expression = getExpression(op);
+        auto expression = builder.getExpression(op->getResult(0));
+        // llzk::ensure(succeeded(expression),
+        //              "unknown op: " + op->getName().getStringRef());
         postcondition.substitute(builder.getConstant(op->getResult(0)),
                                  expression);
       });

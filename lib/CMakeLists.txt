@@ -14,13 +14,15 @@ set(Transforms_SRC
     Transforms/LLEQIfToIfElse.cpp)
 
 set(Verification_SRC
+    Verification/LoopInvariantGeneration.cpp
     Verification/VerificationUtils.cpp
     Verification/SMTLIBEquivalenceEmitter.cpp
     Verification/DeductiveVerifier.cpp
     Verification/SymbolicVerifier.cpp
     Verification/FixpointVerifier.cpp
     Verification/TermUtils.cpp
-    Verification/WeakestPrecondition.cpp)
+    Verification/WeakestPrecondition.cpp
+    Verification/StrongestPostcondition.cpp)
 
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}

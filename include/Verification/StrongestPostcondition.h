@@ -8,7 +8,6 @@
 #include "Verification/TermUtils.h"
 #include <cvc5/cvc5.h>
 
-#include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
@@ -17,21 +16,27 @@
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
+#include <unordered_map>
 
 namespace lleq {
 
 inline llvm::FailureOr<llzk::component::StructType>
-_subcomponent_type(mlir::Type type) {
+_sp_subcomponent_type(mlir::Type type) {
   if (auto structType = mlir::dyn_cast<llzk::component::StructType>(type)) {
     return structType;
   }
   if (auto arrType = mlir::dyn_cast<llzk::array::ArrayType>(type)) {
-    return _subcomponent_type(arrType.getElementType());
+    return _sp_subcomponent_type(arrType.getElementType());
   }
   return {};
 }
 
-class WeakestPreconditionAnalysis {
+class StrongestPostconditionAnalysis {
+  struct SPState {
+    cvc5::Term formula;
+    std::unordered_map<cvc5::Term, cvc5::Term, std::hash<cvc5::Term>> bindings;
+  };
+
   llzk::component::StructDefOp structDef;
   cvc5::TermManager mgr;
   llzk::Field field;
@@ -39,23 +44,19 @@ class WeakestPreconditionAnalysis {
   TermBuilder builder;
   mlir::SymbolTableCollection tables;
 
-  mlir::FailureOr<cvc5::Term> getExpression(mlir::Operation *op);
-  void calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
-  void calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
-  void calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
+  cvc5::Term getExpression(mlir::Operation *op, const SPState &state);
+  cvc5::Term getCurrentTerm(cvc5::Term term, const SPState &state);
+  cvc5::Term getCurrentValue(mlir::Value value, const SPState &state);
+  void bindValue(mlir::Value value, cvc5::Term term, SPState &state);
+  void addConstraint(cvc5::Term term, SPState &state);
 
-  mlir::DenseMap<mlir::Value, cvc5::Term> valueExpressions;
-  cvc5::Term getExpression(mlir::Value val) {
-    if (auto it = valueExpressions.find(val); it != valueExpressions.end()) {
-      return it->second;
-    }
-    return builder.getConstant(val);
-  }
+  void calculateSP(mlir::scf::IfOp ifOp, SPState &state);
+  void calculateSP(mlir::Operation *op, SPState &state);
+  void calculateSP(mlir::Block *block, SPState &state);
 
   void initSubcomponents() {
     for (auto memberDef : structDef.getMemberDefs()) {
-
-      if (auto structType = _subcomponent_type(memberDef.getType());
+      if (auto structType = _sp_subcomponent_type(memberDef.getType());
           llvm::succeeded(structType)) {
         auto definition = structType->getDefinition(
             tables, structDef->getParentOfType<mlir::ModuleOp>());
@@ -67,36 +68,21 @@ class WeakestPreconditionAnalysis {
     }
   }
 
-  void initExpressions() {
-    structDef.walk([this](mlir::Operation *op) {
-      if (op->getNumResults() == 1) {
-        auto expression = getExpression(op);
-        if (llvm::succeeded(expression)) {
-          valueExpressions.insert({op->getResult(0), *expression});
-        }
-      }
-    });
-  }
-
-  TermBuilder::TermSet conjecturePredicates(mlir::scf::ForOp loop);
-
 public:
-  WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
-                              llzk::Field field)
+  StrongestPostconditionAnalysis(llzk::component::StructDefOp structDef,
+                                 llzk::Field field)
       : structDef{structDef}, field{field}, builder{mgr, field} {
     initSubcomponents();
-    initExpressions();
   }
 
-  cvc5::Term getPostcondition();
   void populateVerificationConditions();
   cvc5::Term generateVerificationConditions();
 
   void emit(llvm::raw_ostream &os);
 
-  // Generated VCs after doing weakest precondition analysis
+  // Generated formula after doing strongest postcondition analysis
   cvc5::Term verificationConditions;
-  // Toplevel for free variables that appear in the VCs
+  // Toplevel for free variables that appear in the formula
   TermBuilder::TermSet extraDecls;
   // Mod-p bounds on the free variable declarations
   TermBuilder::TermSet declBounds;

@@ -4,23 +4,42 @@
  */
 
 #include "Verification/TermUtils.h"
+#include "Analysis/ScalarSymbolAnalysis.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/ADT/SmallVectorExtras.h>
+#include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Array/IR/Types.h>
+#include <llzk/Dialect/Bool/IR/Enums.h>
+#include <llzk/Dialect/Bool/IR/Ops.h>
+#include <llzk/Dialect/Cast/IR/Ops.h>
+#include <llzk/Dialect/Constrain/IR/Ops.h>
+#include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/TypeHelper.h>
+#include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/IR/BuiltinAttributes.h>
+#include <mlir/IR/BuiltinOps.h>
+#include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
 
+using namespace llzk;
 using namespace mlir;
+
+using array::ReadArrayOp;
+using array::WriteArrayOp;
+using component::MemberReadOp;
+using component::MemberWriteOp;
+using constrain::EmitEqualityOp;
+using felt::FeltConstantOp;
 
 namespace lleq {
 
@@ -92,6 +111,10 @@ TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
   TermSet bounds;
   for (auto var : decls) {
     if (var.getSort().isArray()) {
+      if (var.getSort().getArrayElementSort().isUninterpretedSort()) {
+        // Don't need bounds for subcomponent arrays
+        continue;
+      }
       std::optional<size_t> size;
       if (auto it = termTypes.find(var); it != termTypes.end()) {
         size = sizeOfType(it->second);
@@ -108,6 +131,13 @@ TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
     }
   }
   return bounds;
+}
+
+static inline cvc5::Sort getElementSortOrSelf(cvc5::Sort s) {
+  if (s.isArray()) {
+    return getElementSortOrSelf(s.getArrayElementSort());
+  }
+  return s;
 }
 
 void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
@@ -153,34 +183,156 @@ cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   return mgr.getIntegerSort();
 }
 
+cvc5::Term TermBuilder::getExpression(mlir::Value value) {
+  // If we've already cached a value, just look it up
+  if (auto it = expressions.find(value); it != expressions.end()) {
+    return it->second;
+  }
+
+  Operation *op = value.getDefiningOp();
+  // TODO: we could theoretically handle a value yielded from an scf.if with
+  // multiple values
+  if (op == nullptr || op->getNumResults() != 1) {
+    return getConstant(value);
+  }
+
+  // If its a basic arithmetic operation we can build it directly
+  static llvm::DenseMap<StringRef, cvc5::Kind> opToTermKind = {
+      {"felt.add", cvc5::Kind::ADD},
+      {"felt.sub", cvc5::Kind::SUB},
+      {"felt.mul", cvc5::Kind::MULT},
+      {"felt.smod", cvc5::Kind::INTS_MODULUS},
+      {"felt.sintdiv", cvc5::Kind::INTS_DIVISION},
+      {"felt.div", cvc5::Kind::INTS_DIVISION}};
+
+  if (auto it = opToTermKind.find(op->getName().getStringRef());
+      it != opToTermKind.end()) {
+    SmallVector<cvc5::Term> operandTerms{
+        llvm::map_to_vector(op->getOperands(), [this](Value value) {
+          return getExpression(value);
+        })};
+    auto expression =
+        mgr.mkTerm(it->second, {operandTerms.begin(), operandTerms.end()});
+    expressions.insert({value, expression});
+    return expression;
+  }
+
+  // Otherwise, switch on the type of the operation
+  auto expression =
+      llvm::TypeSwitch<Operation *, cvc5::Term>(op)
+          .Case<boolean::CmpOp>([this, op](boolean::CmpOp cmp) {
+            static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
+                predicateToKind = {
+                    {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
+                    {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
+                    {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
+                    {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
+                    {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
+            SmallVector<cvc5::Term> operandTerms{
+                llvm::map_to_vector(op->getOperands(), [this](Value value) {
+                  return getExpression(value);
+                })};
+            return mgr.mkTerm(predicateToKind.at(cmp.getPredicate()),
+                              {operandTerms.begin(), operandTerms.end()});
+          })
+          .Case<MemberReadOp>([this](MemberReadOp read) {
+            read.getType();
+            return getConstant(read.getMemberName(), read.getType(),
+                               isWitnessOp(read));
+          })
+          .Case<ReadArrayOp>([this](ReadArrayOp read) {
+            llzk::ensure(read.getIndices().size() == 1,
+                         "multidimensional arrays are not supported");
+            return arrayRead(read.getArrRef(), read.getIndices().front());
+          })
+          .Case<FeltConstantOp>([this](FeltConstantOp constOp) {
+            SmallString<64> str;
+            constOp.getValue().getValue().toStringUnsigned(str);
+            return mgr.mkInteger(std::string{str});
+          })
+          .Case<arith::ConstantIntOp, arith::ConstantIndexOp>(
+              [this](auto constOp) {
+                auto val = dyn_cast<IntegerAttr>(constOp.getValue()).getValue();
+                return getInteger(val);
+              })
+          .Case<array::CreateArrayOp>([this](array::CreateArrayOp createArr) {
+            // If the array is written to exactly one struct member later, just
+            // materialize a symbol for that directly
+            auto destination = getArrayDestination(createArr.getResult());
+            if (destination.has_value()) {
+              return getConstant(destination->getMemberName(),
+                                 createArr.getType(), true);
+            }
+            return getConstant(createArr.getResult());
+          })
+          .Case<cast::FeltToIndexOp, cast::IntToFeltOp>(
+              [this](auto op) { return getExpression(op.getValue()); })
+          .Case<UnrealizedConversionCastOp>(
+              [this](UnrealizedConversionCastOp cast) {
+                return getExpression(cast.getInputs().front());
+              })
+          .Case<scf::IfOp>([this](scf::IfOp ifOp) {
+            auto trueValue =
+                getExpression(ifOp.thenYield().getResults().front());
+            auto falseValue =
+                getExpression(ifOp.elseYield().getResults().front());
+            auto condition = getExpression(ifOp.getCondition());
+            return mgr.mkTerm(cvc5::Kind::ITE,
+                              {condition, trueValue, falseValue});
+          })
+          .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
+            // For now just deal with calls to @compute and error out on other
+            // function calls
+            SymbolTableCollection tables;
+            llzk::ensure(call.calleeIsCompute(),
+                         "arbitrary function calls not supported yet");
+            auto target = call.getCalleeTarget(tables);
+            llzk::ensure(succeeded(target), "failed to resolve callee target");
+            SmallVector<Value> args = call.getArgOperands();
+            return initSubcmp(
+                target->get()->getParentOfType<component::StructDefOp>(), args);
+          })
+          .Default([op](auto) -> cvc5::Term {
+            llvm::report_fatal_error("unknown op: " +
+                                     op->getName().getStringRef());
+          });
+
+  expressions.insert({value, expression});
+  return expression;
+}
+
 cvc5::Term TermBuilder::getConstant(Value value) {
   if (auto it = constants.find(value); it != constants.end()) {
     return it->second;
   }
 
   std::optional<std::string> name;
-  if (auto blockArg = dyn_cast<BlockArgument>(value)) {
-    name.emplace("arg" + std::to_string(blockArg.getArgNumber()));
-  }
+  // if (auto blockArg = dyn_cast<BlockArgument>(value)) {
+  //   name.emplace("arg" + std::to_string(blockArg.getArgNumber()));
+  // }
 
   auto newConst = mgr.mkConst(_sort_of_type(value.getType()), name);
   constants.insert({value, newConst});
   termTypes.insert({newConst, value.getType()});
   return newConst;
 }
+
 cvc5::Term TermBuilder::getConstant(llzk::component::MemberDefOp memberDef,
+                                    bool isWitness) {
+  return getConstant(memberDef.getSymName(), memberDef.getType(), isWitness);
+}
+cvc5::Term TermBuilder::getConstant(StringRef memberName, Type type,
                                     bool isWitness) {
   auto &memberMap = isWitness ? witnessMembers : constraintMembers;
 
-  auto memberName = memberDef.getSymName();
   if (auto it = memberMap.find(memberName); it != memberMap.end()) {
     return it->second;
   }
 
-  auto newTerm = mgr.mkConst(_sort_of_type(memberDef.getType()),
+  auto newTerm = mgr.mkConst(_sort_of_type(type),
                              (memberName + (isWitness ? "_w" : "_c")).str());
   memberMap.insert({memberName, newTerm});
-  termTypes.insert({newTerm, memberDef.getType()});
+  termTypes.insert({newTerm, type});
   return newTerm;
 }
 
@@ -216,6 +368,8 @@ cvc5::Term TermBuilder::readSubcmpMember(mlir::Value subcmp,
 }
 
 cvc5::Term TermBuilder::_is_mod(cvc5::Term val, llvm::DynamicAPInt mod) {
+  llzk::ensure(val.getSort().isInteger(),
+               "cannot bound non-integral sort modulo");
   return mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), val, getInteger(mod - 1)});
 }
 
@@ -293,8 +447,10 @@ cvc5::Term ImplicationTerm::buildTerm(cvc5::TermManager &mgr) {
     return consequent;
   }
 
-  auto antecedent =
-      mgr.mkTerm(cvc5::Kind::AND, {antecedents.begin(), antecedents.end()});
+  auto antecedent = antecedents.size() == 1
+                        ? antecedents.front()
+                        : mgr.mkTerm(cvc5::Kind::AND,
+                                     {antecedents.begin(), antecedents.end()});
   return mgr.mkTerm(cvc5::Kind::IMPLIES, {antecedent, consequent});
 }
 

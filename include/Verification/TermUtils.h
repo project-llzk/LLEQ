@@ -15,9 +15,26 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/Field.h>
+#include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
+
+static inline std::optional<llzk::component::MemberWriteOp>
+getArrayDestination(mlir::Value array) {
+  std::optional<llzk::component::MemberWriteOp> destination;
+  for (auto *user : array.getUsers()) {
+    if (auto writeOp = mlir::dyn_cast<llzk::component::MemberWriteOp>(user)) {
+      if (destination.has_value()) {
+        mlir::emitWarning(array.getLoc())
+            << "array value written to multiple members\n";
+        return {};
+      }
+      destination.emplace(writeOp);
+    }
+  }
+  return destination;
+}
 
 template <class T>
 concept FormulaTerm =
@@ -40,6 +57,11 @@ struct TermBuilder {
   // Return a constant of the appropriate sort for a struct member
   cvc5::Term getConstant(llzk::component::MemberDefOp memberDef,
                          bool isWitness);
+  cvc5::Term getConstant(llvm::StringRef symbolName, mlir::Type type,
+                         bool isWitness);
+
+  // Trace the use-def chain to build an expression for an SSA value
+  cvc5::Term getExpression(mlir::Value value);
 
   // Return all free variables in `term` that are tracked as constants
   TermSet getExtraDecls(cvc5::Term term);
@@ -86,6 +108,7 @@ private:
   cvc5::Sort _sort_of_type(mlir::Type);
 
   llvm::DenseMap<mlir::Value, cvc5::Term> constants;
+  llvm::DenseMap<mlir::Value, cvc5::Term> expressions;
   llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
 
   std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
@@ -111,7 +134,7 @@ private:
   cvc5::Term _get_term(FormulaTerm auto t) {
     using T = decltype(t);
     if constexpr (std::convertible_to<T, mlir::Value>) {
-      return getConstant(t);
+      return getExpression(t);
     } else {
       return t;
     }
