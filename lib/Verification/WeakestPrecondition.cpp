@@ -97,32 +97,47 @@ std::string buildSMTQuery(cvc5::Term query, TermBuilder &builder,
 }
 
 bool checkUnsatWithZ3(StringRef query) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  auto tempStdin = std::tmpnam(nullptr);
-  auto tempStdout = std::tmpnam(nullptr);
-#pragma clang diagnostic pop
+  SmallString<128> tempStdin;
+  SmallString<128> tempStdout;
+  int tempStdinFd;
+  if (std::error_code ec = llvm::sys::fs::createTemporaryFile(
+          "lleq-z3-query", "smt2", tempStdinFd, tempStdin)) {
+    llvm::report_fatal_error(llvm::Twine(
+        "failed to create temporary Z3 query file: " + ec.message()));
+  }
+  if (std::error_code ec = llvm::sys::fs::createTemporaryFile(
+          "lleq-z3-output", "txt", tempStdout)) {
+    llvm::sys::fs::remove(tempStdin);
+    llvm::report_fatal_error(llvm::Twine(
+        "failed to create temporary Z3 output file: " + ec.message()));
+  }
 
-  std::ofstream os{tempStdin};
+  llvm::raw_fd_ostream os{tempStdinFd, /*shouldClose=*/true};
   os << query.data();
   os.close();
 
   auto solverPath = resolveZ3Path();
-  SmallVector<StringRef> args{"z3", "-in", "-smt2"};
+  SmallVector<StringRef> args{solverPath, "-in", "-smt2"};
+  std::string tempStdinStr = tempStdin.str().str();
+  std::string tempStdoutStr = tempStdout.str().str();
 
   std::string error;
-  auto code = llvm::sys::ExecuteAndWait(
-      solverPath, args,
-      /*Env=*/std::nullopt,
-      /*Redirects=*/
-      {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);
+  auto code = llvm::sys::ExecuteAndWait(solverPath, args,
+                                        /*Env=*/std::nullopt,
+                                        /*Redirects=*/
+                                        {tempStdinStr, tempStdoutStr, ""}, 0, 0,
+                                        &error);
   if (code) {
+    llvm::sys::fs::remove(tempStdin);
+    llvm::sys::fs::remove(tempStdout);
     llvm::report_fatal_error(error.c_str());
   }
 
-  std::ifstream is{tempStdout};
+  std::ifstream is{tempStdoutStr};
   std::string result;
   is >> result;
+  llvm::sys::fs::remove(tempStdin);
+  llvm::sys::fs::remove(tempStdout);
   return result == "unsat";
 }
 
@@ -133,6 +148,158 @@ Block *nestedLoopBody(scf::ForOp loop, SmallVector<ForOpInfo> &loopInfo) {
     return nestedLoopBody(first, loopInfo);
   }
   return loop.getBody();
+}
+
+enum class LoopGuardKind { BeforeCurrent, AfterCurrent, AfterExit };
+
+struct LoopCounterTerms {
+  cvc5::Term counter;
+  cvc5::Term lowerBound;
+  cvc5::Term upperBound;
+  cvc5::Term step;
+};
+
+struct FlatLoopIndex {
+  cvc5::Term currentIndex;
+  int64_t totalIterations;
+};
+
+std::optional<int64_t> getConstantIndex(Value value) {
+  auto constOp = value.getDefiningOp<arith::ConstantIndexOp>();
+  if (!constOp) {
+    return std::nullopt;
+  }
+  return constOp.value();
+}
+
+cvc5::Term makeAnd(cvc5::TermManager &mgr, llvm::ArrayRef<cvc5::Term> terms) {
+  if (terms.empty()) {
+    return mgr.mkBoolean(true);
+  }
+  if (terms.size() == 1) {
+    return terms.front();
+  }
+  return mgr.mkTerm(cvc5::Kind::AND, {terms.begin(), terms.end()});
+}
+
+cvc5::Term makeOr(cvc5::TermManager &mgr, llvm::ArrayRef<cvc5::Term> terms) {
+  if (terms.empty()) {
+    return mgr.mkBoolean(false);
+  }
+  if (terms.size() == 1) {
+    return terms.front();
+  }
+  return mgr.mkTerm(cvc5::Kind::OR, {terms.begin(), terms.end()});
+}
+
+cvc5::Term makeStepAligned(cvc5::TermManager &mgr, TermBuilder &builder,
+                           cvc5::Term value, const LoopCounterTerms &counter) {
+  auto offset = mgr.mkTerm(cvc5::Kind::SUB, {value, counter.lowerBound});
+  auto modulus = mgr.mkTerm(cvc5::Kind::INTS_MODULUS, {offset, counter.step});
+  return mgr.mkTerm(cvc5::Kind::EQUAL, {modulus, builder.getInteger(0)});
+}
+
+cvc5::Term makeFullRange(cvc5::TermManager &mgr, TermBuilder &builder,
+                         cvc5::Term value, const LoopCounterTerms &counter) {
+  return makeAnd(mgr,
+                 {
+                     mgr.mkTerm(cvc5::Kind::LEQ, {counter.lowerBound, value}),
+                     mgr.mkTerm(cvc5::Kind::LT, {value, counter.upperBound}),
+                     makeStepAligned(mgr, builder, value, counter),
+                 });
+}
+
+cvc5::Term makeActiveLoopGuard(cvc5::TermManager &mgr,
+                               llvm::ArrayRef<LoopCounterTerms> counters) {
+  SmallVector<cvc5::Term> bounds;
+  for (const auto &counter : counters) {
+    bounds.push_back(
+        mgr.mkTerm(cvc5::Kind::LEQ, {counter.lowerBound, counter.counter}));
+    bounds.push_back(
+        mgr.mkTerm(cvc5::Kind::LT, {counter.counter, counter.upperBound}));
+  }
+  return makeAnd(mgr, bounds);
+}
+
+cvc5::Term makeNestedLoopGuard(cvc5::TermManager &mgr, TermBuilder &builder,
+                               llvm::ArrayRef<LoopCounterTerms> counters,
+                               llvm::ArrayRef<cvc5::Term> quantVars,
+                               LoopGuardKind kind) {
+  if (kind == LoopGuardKind::AfterExit) {
+    SmallVector<cvc5::Term> ranges;
+    for (auto [counter, var] : llvm::zip_equal(counters, quantVars)) {
+      ranges.push_back(makeFullRange(mgr, builder, var, counter));
+    }
+    return makeAnd(mgr, ranges);
+  }
+
+  SmallVector<cvc5::Term> guardCases;
+  for (size_t i = 0; i < counters.size(); ++i) {
+    SmallVector<cvc5::Term> conjuncts;
+
+    for (size_t j = 0; j < i; ++j) {
+      conjuncts.push_back(
+          mgr.mkTerm(cvc5::Kind::EQUAL, {quantVars[j], counters[j].counter}));
+    }
+
+    auto currentBound = counters[i].counter;
+    if (kind == LoopGuardKind::AfterCurrent && i == counters.size() - 1) {
+      currentBound =
+          mgr.mkTerm(cvc5::Kind::ADD, {currentBound, counters[i].step});
+    }
+
+    conjuncts.push_back(
+        mgr.mkTerm(cvc5::Kind::LEQ, {counters[i].lowerBound, quantVars[i]}));
+    conjuncts.push_back(
+        mgr.mkTerm(cvc5::Kind::LT, {quantVars[i], currentBound}));
+    conjuncts.push_back(
+        makeStepAligned(mgr, builder, quantVars[i], counters[i]));
+
+    for (size_t j = i + 1; j < counters.size(); ++j) {
+      conjuncts.push_back(
+          makeFullRange(mgr, builder, quantVars[j], counters[j]));
+    }
+
+    guardCases.push_back(makeAnd(mgr, conjuncts));
+  }
+  return makeOr(mgr, guardCases);
+}
+
+std::optional<FlatLoopIndex>
+detectRowMajorIndex(cvc5::TermManager &mgr, TermBuilder &builder,
+                    llvm::ArrayRef<ForOpInfo> loopInfo, cvc5::Term index) {
+  int64_t totalIterations = 1;
+  SmallVector<int64_t> tripCounts;
+  for (const auto &info : loopInfo) {
+    auto lb = getConstantIndex(*info.lb);
+    auto ub = getConstantIndex(*info.ub);
+    auto step = getConstantIndex(*info.step);
+    if (!lb || !ub || !step || *lb != 0 || *step != 1 || *ub <= 0) {
+      return std::nullopt;
+    }
+    tripCounts.push_back(*ub);
+    totalIterations *= *ub;
+  }
+
+  std::optional<cvc5::Term> expected;
+  for (auto [idx, info] : llvm::enumerate(loopInfo)) {
+    int64_t stride = 1;
+    for (int64_t innerTripCount :
+         llvm::ArrayRef(tripCounts).drop_front(idx + 1)) {
+      stride *= innerTripCount;
+    }
+
+    auto counter = builder.getConstant(*info.ivar);
+    auto term = stride == 1 ? counter
+                            : mgr.mkTerm(cvc5::Kind::MULT,
+                                         {counter, builder.getInteger(stride)});
+    expected = expected ? mgr.mkTerm(cvc5::Kind::ADD, {*expected, term}) : term;
+  }
+
+  if (!expected || !(*expected == index)) {
+    return std::nullopt;
+  }
+  return FlatLoopIndex{*expected, totalIterations};
 }
 
 } // namespace
@@ -154,77 +321,163 @@ WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
     }
   });
 
-  llzk::ensure(loopInfo.size() == 1, "nested loop support in-progress");
+  TermBuilder::TermSet invariants;
+  if (witnessWrites.empty()) {
+    return invariants;
+  }
+
+  std::vector<cvc5::Term> counters;
+  std::vector<cvc5::Term> quantVars;
+  SmallVector<LoopCounterTerms> counterTerms;
+  for (auto [idx, info] : llvm::enumerate(loopInfo)) {
+    auto counter = builder.getConstant(*info.ivar);
+    auto lowerBound = builder.getExpression(*info.lb);
+    auto upperBound = builder.getExpression(*info.ub);
+    auto step = builder.getExpression(*info.step);
+
+    counters.push_back(counter);
+    quantVars.push_back(
+        mgr.mkVar(mgr.getIntegerSort(), "x" + std::to_string(idx)));
+    counterTerms.push_back({counter, lowerBound, upperBound, step});
+  }
+
+  auto substituteCounters = [&counters](cvc5::Term term,
+                                        const std::vector<cvc5::Term> &terms) {
+    return term.substitute(counters, terms);
+  };
+
+  auto makePredicateAtIndex = [this](component::MemberWriteOp write,
+                                     cvc5::Term indexedTerm) {
+    auto member = write.getMemberDefOp(tables)->get();
+    auto arr_w_i =
+        builder.arrayRead(builder.getConstant(member, true), indexedTerm);
+    auto arr_c_i =
+        builder.arrayRead(builder.getConstant(member, false), indexedTerm);
+    return builder.assertEqual(arr_w_i, arr_c_i);
+  };
+
+  auto makePredicate = [this, &substituteCounters, &makePredicateAtIndex](
+                           component::MemberWriteOp write, Value index,
+                           const std::vector<cvc5::Term> &indexTerms) {
+    auto indexedTerm =
+        substituteCounters(builder.getExpression(index), indexTerms);
+    return makePredicateAtIndex(write, indexedTerm);
+  };
 
   std::vector<cvc5::Term> predicates;
   for (auto [write, index] : witnessWrites) {
-    auto arr_w_i = builder.arrayRead(
-        builder.getConstant(write.getMemberDefOp(tables)->get(), true),
-        builder.getExpression(index));
-    auto arr_c_i = builder.arrayRead(
-        builder.getConstant(write.getMemberDefOp(tables)->get(), false),
-        builder.getExpression(index));
-    predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
+    predicates.push_back(makePredicate(write, index, counters));
   }
-
-  TermBuilder::TermSet invariants;
-  auto i = builder.getConstant(*loopInfo.front().ivar);
-  auto lb = builder.getExpression(*loopInfo.front().lb);
-  auto ub = builder.getExpression(*loopInfo.front().ub);
-  auto step = builder.getExpression(*loopInfo.front().step);
 
   // all signals are equal at i
   auto allEqualUpToCurrent = predicates.size() == 1
                                  ? predicates.front()
                                  : mgr.mkTerm(cvc5::Kind::AND, predicates);
 
-  // Turn `P(i)` into `forall lb <= x < ub and step | (x - lb), P(x)`
-  auto quantifyPredicate = [this, &lb, &step](cvc5::Term predicate,
-                                              cvc5::Term var, cvc5::Term ub) {
-    auto x = mgr.mkVar(mgr.getIntegerSort(), "x");
-    auto boundPos = mgr.mkTerm(cvc5::Kind::LEQ, {lb, x});
-    auto boundInv = mgr.mkTerm(cvc5::Kind::LT, {x, ub});
-
-    auto boundStep =
-        mgr.mkTerm(cvc5::Kind::EQUAL,
-                   {mgr.mkTerm(cvc5::Kind::INTS_MODULUS,
-                               {mgr.mkTerm(cvc5::Kind::SUB, {x, lb}), step}),
-                    builder.getInteger(0)});
-    auto bound = mgr.mkTerm(cvc5::Kind::AND, {boundPos, boundInv, boundStep});
-
+  auto quantifyPredicate = [this, &counterTerms, &quantVars,
+                            &substituteCounters](cvc5::Term predicate,
+                                                 LoopGuardKind kind) {
+    auto guard =
+        makeNestedLoopGuard(mgr, builder, counterTerms, quantVars, kind);
+    auto body = substituteCounters(predicate, quantVars);
     return mgr.mkTerm(cvc5::Kind::FORALL,
-                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {x}),
-                       mgr.mkTerm(cvc5::Kind::IMPLIES,
-                                  {bound, predicate.substitute(var, x)})});
+                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, quantVars),
+                       mgr.mkTerm(cvc5::Kind::IMPLIES, {guard, body})});
   };
 
-  // Turn "all signals equal at i" to "all signals equal at all x < i"
-  allEqualUpToCurrent = quantifyPredicate(allEqualUpToCurrent, i, i);
+  // Turn "all signals equal at current counters" into "all signals equal at
+  // every nested counter tuple that has already executed".
+  allEqualUpToCurrent =
+      quantifyPredicate(allEqualUpToCurrent, LoopGuardKind::BeforeCurrent);
 
   // Now, filter out the ones that aren't loop invariants
   for (auto invariant : predicates) {
-    // P(i) is an invariant if:
-    //  {C /\ forall x < i, P(x)} B {forall x < i + step, P(x)}
-    // holds
-    auto invariantHeld =
-        mgr.mkTerm(cvc5::Kind::AND,
-                   {mgr.mkTerm(cvc5::Kind::LT, {i, ub}), allEqualUpToCurrent});
+    auto invariantHeld = makeAnd(
+        mgr, {makeActiveLoopGuard(mgr, counterTerms), allEqualUpToCurrent});
 
     // Calculate wp(B, I)
-    auto precondition = ConjunctionTerm::of(quantifyPredicate(
-        invariant, i, mgr.mkTerm(cvc5::Kind::ADD, {i, step})));
+    auto precondition = ConjunctionTerm::of(
+        quantifyPredicate(invariant, LoopGuardKind::AfterCurrent));
     calculateWP(body, precondition);
 
     // Check C /\ AllI => wp(B, I)
     auto isInvariant = mgr.mkTerm(cvc5::Kind::IMPLIES,
                                   {invariantHeld, precondition.buildTerm(mgr)});
 
+    llvm::dbgs() << isInvariant.toString() << "\n";
+
     auto query = buildSMTQuery(isInvariant, builder, field);
     if (checkUnsatWithZ3(query)) {
       // Assume the invariant holds after exiting the loop
-      invariants.insert(quantifyPredicate(invariant, i, ub));
+      invariants.insert(quantifyPredicate(invariant, LoopGuardKind::AfterExit));
     } else {
       return invariants;
+    }
+  }
+
+  struct FlatPredicate {
+    component::MemberWriteOp write;
+    cvc5::Term currentIndex;
+    int64_t totalIterations;
+  };
+  SmallVector<FlatPredicate> flatPredicates;
+  if (loopInfo.size() > 1) {
+    for (auto [write, index] : witnessWrites) {
+      auto flatIndex = detectRowMajorIndex(mgr, builder, loopInfo,
+                                           builder.getExpression(index));
+      if (flatIndex) {
+        flatPredicates.push_back(
+            {write, flatIndex->currentIndex, flatIndex->totalIterations});
+      }
+    }
+  }
+
+  if (!flatPredicates.empty()) {
+    auto flatVar = mgr.mkVar(mgr.getIntegerSort(), "idx");
+    auto currentFlatIndex = flatPredicates.front().currentIndex;
+    auto totalIterations = flatPredicates.front().totalIterations;
+
+    auto makeFlatGuard = [this, &flatVar](cvc5::Term upperBound) {
+      return makeAnd(
+          mgr, {mgr.mkTerm(cvc5::Kind::LEQ, {builder.getInteger(0), flatVar}),
+                mgr.mkTerm(cvc5::Kind::LT, {flatVar, upperBound})});
+    };
+
+    auto makeFlatPredicate = [this, &flatVar, &flatPredicates,
+                              &makePredicateAtIndex]() {
+      std::vector<cvc5::Term> conjuncts;
+      for (auto flatPredicate : flatPredicates) {
+        conjuncts.push_back(makePredicateAtIndex(flatPredicate.write, flatVar));
+      }
+      return conjuncts.size() == 1 ? conjuncts.front()
+                                   : mgr.mkTerm(cvc5::Kind::AND, conjuncts);
+    };
+
+    auto quantifyFlatPredicate = [this, &flatVar, &makeFlatGuard,
+                                  &makeFlatPredicate](cvc5::Term upperBound) {
+      auto guard = makeFlatGuard(upperBound);
+      return mgr.mkTerm(
+          cvc5::Kind::FORALL,
+          {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {flatVar}),
+           mgr.mkTerm(cvc5::Kind::IMPLIES, {guard, makeFlatPredicate()})});
+    };
+
+    auto flatAllEqualUpToCurrent = quantifyFlatPredicate(currentFlatIndex);
+    auto invariantHeld = makeAnd(
+        mgr, {makeActiveLoopGuard(mgr, counterTerms), flatAllEqualUpToCurrent});
+
+    auto afterCurrent =
+        mgr.mkTerm(cvc5::Kind::ADD, {currentFlatIndex, builder.getInteger(1)});
+    auto precondition =
+        ConjunctionTerm::of(quantifyFlatPredicate(afterCurrent));
+    calculateWP(body, precondition);
+
+    auto isInvariant = mgr.mkTerm(cvc5::Kind::IMPLIES,
+                                  {invariantHeld, precondition.buildTerm(mgr)});
+    auto query = buildSMTQuery(isInvariant, builder, field);
+    if (checkUnsatWithZ3(query)) {
+      invariants.insert(
+          quantifyFlatPredicate(builder.getInteger(totalIterations)));
     }
   }
 
