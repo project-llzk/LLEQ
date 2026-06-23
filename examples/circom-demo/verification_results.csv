@@ -1,888 +1,892 @@
 Benchmark,Root Struct,Mode,Result,Time Seconds,Message
-AveragePooling2D_stride_test,AveragePooling2D_2,verify,timeout,120.134745,timeout
-AveragePooling2D_stride_test,AveragePooling2D_2,wp,error,0.215252,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001028e2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001028e0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001028e381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+AveragePooling2D_stride_test,AveragePooling2D_2,verify,timeout,120.048757,timeout
+AveragePooling2D_stride_test,AveragePooling2D_2,wp,error,0.254821,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000104f26de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104f248f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104f279c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-AveragePooling2D_test,AveragePooling2D_2,verify,error,64.930061,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000104ac2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104ac0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104ac381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+AveragePooling2D_test,AveragePooling2D_2,verify,error,77.265474,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000105106de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001051048f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001051079c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-AveragePooling2D_test,AveragePooling2D_2,wp,error,0.211558,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000103182c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000103180744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010318381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+AveragePooling2D_test,AveragePooling2D_2,wp,error,0.187327,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000104876de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001048748f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001048779c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-BatchNormalization_test,BatchNormalization2D_0,verify,verified,84.914143,
-BatchNormalization_test,BatchNormalization2D_0,wp,error,0.279893,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000104d0ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104d0c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104d0f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+BatchNormalization_test,BatchNormalization2D_0,verify,verified,83.993255,
+BatchNormalization_test,BatchNormalization2D_0,wp,error,0.200159,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001031e2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001031e08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001031e39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-Conv1D_test,Conv1D_3,verify,timeout,120.195999,timeout
-Conv1D_test,Conv1D_3,wp,error,0.231608,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x00000001009e6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001009e4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001009e781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+Conv1D_test,Conv1D_3,verify,timeout,120.113602,timeout
+Conv1D_test,Conv1D_3,wp,error,0.262433,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001047eede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001047ec8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001047ef9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-Conv2D_stride_test,Conv2D_3,verify,timeout,120.022678,timeout
-Conv2D_stride_test,Conv2D_3,wp,error,0.233801,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x000000010342ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000103428744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010342b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+Conv2D_stride_test,Conv2D_3,verify,timeout,120.022300,timeout
+Conv2D_stride_test,Conv2D_3,wp,error,0.241676,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000104802de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001048008f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001048039c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-Conv2D_test,Conv2D_3,verify,timeout,120.021387,timeout
-Conv2D_test,Conv2D_3,wp,error,0.418247,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x00000001034fac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001034f8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001034fb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+Conv2D_test,Conv2D_3,verify,timeout,120.013996,timeout
+Conv2D_test,Conv2D_3,wp,error,0.238307,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000100e46de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100e448f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100e479c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-Dense_test,Dense_3,verify,error,1.201193,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Dense_test.llzk"":15:11):unhandled operation, analysis may be incomplete
+DecomposeProduct,DecomposeProduct_1,verify,error,1.415375,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/DecomposeProduct.llzk"":53:24):failed to legalize operation 'builtin.unrealized_conversion_cast'
+note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/DecomposeProduct.llzk"":53:24):see current operation: %27 = ""builtin.unrealized_conversion_cast""(%26) : (i1) -> !smt.bool
+LLVM ERROR: failed to prepare module for verification
+ #0 0x0000000100d2ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/buil"
+DecomposeProduct,DecomposeProduct_1,wp,error,0.053398,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/DecomposeProduct.llzk"":1:1):no prime field specified; could not deduce
+note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/DecomposeProduct.llzk"":1:1):see current operation: 
+""builtin.module""() ({
+  ""poly.template""() <{sym_name = ""Num2Bits_0""}> ({
+    ""struct.def""() <{sym_name = ""Num2Bits_0""}> ({
+      ""struct.member""() <{sym_name = ""out"", type = !array.type<8 x !felt.type>}> {llzk.pub} : () -> ()
+      ""function.def""() <{funct"
+Dense_test,Dense_3,verify,error,0.758760,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Dense_test.llzk"":15:11):unhandled operation, analysis may be incomplete
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Dense_test.llzk"":15:11):see current operation: scf.condition(%3)
 Assertion failed: (resultNumber < getNumResults() && ""Result number is out of range for operation""), function getOpResultImpl, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-mlir-debug-20.1.8-dev/include/mlir/IR/Operation.h, line 1012.
  #"
-Dense_test,Dense_3,wp,error,0.265671,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000105032c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105030744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010503381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+Dense_test,Dense_3,wp,error,0.175799,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000102b46de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102b448f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102b479c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-Flatten2D_test,Flatten2D_0,verify,error,18.518839,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Flatten2D_test.llzk"":13:19):unsupported expression op
+Flatten2D_test,Flatten2D_0,verify,error,22.367179,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Flatten2D_test.llzk"":13:19):unsupported expression op
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Flatten2D_test.llzk"":13:19):see current operation: %975 = ""array.new""() <{mapOpGroupSizes = array<i32>, numDimsPerMap = array<i32>, operandSegmentSizes = array<i32: 0, 0>}> : () -> !array.type<75 x !felt.type<""bn128"">>
 LLVM ERROR: SMT emission failed
- #0 0x00000001025b6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int)"
-Flatten2D_test,Flatten2D_0,wp,error,0.307469,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x00000001014aec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001014ac744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001014af81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+ #0 0x0000000102b82de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int)"
+Flatten2D_test,Flatten2D_0,wp,error,0.182725,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001051cede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001051cc8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001051cf9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-GlobalAveragePooling2D_test,GlobalAveragePooling2D_2,verify,error,72.405148,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000104a32c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104a30744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104a3381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+GlobalAveragePooling2D_test,GlobalAveragePooling2D_2,verify,error,82.841360,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100f2ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100f2c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100f2f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-GlobalAveragePooling2D_test,GlobalAveragePooling2D_2,wp,error,0.265348,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104e3ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104e3c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104e3f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+GlobalAveragePooling2D_test,GlobalAveragePooling2D_2,wp,error,0.202431,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001029c6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001029c48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001029c79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-GlobalMaxPooling2D_test,GlobalMaxPooling2D_5,verify,error,14.974897,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000101296c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101294744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010129781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+GlobalMaxPooling2D_test,GlobalMaxPooling2D_5,verify,error,15.214551,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010506ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001050688f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010506b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-GlobalMaxPooling2D_test,GlobalMaxPooling2D_5,wp,error,0.259478,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010548ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010548c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010548f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+GlobalMaxPooling2D_test,GlobalMaxPooling2D_5,wp,error,0.200641,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000105366de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053648f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001053679c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-IsNegative_test,IsNegative_4,verify,timeout,120.021600,timeout
-IsNegative_test,IsNegative_4,wp,error,0.213558,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001052e2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001052e0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001052e381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+IsNegative_test,IsNegative_4,verify,timeout,120.051114,timeout
+IsNegative_test,IsNegative_4,wp,error,0.208934,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100e8ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100e8c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100e8f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-IsPositive_test,IsPositive_4,verify,timeout,120.036960,timeout
-IsPositive_test,IsPositive_4,wp,error,0.236624,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001010c6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001010c4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001010c781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+IsPositive_test,IsPositive_4,verify,timeout,120.044650,timeout
+IsPositive_test,IsPositive_4,wp,error,0.269903,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001029fade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001029f88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001029fb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-MaxPooling2D_stride_test,MaxPooling2D_5,verify,timeout,120.152127,timeout
-MaxPooling2D_stride_test,MaxPooling2D_5,wp,error,0.256137,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010352ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010352c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010352f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+MaxPooling2D_stride_test,MaxPooling2D_5,verify,timeout,120.069471,timeout
+MaxPooling2D_stride_test,MaxPooling2D_5,wp,error,0.234257,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100642de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001006408f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001006439c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-MaxPooling2D_test,MaxPooling2D_5,verify,error,38.224888,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x00000001033a6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001033a4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001033a781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+MaxPooling2D_test,MaxPooling2D_5,verify,error,40.170655,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100686de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001006848f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001006879c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-MaxPooling2D_test,MaxPooling2D_5,wp,error,0.235422,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104a5ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104a5c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104a5f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+MaxPooling2D_test,MaxPooling2D_5,wp,error,0.212681,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010484ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010484c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010484f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-Max_test,Max_4,verify,error,3.457041,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102962c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102960744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010296381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+Max_test,Max_4,verify,error,4.745202,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010113ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001011388f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010113b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-Max_test,Max_4,wp,error,0.219498,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010522ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105228744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010522b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+Max_test,Max_4,wp,error,0.204800,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001007dede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001007dc8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001007df9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-Num2Bits,Num2Bits_0,verify,error,0.679415,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Num2Bits.llzk"":16:16):failed to legalize operation 'felt.shr' that was explicitly marked illegal
-note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Num2Bits.llzk"":16:16):see current operation: %107 = ""felt.shr""(<<UNKNOWN SSA VALUE>>, %97) {product_source = ""compute""} : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> !felt.type<""bn128"">
+Num2Bits,Num2Bits_0,verify,error,0.415668,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Num2Bits.llzk"":16:16):failed to legalize operation 'felt.shr' that was explicitly marked illegal
+note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/Num2Bits.llzk"":16:16):see current operation: %105 = ""felt.shr""(<<UNKNOWN SSA VALUE>>, %95) {product_source = ""compute""} : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> !felt.type<""bn128"">
 LLVM ERROR: failed to generate SMT encoding
- #0 0x000000010274ec34 llvm::sys::PrintStackTrace("
-Num2Bits,Num2Bits_0,wp,error,0.237824,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_316 1)) (= (mod (- x 0) 1) 0)) (= (mod (select out_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select out_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
+ #0 0x00000001009e6de0 llvm::sys::PrintStackTrace("
+Num2Bits,Num2Bits_0,wp,error,0.183298,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_316 1)) (= (mod (- x 0) 1) 0)) (= (mod (select out_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select out_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
 LLVM ERROR: unknown op: felt.bit_and
- #0 0x0000000100e82c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100e80744 llvm"
-ReLU_test,relu_test_6,verify,timeout,120.204464,timeout
-ReLU_test,relu_test_6,wp,error,0.224809,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104986c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104984744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010498781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+ #0 0x0000000104e82de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104e808f0 llvm"
+ReLU_test,relu_test_6,verify,timeout,120.024070,timeout
+ReLU_test,relu_test_6,wp,error,0.283930,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000104ceede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104cec8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104cef9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-SumPooling2D_stride_test,SumPooling2D_1,verify,timeout,120.038060,timeout
-SumPooling2D_stride_test,SumPooling2D_1,wp,error,0.214905,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000104f5ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104f58744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104f5b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+SumPooling2D_stride_test,SumPooling2D_1,verify,timeout,120.058800,timeout
+SumPooling2D_stride_test,SumPooling2D_1,wp,error,0.195150,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000104c86de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104c848f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104c879c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-SumPooling2D_test,SumPooling2D_1,verify,error,61.446462,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/SumPooling2D_test.llzk"":162:15):unhandled operation, analysis may be incomplete
+SumPooling2D_test,SumPooling2D_1,verify,error,26.468326,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/SumPooling2D_test.llzk"":162:15):unhandled operation, analysis may be incomplete
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/SumPooling2D_test.llzk"":162:15):see current operation: pod.write %0[@count] = %c4_232 : <[@count: index, @comp: !struct.type<@matElemSum_0::@matElemSum_0>, @params: !pod.type<[]>]>, index {product_source = ""compute""}
 warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/SumPooling2D_test"
-SumPooling2D_test,SumPooling2D_1,wp,error,0.283986,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000100d0ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100d08744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100d0b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+SumPooling2D_test,SumPooling2D_1,wp,error,0.210965,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000100612de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001006108f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001006139c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-aes_256_ctr_test,AES256CTR_8,verify,error,100.795117,"Assertion failed: (indexAsAttr), function rewriteImpl, file /nix/var/nix/builds/nix-66746-3975906522/source/lib/Dialect/Array/Transforms/ArrayToScalarPass.cpp, line 330.
- #0 0x0000000104ea6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104ea4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104ea781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
-aes_256_ctr_test,AES256CTR_8,wp,error,0.397425,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010517ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105178744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010517b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+aes_256_ctr_test,AES256CTR_8,verify,timeout,120.024375,timeout
+aes_256_ctr_test,AES256CTR_8,wp,error,0.414176,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001028e6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001028e48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001028e79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-aes_256_encrypt_test,AES256Encrypt_6,verify,timeout,120.011347,timeout
-aes_256_encrypt_test,AES256Encrypt_6,wp,error,0.406357,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x000000010082ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100828744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010082b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+aes_256_encrypt_test,AES256Encrypt_6,verify,timeout,120.032539,timeout
+aes_256_encrypt_test,AES256Encrypt_6,wp,error,0.578247,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000102be2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102be08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102be39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-aes_256_key_expansion_test,AES256KeyExpansion_3,verify,error,23.877209,"Assertion failed: (indexAsAttr), function rewriteImpl, file /nix/var/nix/builds/nix-66746-3975906522/source/lib/Dialect/Array/Transforms/ArrayToScalarPass.cpp, line 330.
- #0 0x000000010541ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105418744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010541b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
-aes_256_key_expansion_test,AES256KeyExpansion_3,wp,error,0.299865,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000102b1ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102b1c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102b1f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+aes_256_key_expansion_test,AES256KeyExpansion_3,verify,error,46.284141,"Assertion failed: (indexAsAttr), function rewriteImpl, file /nix/var/nix/builds/nix-66746-3975906522/source/lib/Dialect/Array/Transforms/ArrayToScalarPass.cpp, line 330.
+ #0 0x0000000102602de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001026008f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001026039c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
+aes_256_key_expansion_test,AES256KeyExpansion_3,wp,error,0.329822,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000100746de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001007448f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001007479c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-aliascheck_test,AliasCheck_2,verify,timeout,120.038402,timeout
-aliascheck_test,AliasCheck_2,wp,error,0.258992,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001005eec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001005ec744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001005ef81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+aliascheck_test,AliasCheck_2,verify,timeout,120.036496,timeout
+aliascheck_test,AliasCheck_2,wp,error,0.189031,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100bb2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100bb08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100bb39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-babyadd_tester,BabyAdd_0,verify,verified,6.369227,
-babyadd_tester,BabyAdd_0,wp,timeout,120.018509,timeout
-babycheck_test,BabyCheck_0,verify,verified,2.384793,
-babycheck_test,BabyCheck_0,wp,verified,0.068988,unsat
-binsub_test,A_3,verify,error,7.693218,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102852c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102850744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010285381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+babyadd_tester,BabyAdd_0,verify,verified,7.552625,
+babyadd_tester,BabyAdd_0,wp,timeout,120.008977,timeout
+babycheck_test,BabyCheck_0,verify,verified,2.138294,
+babycheck_test,BabyCheck_0,wp,verified,0.058090,unsat
+binsub_test,A_3,verify,error,8.524770,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000104852de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001048508f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001048539c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-binsub_test,A_3,wp,error,0.226538,"LLVM ERROR: arbitrary function calls not supported yet
- #0 0x00000001007aec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001007ac744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001007af81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+binsub_test,A_3,wp,error,0.209562,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x00000001050c6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001050c48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001050c79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 "
-calculateTotal_test,CalculateTotal_0,verify,error,0.613023,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test.llzk"":13:19):unsupported expression op
+calculateTotal_test,CalculateTotal_0,verify,error,1.819198,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test.llzk"":13:19):unsupported expression op
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test.llzk"":13:19):see current operation: %85 = ""array.new""() <{mapOpGroupSizes = array<i32>, numDimsPerMap = array<i32>, operandSegmentSizes = array<i32: 0, 0>}> : () -> !array.type<6 x !felt.type<""bn128"">>
 LLVM ERROR: SMT emission failed
- #0 0x0000000102cb6c34 llvm::sys::PrintStackTrace(llvm::raw_ostrea"
-calculateTotal_test,CalculateTotal_0,wp,verified,0.242061,unsat
-calculateTotal_test_fused,CalculateTotal_0,verify,error,0.728444,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test_fused.llzk"":13:19):unsupported expression op
+ #0 0x0000000102d5ede0 llvm::sys::PrintStackTrace(llvm::raw_ostrea"
+calculateTotal_test,CalculateTotal_0,wp,verified,0.278124,unsat
+calculateTotal_test_fused,CalculateTotal_0,verify,error,0.734938,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test_fused.llzk"":13:19):unsupported expression op
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test_fused.llzk"":13:19):see current operation: %85 = ""array.new""() <{mapOpGroupSizes = array<i32>, numDimsPerMap = array<i32>, operandSegmentSizes = array<i32: 0, 0>}> : () -> !array.type<6 x !felt.type<""bn128"">>
 LLVM ERROR: SMT emission failed
- #0 0x0000000105092c34 llvm::sys::PrintStackTrace(llvm"
-calculateTotal_test_fused,CalculateTotal_0,wp,verified,0.393297,unsat
-chi_test,Chi_6,verify,timeout,120.041127,timeout
-chi_test,Chi_6,wp,error,0.371886,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104ce6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104ce4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104ce781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+ #0 0x000000010268ede0 llvm::sys::PrintStackTrace(llvm"
+calculateTotal_test_fused,CalculateTotal_0,wp,verified,0.234886,unsat
+chi_test,Chi_6,verify,timeout,120.048371,timeout
+chi_test,Chi_6,wp,error,0.335379,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000105462de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001054608f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001054639c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-constants_test,A_1,verify,error,2.907521,"Assertion failed: (!empty()), function front, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-llvm-debug-20.1.8-dev/include/llvm/ADT/ArrayRef.h, line 172.
- #0 0x0000000100cdac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100cd8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100cdb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq"
-constants_test,A_1,wp,error,0.255563,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: invalid size of argument 'sorts', expected at least one parameter sort for function sort
- #0 0x0000000102e3ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102e3c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102e3f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
-decryptMultiple_test,DecryptBits_1,verify,timeout,120.119136,timeout
-decryptMultiple_test,DecryptBits_1,wp,error,0.261256,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: expecting an arithmetic subterm
- #0 0x0000000104e1ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104e18744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104e1b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+constants_test,A_1,verify,timeout,120.023234,timeout
+constants_test,A_1,wp,error,0.195564,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x0000000102dc2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102dc08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102dc39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
+ #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
+ #4 "
+decryptMultiple_test,DecryptBits_1,verify,timeout,120.134845,timeout
+decryptMultiple_test,DecryptBits_1,wp,error,0.281040,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: expecting an arithmetic subterm
+ #0 0x0000000102c12de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102c108f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102c139c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 ("
-decrypt_test,Decrypt_1,verify,timeout,120.010812,timeout
-decrypt_test,Decrypt_1,wp,error,0.217080,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: expecting an arithmetic subterm
- #0 0x0000000100f16c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100f14744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100f1781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+decrypt_test,Decrypt_1,verify,timeout,120.054153,timeout
+decrypt_test,Decrypt_1,wp,error,0.218771,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: expecting an arithmetic subterm
+ #0 0x0000000104e0ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104e0c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104e0f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 ("
-edwards2montgomery,Edwards2Montgomery_0,verify,verified,2.124065,
-edwards2montgomery,Edwards2Montgomery_0,wp,partial,0.095596,unknown
-encryptMultiple_test,EncryptBits_2,verify,timeout,120.047788,timeout
-encryptMultiple_test,EncryptBits_2,wp,error,0.235002,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001007aec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001007ac744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001007af81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+edwards2montgomery,Edwards2Montgomery_0,verify,verified,2.150134,
+edwards2montgomery,Edwards2Montgomery_0,wp,partial,0.143519,unknown
+encryptMultiple_test,EncryptBits_2,verify,timeout,120.068501,timeout
+encryptMultiple_test,EncryptBits_2,wp,error,0.212783,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010348ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010348c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010348f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-encrypt_test,Encrypt_2,verify,error,3.597556,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000100dfac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100df8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100dfb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+encrypt_test,Encrypt_2,verify,error,4.417943,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100896de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001008948f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001008979c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-encrypt_test,Encrypt_2,wp,error,0.271977,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: array select operating on non-array
- #0 0x0000000100c1ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100c18744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100c1b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+encrypt_test,Encrypt_2,wp,error,0.221088,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: array select operating on non-array
+ #0 0x00000001048e2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001048e08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001048e39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b7"
-greatereqthan,GreaterEqThan_2,verify,error,0.495579,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102b7ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102b78744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102b7b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+greatereqthan,GreaterEqThan_2,verify,error,0.402625,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000104982de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001049808f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001049839c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-greatereqthan,GreaterEqThan_2,wp,error,0.210340,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102fe2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102fe0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102fe381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+greatereqthan,GreaterEqThan_2,wp,error,0.184298,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010077ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001007788f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010077b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-greaterthan,GreaterThan_2,verify,error,0.436339,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x000000010523ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105238744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010523b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+greaterthan,GreaterThan_2,verify,error,0.432562,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000102d62de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102d608f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102d639c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-greaterthan,GreaterThan_2,wp,error,0.212172,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010147ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010147c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010147f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+greaterthan,GreaterThan_2,wp,error,0.229385,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010469ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001046988f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010469b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-inTest,IN_5,verify,error,2.153113,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000105032c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105030744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010503381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+inTest,IN_5,verify,error,2.543955,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000102756de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001027548f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001027579c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-inTest,IN_5,wp,error,0.235524,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000100e3ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100e38744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100e3b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+inTest,IN_5,wp,error,0.190428,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100fd2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100fd08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100fd39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-iota10_test,Iota_3,verify,timeout,120.009832,timeout
-iota10_test,Iota_3,wp,error,0.209880,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001053dac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001053d8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001053db81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+iota10_test,Iota_3,verify,timeout,120.102277,timeout
+iota10_test,Iota_3,wp,error,0.285364,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001054fade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001054f88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001054fb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-iota3_test,Iota_3,verify,timeout,120.021609,timeout
-iota3_test,Iota_3,wp,error,0.249977,"libc++abi: terminating due to uncaught exception of type cvc5::CVC5ApiException: invalid size of argument 'sorts', expected at least one parameter sort for function sort
- #0 0x0000000103076c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000103074744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010307781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
-isequal,IsEqual_1,verify,error,0.222516,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x00000001009bac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001009b8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001009bb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+iota3_test,Iota_3,verify,timeout,120.073363,timeout
+iota3_test,Iota_3,wp,error,0.189011,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010530ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053088f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010530b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
+ #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
+ #4 0x000000018c5618d"
+isequal,IsEqual_1,verify,error,0.197985,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010535ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053588f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010535b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-isequal,IsEqual_1,wp,error,0.208195,"LLVM ERROR: arbitrary function calls not supported yet
- #0 0x000000010057ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010057c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010057f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+isequal,IsEqual_1,wp,error,0.236384,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x000000010140ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001014088f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010140b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 "
-iszero,IsZero_0,verify,verified,0.140075,
-iszero,IsZero_0,wp,counterexample,0.063834,sat
-keccakfRound0_test,KeccakfRound_88,verify,timeout,120.091648,timeout
-keccakfRound0_test,KeccakfRound_88,wp,error,1.054607,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001052eec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001052ec744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001052ef81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+iszero,IsZero_0,verify,verified,0.144476,
+iszero,IsZero_0,wp,counterexample,0.048375,sat
+keccakfRound0_test,KeccakfRound_88,verify,timeout,120.021495,timeout
+keccakfRound0_test,KeccakfRound_88,wp,error,0.701721,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000102e06de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102e048f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102e079c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-keccakfRound20_test,KeccakfRound_88,verify,timeout,120.311664,timeout
-keccakfRound20_test,KeccakfRound_88,wp,error,1.209310,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000100742c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100740744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010074381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+keccakfRound20_test,KeccakfRound_88,verify,timeout,120.069462,timeout
+keccakfRound20_test,KeccakfRound_88,wp,error,0.775166,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000104572de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001045708f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001045739c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-lesseqthan,LessEqThan_2,verify,error,0.554543,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x00000001054b6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001054b4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001054b781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+lesseqthan,LessEqThan_2,verify,error,0.394659,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100812de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001008108f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001008139c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-lesseqthan,LessEqThan_2,wp,error,0.197648,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104a9ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104a98744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104a9b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+lesseqthan,LessEqThan_2,wp,error,0.226871,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101442de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001014408f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001014439c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-lessthan,LessThan_1,verify,error,0.450487,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102e0ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102e08744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102e0b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+lessthan,LessThan_1,verify,error,0.445824,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000105046de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001050448f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001050479c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-lessthan,LessThan_1,wp,error,0.182936,"LLVM ERROR: arbitrary function calls not supported yet
- #0 0x000000010458ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104588744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010458b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+lessthan,LessThan_1,wp,error,0.174111,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x000000010131ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010131c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010131f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 "
-main,fulladder_0,verify,error,0.210418,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/main.llzk"":17:14):failed to legalize operation 'felt.uintdiv' that was explicitly marked illegal
+main,fulladder_0,verify,error,0.223979,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/main.llzk"":17:14):failed to legalize operation 'felt.uintdiv' that was explicitly marked illegal
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/main.llzk"":17:14):see current operation: %38 = ""felt.uintdiv""(%37, %25) {product_source = ""compute""} : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> !felt.type<""bn128"">
 LLVM ERROR: failed to generate SMT encoding
- #0 0x00000001027c6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&,"
-main,fulladder_0,wp,error,0.213411,"LLVM ERROR: unknown op: felt.uintdiv
- #0 0x0000000100beac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100be8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100beb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
- #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
- #4 0x000000018c5618d8"
-matAdd_test,matAdd_0,verify,verified,0.319201,
-matAdd_test,matAdd_0,wp,error,0.225027,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000102eb6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102eb4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102eb781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+ #0 0x00000001025fade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&,"
+main,fulladder_0,wp,counterexample,0.066429,sat
+matAdd_test,matAdd_0,verify,verified,0.312216,
+matAdd_test,matAdd_0,wp,error,0.180862,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001032dade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001032d88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001032db9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matElemMul_test,matElemMul_0,verify,verified,6.323539,
-matElemMul_test,matElemMul_0,wp,error,0.223966,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x000000010076ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010076c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010076f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matElemMul_test,matElemMul_0,verify,verified,6.366186,
+matElemMul_test,matElemMul_0,wp,error,0.183442,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000102afade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102af88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102afb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matElemPow_test,matElemPow_1,verify,error,4.876392,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matElemPow_test.llzk"":116:13):unhandled operation, analysis may be incomplete
+matElemPow_test,matElemPow_1,verify,error,4.513506,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matElemPow_test.llzk"":116:13):unhandled operation, analysis may be incomplete
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matElemPow_test.llzk"":116:13):see current operation: pod.write %0[@count] = %c1 : <[@count: index, @comp: !struct.type<@power_0::@power_0>, @params: !pod.type<[]>]>, index {product_source = ""compute""}
 warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matElemPow_test.llzk"":116:13):unhan"
-matElemPow_test,matElemPow_1,wp,error,0.193655,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x000000010551ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105518744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010551b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matElemPow_test,matElemPow_1,wp,error,0.197814,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000100836de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001008348f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001008379c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matMul_test,matMul_2,verify,error,2.211709,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matMul_test.llzk"":15:11):unhandled operation, analysis may be incomplete
+matMul_test,matMul_2,verify,error,2.296991,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matMul_test.llzk"":15:11):unhandled operation, analysis may be incomplete
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matMul_test.llzk"":15:11):see current operation: scf.condition(%3)
 Assertion failed: (resultNumber < getNumResults() && ""Result number is out of range for operation""), function getOpResultImpl, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-mlir-debug-20.1.8-dev/include/mlir/IR/Operation.h, line 1012.
 "
-matMul_test,matMul_2,wp,error,0.209432,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000104f56c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104f54744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104f5781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matMul_test,matMul_2,wp,error,0.240795,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001053c2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053c08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001053c39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matPow_test,matPow_3,verify,error,6.578400,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matPow_test.llzk"":15:11):unhandled operation, analysis may be incomplete
+matPow_test,matPow_3,verify,error,7.017622,"warning: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matPow_test.llzk"":15:11):unhandled operation, analysis may be incomplete
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/matPow_test.llzk"":15:11):see current operation: scf.condition(%3)
 Assertion failed: (resultNumber < getNumResults() && ""Result number is out of range for operation""), function getOpResultImpl, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-mlir-debug-20.1.8-dev/include/mlir/IR/Operation.h, line 1012.
 "
-matPow_test,matPow_3,wp,error,0.204035,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010095ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010095c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010095f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matPow_test,matPow_3,wp,error,0.220529,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101332de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001013308f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001013339c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-matScalarAdd_test,matScalarAdd_0,verify,verified,0.292498,
-matScalarAdd_test,matScalarAdd_0,wp,error,0.215945,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x00000001050aec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001050ac744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001050af81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matScalarAdd_test,matScalarAdd_0,verify,verified,0.262544,
+matScalarAdd_test,matScalarAdd_0,wp,error,0.237001,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000105142de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001051408f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001051439c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matScalarMul_test,matScalarMul_0,verify,verified,6.269535,
-matScalarMul_test,matScalarMul_0,wp,error,0.226649,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000104bbec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104bbc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104bbf81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matScalarMul_test,matScalarMul_0,verify,verified,6.236704,
+matScalarMul_test,matScalarMul_0,wp,error,0.179452,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001047aede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001047ac8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001047af9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matScalarSub_test,matScalarSub_0,verify,verified,0.330483,
-matScalarSub_test,matScalarSub_0,wp,error,0.178936,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000100ea2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100ea0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100ea381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matScalarSub_test,matScalarSub_0,verify,verified,0.296120,
+matScalarSub_test,matScalarSub_0,wp,error,0.190341,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000104746de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001047448f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001047479c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-matSub_test,matSub_0,verify,verified,0.321006,
-matSub_test,matSub_0,wp,error,0.211788,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000100c46c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100c44744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100c4781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+matSub_test,matSub_0,verify,verified,0.352160,
+matSub_test,matSub_0,wp,error,0.182200,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001027d6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001027d48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001027d79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-mimc_sponge_hash_test,MiMCSponge_1,verify,timeout,120.051711,timeout
-mimc_sponge_hash_test,MiMCSponge_1,wp,error,0.643519,"(set-logic ALL)
+mimc_sponge_hash_test,MiMCSponge_1,verify,timeout,120.035352,timeout
+mimc_sponge_hash_test,MiMCSponge_1,wp,error,0.330952,"(set-logic ALL)
 ; Subcomponents
 (declare-sort MiMCFeistel_0 0)
 (declare-fun init-MiMCFeistel_0 (Int Int Int) MiMCFeistel_0)
+(declare-fun read-MiMCFeistel_0-xLout (MiMCFeistel_0) Int)
+(declare-fun read-MiMCFeistel_0-xR (MiMCFeistel_0) (Array Int Int))
 (declare-fun read-MiMCFeistel_0-t4 (MiMCFeistel_0) (Array Int Int))
 (declare-fun read-MiMCFeistel_0-t2 (MiMCFeistel_0) (Array Int Int))
-(declare-fun read-MiMCFeistel_0-xRout (MiMCFeistel_0) Int)
-(declare-fun read-MiMCFeistel_0-xR (MiMCFeistel_0) (Array Int Int))
 (declare-fun read-MiMCFeistel_0-xL (MiMCFeistel_0) (Array Int Int))
-(declare-fun read-MiMCFeistel_0-xLout (MiMCFe"
-mimc_sponge_test,MiMCFeistel_0,verify,timeout,120.101721,timeout
-mimc_sponge_test,MiMCFeistel_0,wp,error,0.438822,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_760 1)) (= (mod (- x 0) 1) 0)) (= (mod (select t2_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select t2_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
+(declare-fun read-MiMCFeistel_0-xRout (MiMCFe"
+mimc_sponge_test,MiMCFeistel_0,verify,timeout,120.156246,timeout
+mimc_sponge_test,MiMCFeistel_0,wp,error,0.308275,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_760 1)) (= (mod (- x 0) 1) 0)) (= (mod (select t4_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select t4_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
 LLVM ERROR: unknown op: bool.or
- #0 0x000000010147ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101478744 llvm::sys::"
-mimc_test,MiMC7_0,verify,timeout,120.029812,timeout
-mimc_test,MiMC7_0,wp,timeout,120.008139,timeout
-mnist_convnet_test,mnist_convnet_21,verify,timeout,120.070886,timeout
-mnist_convnet_test,mnist_convnet_21,wp,error,0.257246,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001052cec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001052cc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001052cf81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+ #0 0x0000000102b12de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102b108f0 llvm::sys::"
+mimc_test,MiMC7_0,verify,timeout,120.010422,timeout
+mimc_test,MiMC7_0,wp,timeout,120.007615,timeout
+mnist_convnet_test,mnist_convnet_21,verify,timeout,120.171598,timeout
+mnist_convnet_test,mnist_convnet_21,wp,error,0.293554,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001052cade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001052c88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001052cb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mnist_latest_precision_test,mnist_latest_precision_29,verify,timeout,120.132699,timeout
-mnist_latest_precision_test,mnist_latest_precision_29,wp,error,0.375080,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104746c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104744744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010474781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mnist_latest_precision_test,mnist_latest_precision_29,verify,timeout,120.059098,timeout
+mnist_latest_precision_test,mnist_latest_precision_29,wp,error,0.327510,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100d2ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100d2c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100d2f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mnist_latest_test,mnist_latest_25,verify,timeout,120.139944,timeout
-mnist_latest_test,mnist_latest_25,wp,error,0.366260,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010286ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102868744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010286b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mnist_latest_test,mnist_latest_25,verify,timeout,120.038646,timeout
+mnist_latest_test,mnist_latest_25,wp,error,0.260540,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001052dede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001052dc8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001052df9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mnist_test,mnist_20,verify,timeout,120.019050,timeout
-mnist_test,mnist_20,wp,error,0.238572,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102dcac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102dc8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102dcb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mnist_test,mnist_20,verify,timeout,120.164084,timeout
+mnist_test,mnist_20,wp,error,0.279359,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000102b8ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102b8c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102b8f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-model1_test,model1_14,verify,timeout,120.064576,timeout
-model1_test,model1_14,wp,error,0.299053,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010070ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010070c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010070f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+model1_test,model1_14,verify,timeout,120.082100,timeout
+model1_test,model1_14,wp,error,0.285158,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001053b6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053b48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001053b79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-montgomery2edwards,Montgomery2Edwards_0,verify,verified,2.344631,
-montgomery2edwards,Montgomery2Edwards_0,wp,partial,0.166911,unknown
-montgomeryadd,MontgomeryAdd_0,verify,verified,3.410905,
-montgomeryadd,MontgomeryAdd_0,wp,timeout,120.035384,timeout
-montgomerydouble,MontgomeryDouble_0,verify,verified,4.253179,
-montgomerydouble,MontgomeryDouble_0,wp,timeout,120.010918,timeout
-mul_test,Mul_1,verify,timeout,120.017314,timeout
-mul_test,Mul_1,wp,error,0.229242,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x00000001006f6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001006f4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001006f781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+montgomery2edwards,Montgomery2Edwards_0,verify,verified,2.144388,
+montgomery2edwards,Montgomery2Edwards_0,wp,partial,0.071769,unknown
+montgomeryadd,MontgomeryAdd_0,verify,verified,3.184814,
+montgomeryadd,MontgomeryAdd_0,wp,timeout,120.017381,timeout
+montgomerydouble,MontgomeryDouble_0,verify,verified,4.234988,
+montgomerydouble,MontgomeryDouble_0,wp,timeout,120.006619,timeout
+mul_test,Mul_1,verify,timeout,120.013713,timeout
+mul_test,Mul_1,wp,error,0.221451,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000103016de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001030148f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001030179c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-mux1_1,Main_4,verify,error,0.290743,"Assertion failed: (!empty()), function front, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-llvm-debug-20.1.8-dev/include/llvm/ADT/ArrayRef.h, line 172.
- #0 0x0000000103482c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000103480744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010348381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq"
-mux1_1,Main_4,wp,error,0.193334,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104aa6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104aa4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104aa781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mux1_1,Main_4,verify,error,0.305536,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010300ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001030088f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010300b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
+ #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
+mux1_1,Main_4,wp,error,0.195561,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100acede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100acc8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100acf9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mux2_1,Main_4,verify,error,0.466584,"Assertion failed: (!empty()), function front, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-llvm-debug-20.1.8-dev/include/llvm/ADT/ArrayRef.h, line 172.
- #0 0x0000000104b5ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104b58744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104b5b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq"
-mux2_1,Main_4,wp,error,0.269330,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000103206c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000103204744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010320781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mux2_1,Main_4,verify,error,0.377986,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x00000001047fade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001047f88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001047fb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
+ #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
+mux2_1,Main_4,wp,error,0.197311,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001009f6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001009f48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001009f79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mux3_1,Main_4,verify,error,0.745853,"Assertion failed: (!empty()), function front, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-llvm-debug-20.1.8-dev/include/llvm/ADT/ArrayRef.h, line 172.
- #0 0x0000000102b8ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102b8c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102b8f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq"
-mux3_1,Main_4,wp,error,0.288241,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010473ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104738744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010473b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mux3_1,Main_4,verify,error,0.608417,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000101142de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001011408f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001011439c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
+ #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
+mux3_1,Main_4,wp,error,0.199769,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100c72de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100c708f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100c739c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mux4_1,Main_4,verify,error,1.611966,"Assertion failed: (!empty()), function front, file /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-llvm-debug-20.1.8-dev/include/llvm/ADT/ArrayRef.h, line 172.
- #0 0x0000000102af6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102af4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102af781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq"
-mux4_1,Main_4,wp,error,0.215823,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010507ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010507c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010507f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+mux4_1,Main_4,verify,error,1.777001,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000102ae6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102ae48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102ae79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
+ #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
+mux4_1,Main_4,wp,error,0.214952,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101052de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001010508f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001010539c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-mux_decode,Decoder_0,verify,error,2.739914,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux_decode.llzk"":13:19):unsupported expression op
+mux_decode,Decoder_0,verify,error,2.810135,"error: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux_decode.llzk"":13:19):unsupported expression op
 note: loc(""/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux_decode.llzk"":13:19):see current operation: %129 = ""array.new""() <{mapOpGroupSizes = array<i32>, numDimsPerMap = array<i32>, operandSegmentSizes = array<i32: 0, 0>}> : () -> !array.type<1 x !felt.type<""bn128"">>
 LLVM ERROR: SMT emission failed
- #0 0x0000000102e9ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/"
-mux_decode,Decoder_0,wp,error,0.307326,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_317 1)) (= (mod (- x 0) 1) 0)) (= (mod (select out_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select out_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
-(set-logic ALL)
-(declare-const var_323 Int)
-(declare-const out_c (Array Int Int))
-(declare-const out_w (Array Int Int))
-(declare-const var_317 Int)
-(assert (forall ((i Int)) (let ((_let_1 (select out_c i"
-mux_ep,EscalarProduct_0,verify,verified,18.073949,
-mux_ep,EscalarProduct_0,wp,partial,0.173304,unknown
-outer_test,outer_0,verify,verified,6.301952,
-outer_test,outer_0,wp,error,0.208048,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000104dd6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104dd4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104dd781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+ #0 0x000000010329ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/"
+mux_decode,Decoder_0,wp,partial,0.131892,unknown
+mux_ep,EscalarProduct_0,verify,verified,18.183787,
+mux_ep,EscalarProduct_0,wp,partial,0.141001,unknown
+outer_test,outer_0,verify,verified,6.302295,
+outer_test,outer_0,wp,error,0.181503,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x00000001007d6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001007d48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001007d79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-pad_test,Pad_0,verify,timeout,120.553992,timeout
-pad_test,Pad_0,wp,error,0.336669,"(set-logic ALL)
+pad_test,Pad_0,verify,timeout,120.486383,timeout
+pad_test,Pad_0,wp,error,0.304728,"(set-logic ALL)
 (declare-const out2_c (Array Int Int))
 (declare-const out_c (Array Int Int))
 (declare-const out2_w (Array Int Int))
 (declare-const out_w (Array Int Int))
 (assert (forall ((i Int)) (let ((_let_1 (select out2_c i))) (=> (and (<= 0 i) (<= i 1087)) (and (<= 0 _let_1) (<= _let_1 21888242871839275222246405745257275088548364400416034343698204186575808495616))))))
 (assert (forall ((i Int)) (let ((_let_1 (select out_c i))) (=> (and (<= 0 i) (<= i 1087)) (and (<= 0 _let_1) (<= _let_1 21888"
-pointbits_loopback,Main_9,verify,timeout,120.121883,timeout
-pointbits_loopback,Main_9,wp,error,0.258993,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001045b6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001045b4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001045b781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+pointbits_loopback,Main_9,verify,timeout,120.035457,timeout
+pointbits_loopback,Main_9,wp,error,0.207955,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000102c6ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102c688f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102c6b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-queryTest,Query_9,verify,error,2.426341,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102d26c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102d24744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102d2781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+queryTest,Query_9,verify,error,3.791357,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010509ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001050988f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010509b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-queryTest,Query_9,wp,error,0.236384,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001008e6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001008e4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001008e781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+queryTest,Query_9,wp,error,0.295298,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101422de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001014208f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001014239c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-quinGeneratePathIndices_test,QuinGeneratePathIndices_3,verify,error,0.552719,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000100686c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100684744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010068781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+quinGeneratePathIndices_test,QuinGeneratePathIndices_3,verify,error,0.743234,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x00000001048eede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001048ec8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001048ef9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-quinGeneratePathIndices_test,QuinGeneratePathIndices_3,wp,error,0.225468,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000100cfac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100cf8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100cfb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+quinGeneratePathIndices_test,QuinGeneratePathIndices_3,wp,error,0.290730,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000103446de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001034448f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001034479c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-quinSelector_test,QuinSelector_5,verify,error,0.762324,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x00000001012dec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001012dc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001012df81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+quinSelector_test,QuinSelector_5,verify,error,1.128737,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100a1ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100a1c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100a1f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-quinSelector_test,QuinSelector_5,wp,error,0.211436,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000100b06c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100b04744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100b0781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+quinSelector_test,QuinSelector_5,wp,error,0.321427,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101416de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001014148f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001014179c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-rhopi_test,RhoPi_74,verify,timeout,120.044323,timeout
-rhopi_test,RhoPi_74,wp,error,0.550519,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102ec2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102ec0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102ec381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+rhopi_test,RhoPi_74,verify,timeout,120.031120,timeout
+rhopi_test,RhoPi_74,wp,error,0.408398,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001012d2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001012d08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001012d39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-sign_test,Sign_2,verify,timeout,120.027922,timeout
-sign_test,Sign_2,wp,error,0.265934,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104bcec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104bcc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104bcf81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+sign_test,Sign_2,verify,timeout,120.011340,timeout
+sign_test,Sign_2,wp,error,0.163265,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100692de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001006908f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001006939c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-splicer_test,Splicer_9,verify,error,2.332097,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x000000010486ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010486c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010486f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+splicer_test,Splicer_9,verify,error,2.314333,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000105366de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053648f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001053679c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-splicer_test,Splicer_9,wp,error,0.237617,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001050cec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001050cc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001050cf81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+splicer_test,Splicer_9,wp,error,0.196611,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000105362de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053608f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001053639c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-squeeze_test,Squeeze_0,verify,timeout,120.045875,timeout
-squeeze_test,Squeeze_0,wp,error,0.164533,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_323 1)) (= (mod (- x 0) 1) 0)) (= (mod (select out_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select out_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
-LLVM ERROR: unknown op: scf.while
- #0 0x0000000104d7ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104d78744 llvm::s"
-sum_test,A_3,verify,error,84.646446,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000104b5ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104b5c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104b5f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+squeeze_test,Squeeze_0,verify,timeout,120.122517,timeout
+squeeze_test,Squeeze_0,wp,error,0.201008,"(=> true (forall ((x Int)) (=> (and (<= 0 x) (< x (+ var_323 1)) (= (mod (- x 0) 1) 0)) (= (mod (select out_w x) 21888242871839275222246405745257275088548364400416034343698204186575808495617) (mod (select out_c x) 21888242871839275222246405745257275088548364400416034343698204186575808495617)))))
+(set-logic ALL)
+(declare-const out_c (Array Int Int))
+(declare-const out_w (Array Int Int))
+(declare-const var_323 Int)
+(assert (forall ((i Int)) (let ((_let_1 (select out_c i))) (=> (and (<= 0 i) (<= i "
+sum_test,A_3,verify,error,67.790894,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100acade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100ac88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100acb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-sum_test,A_3,wp,error,0.219085,"LLVM ERROR: arbitrary function calls not supported yet
- #0 0x0000000104cb2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104cb0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104cb381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+sum_test,A_3,wp,error,0.172035,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x0000000100b5ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100b588f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100b5b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 "
-test_bigadd_15,BigAdd_4,verify,error,0.835761,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102bd2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102bd0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102bd381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigadd_15,BigAdd_4,verify,error,0.494435,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000104a66de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104a648f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104a679c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigadd_15,BigAdd_4,wp,error,0.470466,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000100ecec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100ecc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100ecf81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigadd_15,BigAdd_4,wp,error,0.168322,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100d82de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100d808f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100d839c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigadd_23,BigAdd_4,verify,error,0.596496,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102e62c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102e60744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102e6381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigadd_23,BigAdd_4,verify,error,0.390865,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100762de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001007608f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001007639c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigadd_23,BigAdd_4,wp,error,0.369616,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001032a6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001032a4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001032a781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigadd_23,BigAdd_4,wp,error,0.194697,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001027eede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001027ec8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001027ef9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_biglessthan_23,BigLessThan_6,verify,error,1.172997,"LLVM ERROR: while->for conversion failed
- #0 0x000000010517ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105178744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010517b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_biglessthan_23,BigLessThan_6,verify,error,0.795073,"LLVM ERROR: while->for conversion failed
+ #0 0x0000000102c4ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102c488f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102c4b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c56"
-test_biglessthan_23,BigLessThan_6,wp,error,0.367268,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000101372c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101370744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010137381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_biglessthan_23,BigLessThan_6,wp,error,0.222058,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001014bade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001014b88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001014bb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigmod_22,BigMod_16,verify,error,2.486029,"Assertion failed: (!impl->wasOpReplaced(op) && ""attempting to modify a replaced/erased op""), function startOpModification, file /nix/var/nix/builds/nix-63599-2589559352/mlir-debug-src-20.1.8/mlir/lib/Transforms/Utils/DialectConversion.cpp, line 1793.
- #0 0x00000001031aec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001031ac744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x100"
-test_bigmod_22,BigMod_16,wp,error,0.372181,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010492ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010492c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010492f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmod_22,BigMod_16,verify,error,2.281734,"Assertion failed: (!impl->wasOpReplaced(op) && ""attempting to modify a replaced/erased op""), function startOpModification, file /nix/var/nix/builds/nix-63599-2589559352/mlir-debug-src-20.1.8/mlir/lib/Transforms/Utils/DialectConversion.cpp, line 1793.
+ #0 0x00000001048fade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001048f88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x100"
+test_bigmod_22,BigMod_16,wp,error,0.393393,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001028d6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001028d48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001028d79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigmod_32,BigMod_16,verify,error,2.417139,"Assertion failed: (!impl->wasOpReplaced(op) && ""attempting to modify a replaced/erased op""), function startOpModification, file /nix/var/nix/builds/nix-63599-2589559352/mlir-debug-src-20.1.8/mlir/lib/Transforms/Utils/DialectConversion.cpp, line 1793.
- #0 0x000000010095ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010095c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x100"
-test_bigmod_32,BigMod_16,wp,error,0.429439,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001026b6c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001026b4744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001026b781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmod_32,BigMod_16,verify,error,2.456276,"Assertion failed: (!impl->wasOpReplaced(op) && ""attempting to modify a replaced/erased op""), function startOpModification, file /nix/var/nix/builds/nix-63599-2589559352/mlir-debug-src-20.1.8/mlir/lib/Transforms/Utils/DialectConversion.cpp, line 1793.
+ #0 0x000000010150ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010150c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x100"
+test_bigmod_32,BigMod_16,wp,error,0.382624,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001051dede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001051dc8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001051df9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigmult_21,BigMult_4,verify,error,0.449127,"LLVM ERROR: while->for conversion failed
- #0 0x0000000104b2ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104b2c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104b2f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmult_21,BigMult_4,verify,error,0.374646,"LLVM ERROR: while->for conversion failed
+ #0 0x0000000104aeade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104ae88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104aeb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c56"
-test_bigmult_21,BigMult_4,wp,error,0.247462,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102b52c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102b50744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102b5381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmult_21,BigMult_4,wp,error,0.210702,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000102a3ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102a3c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102a3f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigmult_22,BigMult_4,verify,error,0.879571,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000100a5ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100a58744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100a5b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmult_22,BigMult_4,verify,error,0.781806,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010307ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010307c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010307f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigmult_22,BigMult_4,wp,error,0.324307,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000100632c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100630744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010063381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmult_22,BigMult_4,wp,error,0.265714,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100a9ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100a9c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100a9f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigmult_23,BigMult_4,verify,error,1.284047,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x00000001052dec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001052dc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001052df81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmult_23,BigMult_4,verify,error,1.465690,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100d5ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100d5c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100d5f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigmult_23,BigMult_4,wp,error,0.222421,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102e7ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102e78744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102e7b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigmult_23,BigMult_4,wp,error,0.246882,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010147ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001014788f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010147b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigsub_15,BigSub_6,verify,error,0.829017,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000100ee2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000100ee0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000100ee381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigsub_15,BigSub_6,verify,error,0.760545,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000104ac2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104ac08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104ac39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigsub_15,BigSub_6,wp,error,0.258439,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102bf2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102bf0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102bf381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigsub_15,BigSub_6,wp,error,0.208335,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001027dede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001027dc8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001027df9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigsub_23,BigSub_6,verify,error,0.609682,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000101486c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101484744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010148781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigsub_23,BigSub_6,verify,error,0.463467,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000100ab2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100ab08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100ab39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigsub_23,BigSub_6,wp,error,0.228261,"LLVM ERROR: unknown subcomponent type
- #0 0x000000010061ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010061c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010061f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigsub_23,BigSub_6,wp,error,0.227591,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010462ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001046288f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010462b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_bigsubmodp_32,BigSubModP_10,verify,error,0.756136,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000102b0ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102b08744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102b0b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigsubmodp_32,BigSubModP_10,verify,error,0.553875,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010290ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010290c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010290f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_bigsubmodp_32,BigSubModP_10,wp,error,0.258243,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001007aec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001007ac744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001007af81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_bigsubmodp_32,BigSubModP_10,wp,error,0.289697,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000104c52de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104c508f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104c539c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_fp12_add_22,Fp12Add_16,verify,error,5.688091,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x00000001025bac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001025b8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001025bb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_fp12_add_22,Fp12Add_16,verify,error,5.056911,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000105352de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001053508f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001053539c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_fp12_add_22,Fp12Add_16,wp,error,0.355618,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102c0ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102c0c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102c0f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_fp12_add_22,Fp12Add_16,wp,error,0.222799,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101502de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001015008f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001015039c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_fp2_add_22,Fp2Add_16,verify,error,1.170928,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x000000010063ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010063c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010063f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_fp2_add_22,Fp2Add_16,verify,error,1.192957,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x000000010465ade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001046588f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010465b9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-test_fp2_add_22,Fp2Add_16,wp,error,0.384941,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000105266c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000105264744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010526781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_fp2_add_22,Fp2Add_16,wp,error,0.258248,"LLVM ERROR: unknown subcomponent type
+ #0 0x00000001029c6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001029c48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001029c79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-test_secp256k1_poc,Secp256k1PointOnCurve_10,verify,error,5.629123,"Assertion failed: (indexAsAttr), function rewriteImpl, file /nix/var/nix/builds/nix-66746-3975906522/source/lib/Dialect/Array/Transforms/ArrayToScalarPass.cpp, line 330.
- #0 0x000000010553ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010553c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010553f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
-test_secp256k1_poc,Secp256k1PointOnCurve_10,wp,error,0.859295,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102de2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102de0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102de381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+test_secp256k1_poc,Secp256k1PointOnCurve_10,verify,error,6.179155,"Assertion failed: (indexAsAttr), function rewriteImpl, file /nix/var/nix/builds/nix-66746-3975906522/source/lib/Dialect/Array/Transforms/ArrayToScalarPass.cpp, line 330.
+ #0 0x0000000100e0ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100e0c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100e0f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/bu"
+test_secp256k1_poc,Secp256k1PointOnCurve_10,wp,error,0.413534,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000100ca6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100ca48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100ca79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-theta_test,Theta_9,verify,timeout,120.017518,timeout
-theta_test,Theta_9,wp,error,0.380697,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000104632c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104630744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010463381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+theta_test,Theta_9,verify,timeout,120.030507,timeout
+theta_test,Theta_9,wp,error,0.414269,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000103222de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001032208f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001032239c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-trace_test,trace_1,verify,error,0.281418,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x000000010120ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010120c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010120f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+trace_test,trace_1,verify,error,0.323389,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x00000001009eede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001009ec8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001009ef9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-trace_test,trace_1,wp,error,0.197733,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000102c5ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102c58744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000102c5b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+trace_test,trace_1,wp,error,0.209855,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x0000000100bc2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000100bc08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000100bc39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-tranpose_test,transpose_0,verify,verified,0.226152,
-tranpose_test,transpose_0,wp,error,0.205384,"LLVM ERROR: multidimensional arrays are not supported
- #0 0x0000000104beac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104be8744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104beb81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+tranpose_test,transpose_0,verify,verified,0.221328,
+tranpose_test,transpose_0,wp,error,0.175515,"LLVM ERROR: multidimensional arrays are not supported
+ #0 0x000000010059ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010059c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010059f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0"
-utils_GetValueByIndex,getValueByIndex_3,verify,error,0.761999,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x000000010126ac34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101268744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010126b81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_GetValueByIndex,getValueByIndex_3,verify,error,0.613356,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x0000000105406de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001054048f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001054079c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-utils_GetValueByIndex,getValueByIndex_3,wp,error,0.261953,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000102682c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000102680744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010268381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_GetValueByIndex,getValueByIndex_3,wp,error,0.200724,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000102f16de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000102f148f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000102f179c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-utils_getClaimExpiration,getClaimExpiration_2,verify,timeout,120.010142,timeout
-utils_getClaimExpiration,getClaimExpiration_2,wp,error,0.185755,"LLVM ERROR: arbitrary function calls not supported yet
- #0 0x000000010326ec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x000000010326c744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010326f81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_getClaimExpiration,getClaimExpiration_2,verify,timeout,120.087905,timeout
+utils_getClaimExpiration,getClaimExpiration_2,wp,error,0.176803,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x0000000104ad6de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104ad48f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104ad79c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 "
-utils_getClaimSubjectOtherIden,getClaimSubjectOtherIden_8,verify,timeout,120.008915,timeout
-utils_getClaimSubjectOtherIden,getClaimSubjectOtherIden_8,wp,error,0.182063,"LLVM ERROR: unknown subcomponent type
- #0 0x00000001010f2c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x00000001010f0744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x00000001010f381c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_getClaimSubjectOtherIden,getClaimSubjectOtherIden_8,verify,timeout,120.090220,timeout
+utils_getClaimSubjectOtherIden,getClaimSubjectOtherIden_8,wp,error,0.208030,"LLVM ERROR: unknown subcomponent type
+ #0 0x000000010349ede0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x000000010349c8f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x000000010349f9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-utils_getSubjectLocation,getSubjectLocation_1,verify,error,0.298030,"LLVM ERROR: could not create SourceRef child for member reference
- #0 0x0000000104ebec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104ebc744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104ebf81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_getSubjectLocation,getSubjectLocation_1,verify,error,0.236477,"LLVM ERROR: could not create SourceRef child for member reference
+ #0 0x00000001011a2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001011a08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001011a39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804"
-utils_getSubjectLocation,getSubjectLocation_1,wp,error,0.356990,"LLVM ERROR: arbitrary function calls not supported yet
- #0 0x0000000104beec34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000104bec744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x0000000104bef81c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_getSubjectLocation,getSubjectLocation_1,wp,error,0.185853,"LLVM ERROR: arbitrary function calls not supported yet
+ #0 0x00000001033e2de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001033e08f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001033e39c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 "
-utils_isExpirable,isExpirable_0,verify,verified,0.161247,
-utils_isExpirable,isExpirable_0,wp,verified,0.099373,unsat
-utils_isUpdatable,isUpdatable_0,verify,verified,0.152542,
-utils_isUpdatable,isUpdatable_0,wp,verified,0.060818,unsat
-utils_verifyCredentialSubject,verifyCredentialSubject_9,verify,timeout,120.013187,timeout
-utils_verifyCredentialSubject,verifyCredentialSubject_9,wp,error,0.182104,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000101176c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101174744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010117781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_isExpirable,isExpirable_0,verify,verified,0.087625,
+utils_isExpirable,isExpirable_0,wp,verified,0.048900,unsat
+utils_isUpdatable,isUpdatable_0,verify,verified,0.095808,
+utils_isUpdatable,isUpdatable_0,wp,verified,0.050265,unsat
+utils_verifyCredentialSubject,verifyCredentialSubject_9,verify,timeout,120.004955,timeout
+utils_verifyCredentialSubject,verifyCredentialSubject_9,wp,error,0.178604,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000101132de0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x00000001011308f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x00000001011339c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
-utils_verifyExpirationTime,verifyExpirationTime_10,verify,timeout,120.010657,timeout
-utils_verifyExpirationTime,verifyExpirationTime_10,wp,error,0.185815,"LLVM ERROR: unknown subcomponent type
- #0 0x0000000101436c34 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ec34)
- #1 0x0000000101434744 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c744)
- #2 0x000000010143781c SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f81c)
+utils_verifyExpirationTime,verifyExpirationTime_10,verify,timeout,120.006224,timeout
+utils_verifyExpirationTime,verifyExpirationTime_10,wp,error,0.177838,"LLVM ERROR: unknown subcomponent type
+ #0 0x0000000104ffade0 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056ede0)
+ #1 0x0000000104ff88f0 llvm::sys::RunSignalHandlers() (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056c8f0)
+ #2 0x0000000104ffb9c8 SignalHandler(int) (/Users/raghav/Veridise/LLEQ/build/tools/lleq/lleq+0x10056f9c8)
  #3 0x000000018c56b744 (/usr/lib/system/libsystem_platform.dylib+0x1804fb744)
  #4 0x000000018c5618d"
