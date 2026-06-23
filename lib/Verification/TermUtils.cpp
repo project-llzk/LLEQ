@@ -35,10 +35,7 @@ using namespace llzk;
 using namespace mlir;
 
 using array::ReadArrayOp;
-using array::WriteArrayOp;
 using component::MemberReadOp;
-using component::MemberWriteOp;
-using constrain::EmitEqualityOp;
 using felt::FeltConstantOp;
 
 namespace lleq {
@@ -203,7 +200,9 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
       {"felt.mul", cvc5::Kind::MULT},
       {"felt.smod", cvc5::Kind::INTS_MODULUS},
       {"felt.sintdiv", cvc5::Kind::INTS_DIVISION},
-      {"felt.div", cvc5::Kind::INTS_DIVISION}};
+      {"felt.div", cvc5::Kind::INTS_DIVISION},
+      {"arith.addi", cvc5::Kind::ADD},
+      {"arith.subi", cvc5::Kind::SUB}};
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
@@ -443,22 +442,19 @@ cvc5::Term TermBuilder::_array_write_impl(cvc5::Term arr, cvc5::Term index,
 }
 
 cvc5::Term ImplicationTerm::buildTerm(cvc5::TermManager &mgr) {
-  if (antecedents.empty()) {
-    return consequent;
-  }
-
-  auto antecedent = antecedents.size() == 1
-                        ? antecedents.front()
-                        : mgr.mkTerm(cvc5::Kind::AND,
-                                     {antecedents.begin(), antecedents.end()});
-  return mgr.mkTerm(cvc5::Kind::IMPLIES, {antecedent, consequent});
+  llvm::SmallVector<cvc5::Term> consequentTerms{consequents.begin(),
+                                                consequents.end()};
+  return mgr.mkTerm(cvc5::Kind::IMPLIES, {conjunctAll(antecedents, mgr),
+                                          conjunctAll(consequentTerms, mgr)});
 }
 
 void ImplicationTerm::substitute(cvc5::Term oldTerm, cvc5::Term newTerm) {
   for (auto &antecedent : antecedents) {
     antecedent = antecedent.substitute(oldTerm, newTerm);
   }
-  consequent = consequent.substitute(oldTerm, newTerm);
+  for (auto &consequent : consequents) {
+    consequent = consequent.substitute(oldTerm, newTerm);
+  }
 }
 
 void ConjunctionTerm::addConjunct(const ImplicationTerm &term) {

@@ -5,10 +5,10 @@
 
 #include "Verification/WeakestPrecondition.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
-#include "Transforms/LLEQWhileToFor.h"
 #include "Verification/TermUtils.h"
 #include "Verification/VerificationUtils.h"
 
+#include <complex>
 #include <fstream>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
@@ -18,6 +18,7 @@
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/FileSystem.h>
+#include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/Process.h>
 #include <llvm/Support/Program.h>
 #include <llvm/Support/raw_ostream.h>
@@ -28,7 +29,9 @@
 #include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
+#include <llzk/Util/TypeHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
 
@@ -49,7 +52,10 @@ using felt::FeltConstantOp;
 
 namespace lleq {
 
-using transform::ForOpInfo;
+struct LoopCounterInfo {
+  cvc5::Term counter;
+  Range range;
+};
 
 namespace {
 
@@ -126,21 +132,188 @@ bool checkUnsatWithZ3(StringRef query) {
   return result == "unsat";
 }
 
-Block *nestedLoopBody(scf::ForOp loop, SmallVector<ForOpInfo> &loopInfo) {
-  loopInfo.push_back({loop.getLowerBound(), loop.getUpperBound(),
-                      loop.getStep(), loop.getInductionVar(), 0});
+Block *nestedLoopBody(scf::ForOp loop, SmallVector<LoopCounterInfo> &loopInfo,
+                      TermBuilder &builder) {
+  loopInfo.push_back(
+      LoopCounterInfo{builder.getExpression(loop.getInductionVar()),
+                      Range{builder.getExpression(loop.getLowerBound()),
+                            builder.getExpression(loop.getUpperBound()),
+                            builder.getExpression(loop.getStep())}});
   if (auto first = dyn_cast<scf::ForOp>(loop.getBody()->front())) {
-    return nestedLoopBody(first, loopInfo);
+    return nestedLoopBody(first, loopInfo, builder);
   }
   return loop.getBody();
 }
 
+struct FailingCore {
+  SmallVector<cvc5::Term> terms;
+  SmallVector<Annotation> annotations;
+};
+
+FailingCore getFailingCore(cvc5::Term invariant,
+                           const ConjunctionTerm &postcondition,
+                           TermBuilder &builder, llzk::Field field) {
+  FailingCore core;
+  auto &mgr = builder.manager();
+  for (auto conjunction : postcondition.conjuncts) {
+    auto antecedent = conjunctAll(conjunction.antecedents, mgr);
+    for (auto [consequent, annotation] :
+         llvm::zip(conjunction.consequents, conjunction.annotations)) {
+      auto fails =
+          mgr.mkTerm(cvc5::Kind::IMPLIES,
+                     {conjunctAll({invariant, antecedent}, mgr), consequent});
+      if (!checkUnsatWithZ3(buildSMTQuery(fails, builder, field))) {
+        core.terms.push_back(consequent);
+        llzk::ensure(annotation.has_value(),
+                     "cannot produce unannotated failing core");
+        core.annotations.push_back(*annotation);
+      }
+    }
+  }
+  return core;
+}
+
 } // namespace
+
+FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
+    scf::ForOp loop, const ConjunctionTerm &postcondition) {
+  SmallVector<LoopCounterInfo> loopInfo;
+  auto *body = nestedLoopBody(loop, loopInfo, builder);
+
+  // Maps a witness *array* that's written in the loop to the index at which its
+  // written
+  DenseMap<component::MemberWriteOp, Value> witnessWrites;
+  body->walk([&witnessWrites](array::WriteArrayOp write) {
+    llzk::ensure(write.getIndices().size() == 1,
+                 "multidimensional arrays not yet supported");
+    auto dest = getArrayDestination(write.getArrRef());
+    if (dest.has_value()) {
+      witnessWrites.insert({*dest, write.getIndices().front()});
+    }
+  });
+
+  llzk::ensure(loopInfo.size() == 1, "nested loop support in-progress");
+
+  auto [i, range] = loopInfo.front();
+  auto [lb, ub, step] = range;
+
+  SmallVector<cvc5::Term> predicates;
+  SmallVector<int64_t> arraySizes;
+  for (auto [write, index] : witnessWrites) {
+    auto memberDef = write.getMemberDefOp(tables)->get();
+    auto arr_w_i = builder.arrayRead(builder.getConstant(memberDef, true), i);
+    auto arr_c_i = builder.arrayRead(builder.getConstant(memberDef, false), i);
+    predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
+    // We've already asserted that the array is not multidimensional
+    arraySizes.push_back(
+        dyn_cast<array::ArrayType>(memberDef.getType()).getShape().front());
+  }
+
+  // Turn `predicate(var)` into `forall x in range(lb, ub, step), predicate(x)`
+  auto quantifyPredicate = [this](cvc5::Term predicate, cvc5::Term var,
+                                  cvc5::Term lb, cvc5::Term ub,
+                                  cvc5::Term step) {
+    auto x = mgr.mkVar(mgr.getIntegerSort(), "x");
+    auto boundPos = mgr.mkTerm(cvc5::Kind::LEQ, {lb, x});
+    auto boundInv = mgr.mkTerm(cvc5::Kind::LT, {x, ub});
+
+    auto boundStep =
+        mgr.mkTerm(cvc5::Kind::EQUAL,
+                   {mgr.mkTerm(cvc5::Kind::INTS_MODULUS,
+                               {mgr.mkTerm(cvc5::Kind::SUB, {x, lb}), step}),
+                    builder.getInteger(0)});
+    auto bound = mgr.mkTerm(cvc5::Kind::AND, {boundPos, boundInv, boundStep});
+
+    return mgr.mkTerm(cvc5::Kind::FORALL,
+                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {x}),
+                       mgr.mkTerm(cvc5::Kind::IMPLIES,
+                                  {bound, predicate.substitute(var, x)})});
+  };
+
+  // Filter out which predicates are inductive
+  SmallVector<cvc5::Term> inductivePredicates;
+  // Conjuncts necessary to strengthen the inductive invariant
+  // SmallVector<cvc5::Term> strengthenings;
+  // forall x in range(lb, i, step), forall sig, sig_c[x] == sig_w[x]
+  cvc5::Term bodyPrecondition =
+      quantifyPredicate(conjunctAll(predicates, mgr), i, lb, i, step);
+  cvc5::Term nextI = mgr.mkTerm(cvc5::Kind::ADD, {i, step});
+
+  SmallVector<cvc5::Term> sliceAssertions;
+  for (auto [size, predicate] : llvm::zip(arraySizes, predicates)) {
+    // We can strengthen the invariant to say the array is equal outside the
+    // slice visited by the for loop as well (note: this isn't quite right if,
+    // e.g., the loop isn't a basic "step 1, write to arr[i]", but its pretty
+    // hard to do much better in general)
+    sliceAssertions.push_back(
+        quantifyPredicate(predicate, i, builder.getInteger(0), lb, step));
+    sliceAssertions.push_back(
+        quantifyPredicate(predicate, i, ub, builder.getInteger(size), step));
+  }
+
+  auto strengthened = conjunctAll(sliceAssertions, mgr);
+  auto strengthenedPrecondition =
+      conjunctAll({bodyPrecondition, strengthened}, mgr);
+
+  for (auto [size, predicate] : llvm::zip(arraySizes, predicates)) {
+    auto postcondition =
+        ConjunctionTerm::of(quantifyPredicate(predicate, i, lb, nextI, step));
+
+    llvm::dbgs() << postcondition.buildTerm(mgr).toString() << "\n";
+
+    // Verify {strengthenedPrecondition} loopBody {postcondition} to show the
+    // predicate is inductive
+    calculateWP(body, postcondition);
+    auto isInductive =
+        mgr.mkTerm(cvc5::Kind::IMPLIES,
+                   {strengthenedPrecondition, postcondition.buildTerm(mgr)});
+    // llvm::dbgs() << "Is inductive: " << isInductive.toString() << "\n";
+    auto query = buildSMTQuery(isInductive, builder, field);
+    // llvm::dbgs() << invariant.toString() << "\n";
+    llvm::dbgs() << query << "\n";
+    if (checkUnsatWithZ3(query)) {
+      inductivePredicates.push_back(predicate);
+      // TODO: Also add annotations for the strengthenings
+    }
+  }
+
+  // Check that the resulting predicate entails the postcondition
+  auto inductiveInvariant = conjunctAll(inductivePredicates, mgr);
+  inductiveInvariant = quantifyPredicate(inductiveInvariant, i, lb, ub, step);
+
+  auto entailsPostcondition = postcondition;
+  entailsPostcondition.addAntecedent(inductiveInvariant);
+  entailsPostcondition.addAntecedent(strengthened);
+
+  auto query =
+      buildSMTQuery(entailsPostcondition.buildTerm(mgr), builder, field);
+  llvm::dbgs() << query << "\n";
+  if (checkUnsatWithZ3(query)) {
+    return strengthened;
+  } else {
+    auto failingCore =
+        getFailingCore(conjunctAll({inductiveInvariant, strengthened}, mgr),
+                       postcondition, builder, field);
+    for (auto [ann, elem] :
+         llvm::zip(failingCore.annotations, failingCore.terms)) {
+      llvm::dbgs() << "Loop invariant was not strong enough to prove: "
+                   << elem.toString() << "\n";
+      if (!ann.isArray) {
+        sliceAssertions.push_back(elem);
+      } else {
+        return failure();
+      }
+    }
+    return conjunctAll(sliceAssertions, mgr);
+  }
+
+  // TODO: add strengthenings
+}
 
 TermBuilder::TermSet
 WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
-  SmallVector<ForOpInfo> loopInfo;
-  auto *body = nestedLoopBody(loop, loopInfo);
+  SmallVector<LoopCounterInfo> loopInfo;
+  auto *body = nestedLoopBody(loop, loopInfo, builder);
 
   // Maps a witness *array* that's written in the loop to the index at which its
   // written
@@ -168,19 +341,18 @@ WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
   }
 
   TermBuilder::TermSet invariants;
-  auto i = builder.getConstant(*loopInfo.front().ivar);
-  auto lb = builder.getExpression(*loopInfo.front().lb);
-  auto ub = builder.getExpression(*loopInfo.front().ub);
-  auto step = builder.getExpression(*loopInfo.front().step);
+  auto [i, range] = loopInfo.front();
+  auto [lb, ub, step] = range;
 
   // all signals are equal at i
-  auto allEqualUpToCurrent = predicates.size() == 1
-                                 ? predicates.front()
-                                 : mgr.mkTerm(cvc5::Kind::AND, predicates);
+  auto equalAtI = predicates.size() == 1
+                      ? predicates.front()
+                      : mgr.mkTerm(cvc5::Kind::AND, predicates);
 
   // Turn `P(i)` into `forall lb <= x < ub and step | (x - lb), P(x)`
-  auto quantifyPredicate = [this, &lb, &step](cvc5::Term predicate,
-                                              cvc5::Term var, cvc5::Term ub) {
+  auto quantifyPredicate = [this](cvc5::Term predicate, cvc5::Term var,
+                                  cvc5::Term ub, cvc5::Term lb,
+                                  cvc5::Term step) {
     auto x = mgr.mkVar(mgr.getIntegerSort(), "x");
     auto boundPos = mgr.mkTerm(cvc5::Kind::LEQ, {lb, x});
     auto boundInv = mgr.mkTerm(cvc5::Kind::LT, {x, ub});
@@ -199,7 +371,7 @@ WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
   };
 
   // Turn "all signals equal at i" to "all signals equal at all x < i"
-  allEqualUpToCurrent = quantifyPredicate(allEqualUpToCurrent, i, i);
+  auto allEqualUpToCurrent = quantifyPredicate(equalAtI, i, i, lb, step);
 
   // Now, filter out the ones that aren't loop invariants
   for (auto invariant : predicates) {
@@ -210,9 +382,18 @@ WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
         mgr.mkTerm(cvc5::Kind::AND,
                    {mgr.mkTerm(cvc5::Kind::LT, {i, ub}), allEqualUpToCurrent});
 
+    // We need to say something about intermediate signals that show up in the
+    // loop body but won't be proven equivalent by the invariant (either because
+    // they're scalar or because they aren't visited by the loop). For now, just
+    // do something stupid and assert equality for all array elements that come
+    // before the loop.
+    auto extraAssertions =
+        quantifyPredicate(equalAtI, i, lb, builder.getInteger(0), step);
+
     // Calculate wp(B, I)
     auto precondition = ConjunctionTerm::of(quantifyPredicate(
-        invariant, i, mgr.mkTerm(cvc5::Kind::ADD, {i, step})));
+        invariant, i, mgr.mkTerm(cvc5::Kind::ADD, {i, step}), lb, step));
+    precondition.addAntecedent(extraAssertions);
     calculateWP(body, precondition);
 
     // Check C /\ AllI => wp(B, I)
@@ -220,11 +401,11 @@ WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
                                   {invariantHeld, precondition.buildTerm(mgr)});
 
     auto query = buildSMTQuery(isInvariant, builder, field);
+    llvm::dbgs() << invariant.toString() << "\n";
+    llvm::dbgs() << query << "\n";
     if (checkUnsatWithZ3(query)) {
       // Assume the invariant holds after exiting the loop
-      invariants.insert(quantifyPredicate(invariant, i, ub));
-    } else {
-      return invariants;
+      invariants.insert(quantifyPredicate(invariant, i, ub, lb, step));
     }
   }
 
@@ -372,10 +553,11 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
       })
       .Case<UnrealizedConversionCastOp>([this](auto) { return; })
       .Case<scf::ForOp>([this, &postcondition](scf::ForOp op) {
-        for (auto invariant : conjecturePredicates(op)) {
-          llvm::dbgs() << "; Conjecturing " << invariant.toString() << "\n";
-          postcondition.addAntecedent(invariant);
-        }
+        auto invariant = computeInvariant(op, postcondition);
+        llzk::ensure(succeeded(invariant),
+                     "failed to infer invariant for loop");
+        // It should already be the case that invariant => postcondition
+        postcondition = ConjunctionTerm::of(*invariant);
       })
       .Case<smt::AssertOp>([this, &postcondition](smt::AssertOp op) {
         postcondition.addAntecedent(builder.getExpression(op.getInput()));
@@ -438,23 +620,33 @@ void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
   postcondition = thenBranch;
 }
 
-cvc5::Term WeakestPreconditionAnalysis::getPostcondition() {
+ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
 
   auto members = structDef.getMemberDefs();
   llzk::ensure(!members.empty(),
                "cannot build postcondition for struct with empty members");
 
-  std::vector<cvc5::Term> memberEquivs;
+  SmallVector<cvc5::Term> memberEquivs;
+  SmallVector<std::optional<Annotation>> annotations;
   for (auto memberDef : members) {
     auto witnessSym = builder.getConstant(memberDef, true);
     auto constraintSym = builder.getConstant(memberDef, false);
+    if (auto arrType = dyn_cast<llzk::array::ArrayType>(memberDef.getType())) {
+      llzk::ensure(arrType.getShape().size() == 1,
+                   "multidimensional arrays not yet supported");
+
+      auto size = arrType.getShape().front();
+      annotations.push_back(
+          Annotation{true,
+                     {{builder.getInteger(0), builder.getInteger(size),
+                       builder.getInteger(1)}}});
+    } else {
+      annotations.push_back(Annotation{false, std::nullopt});
+    }
     memberEquivs.push_back(builder.assertEqual(witnessSym, constraintSym));
   }
 
-  if (memberEquivs.size() > 1) {
-    return mgr.mkTerm(cvc5::Kind::AND, memberEquivs);
-  }
-  return memberEquivs.front();
+  return ImplicationTerm{{}, memberEquivs, annotations};
 }
 
 void WeakestPreconditionAnalysis::populateVerificationConditions() {

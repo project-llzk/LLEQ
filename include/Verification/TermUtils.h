@@ -36,14 +36,26 @@ getArrayDestination(mlir::Value array) {
   return destination;
 }
 
+static inline cvc5::Term conjunctAll(llvm::ArrayRef<cvc5::Term> terms,
+                                     cvc5::TermManager &mgr) {
+  if (terms.size() == 0) {
+    return mgr.mkBoolean(true);
+  }
+  if (terms.size() == 1) {
+    return terms.front();
+  }
+  return mgr.mkTerm(cvc5::Kind::AND, {terms.begin(), terms.end()});
+}
+
 template <class T>
 concept FormulaTerm =
     std::convertible_to<T, cvc5::Term> || std::convertible_to<T, mlir::Value>;
 
 // A helper class for building common term shapes from MLIR SSA values
 struct TermBuilder {
-
   using TermSet = std::unordered_set<cvc5::Term, std::hash<cvc5::Term>>;
+
+  cvc5::TermManager &manager() { return mgr; }
 
   // Build an integer constant
   cvc5::Term getInteger(llvm::DynamicAPInt val);
@@ -149,13 +161,27 @@ private:
 // But its better to encode these as `((A1 /\ ... An-1) -> An) /\ ...`
 // So we have to track our own implication and top-level conjunction terms
 
-// A term of the shape (A1 /\ ... An-1) -> An
+struct Range {
+  cvc5::Term lb, ub, step;
+};
+
+struct Annotation {
+  bool isArray;
+  std::optional<Range> arraySlice;
+};
+
+// A term of the shape (A1 /\ ... /\ An) -> (B1 /\ ... /\ Bm)
 struct ImplicationTerm {
   llvm::SmallVector<cvc5::Term> antecedents;
-  cvc5::Term consequent;
+  llvm::SmallVector<cvc5::Term> consequents;
+
+  // Optional annotations on each consequent term. The annotation is present if
+  // the term is expressing equality between two signals, and the `arraySlice`
+  // field is present if the signals are arrays.
+  llvm::SmallVector<std::optional<Annotation>> annotations;
 
   static ImplicationTerm of(cvc5::Term term) {
-    return ImplicationTerm{{}, term};
+    return ImplicationTerm{{}, {term}};
   }
 
   void addAntecedent(cvc5::Term term) { antecedents.push_back(term); }

@@ -65,8 +65,10 @@ SymbolicStore::buildStore(llzk::component::StructDefOp structDef) {
     mlir::SymbolTableCollection tables;
     llzk::LightweightSignalEquivalenceAnalysis equivalence{component};
 
-    if (mlir::failed(llzk::alignStartingAt(component, tables, equivalence))) {
-      return mlir::failure();
+    llzk::ProductAligner aligner{tables, equivalence};
+    if (!aligner.alignFuncs(component, component.getComputeFuncOp(),
+                            component.getConstrainFuncOp())) {
+      return failure();
     }
   }
 

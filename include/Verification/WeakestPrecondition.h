@@ -11,7 +11,9 @@
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
+#include <llzk/Dialect/LLZK/IR/AttributeHelper.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/ErrorHelper.h>
 #include <llzk/Util/Field.h>
 #include <llzk/Util/TypeHelper.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
@@ -79,6 +81,8 @@ class WeakestPreconditionAnalysis {
   }
 
   TermBuilder::TermSet conjecturePredicates(mlir::scf::ForOp loop);
+  llvm::FailureOr<cvc5::Term>
+  computeInvariant(mlir::scf::ForOp loop, const ConjunctionTerm &postcondition);
 
 public:
   WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
@@ -88,7 +92,7 @@ public:
     initExpressions();
   }
 
-  cvc5::Term getPostcondition();
+  ImplicationTerm getPostcondition();
   void populateVerificationConditions();
   cvc5::Term generateVerificationConditions();
 

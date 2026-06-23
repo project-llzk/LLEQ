@@ -183,25 +183,10 @@ int main(int argc, char **argv) {
       // already emits an error
       return EXIT_FAILURE;
     }
+
     WeakestPreconditionAnalysis analysis{structDef, *field};
     analysis.emit(llvm::outs());
-    // analysis.populateVerificationConditions();
-    // auto vc = analysis.verificationConditions;
-    // auto decls = analysis.extraDecls;
-    // auto bounds = analysis.declBounds;
-    // llvm::outs() << "(set-logic ALL)\n";
-    // llvm::outs() << "; Extra declarations\n";
-    // for (auto decl : decls) {
-    //   llvm::outs() << "(declare-const " << decl.toString() << " "
-    //                << decl.getSort().toString() << ")\n";
-    // }
-    // llvm::outs() << "; Bounds\n";
-    // for (auto bound : bounds) {
-    //   llvm::outs() << "(assert " << bound.toString() << ")\n";
-    // }
-    // llvm::outs() << "; Verification condition\n";
-    // llvm::outs() << "(assert " << vc.notTerm().toString() << ")\n";
-    // llvm::outs() << "(check-sat)\n(get-model)\n";
+
     return EXIT_SUCCESS;
   }
   case cli::SubCmd::Verify:
