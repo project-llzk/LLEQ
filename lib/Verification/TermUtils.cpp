@@ -13,6 +13,7 @@
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/Debug.h>
+#include <llvm/Support/Error.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Array/IR/Types.h>
@@ -22,6 +23,7 @@
 #include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
+#include <llzk/Dialect/LLZK/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/TypeHelper.h>
@@ -50,9 +52,15 @@ void TermBuilder::populateSubcomponent(llzk::component::StructDefOp subcmp) {
   for (auto type : subcmp.getComputeFuncOp().getFunctionType().getInputs()) {
     argumentSorts.push_back(_sort_of_type(type));
   }
-  cvc5::Sort initFuncSort = mgr.mkFunctionSort(std::move(argumentSorts), sort);
-  cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
-  subcmpInits.insert({subcmp.getType(), initFunc});
+  if (argumentSorts.empty()) {
+    cvc5::Term initConst = mgr.mkConst(sort, "init-" + subcmpName);
+    subcmpInits.insert({subcmp.getType(), initConst});
+  } else {
+    cvc5::Sort initFuncSort =
+        mgr.mkFunctionSort(std::move(argumentSorts), sort);
+    cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
+    subcmpInits.insert({subcmp.getType(), initFunc});
+  }
 
   // For each `@B::struct.member @foo : T` => `(decl-fun read-B-foo (B) T)`
   for (auto memberDef : subcmp.getMemberDefs()) {
@@ -199,8 +207,11 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
       {"felt.sub", cvc5::Kind::SUB},
       {"felt.mul", cvc5::Kind::MULT},
       {"felt.smod", cvc5::Kind::INTS_MODULUS},
+      {"felt.umod", cvc5::Kind::INTS_MODULUS},
       {"felt.sintdiv", cvc5::Kind::INTS_DIVISION},
+      {"felt.uintdiv", cvc5::Kind::INTS_DIVISION},
       {"felt.div", cvc5::Kind::INTS_DIVISION},
+      {"felt.neg", cvc5::Kind::NEG},
       {"arith.addi", cvc5::Kind::ADD},
       {"arith.subi", cvc5::Kind::SUB}};
 
@@ -231,6 +242,12 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                 llvm::map_to_vector(op->getOperands(), [this](Value value) {
                   return getExpression(value);
                 })};
+            if (cmp.getPredicate() == boolean::FeltCmpPredicate::NE) {
+              return mgr
+                  .mkTerm(predicateToKind.at(boolean::FeltCmpPredicate::EQ),
+                          {operandTerms.begin(), operandTerms.end()})
+                  .notTerm();
+            }
             return mgr.mkTerm(predicateToKind.at(cmp.getPredicate()),
                               {operandTerms.begin(), operandTerms.end()});
           })
@@ -264,6 +281,19 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
             }
             return getConstant(createArr.getResult());
           })
+          .Case<llzk::NonDetOp>([this](llzk::NonDetOp nondet) {
+            if (isa<array::ArrayType>(nondet.getType())) {
+              // If its using llzk.nondet to initialize an array, just copy the
+              // array logic
+              auto destination = getArrayDestination(nondet.getResult());
+              if (destination.has_value()) {
+                return getConstant(destination->getMemberName(),
+                                   nondet.getType(), true);
+              }
+            }
+
+            return getConstant(nondet.getResult());
+          })
           .Case<cast::FeltToIndexOp, cast::IntToFeltOp>(
               [this](auto op) { return getExpression(op.getValue()); })
           .Case<UnrealizedConversionCastOp>(
@@ -278,6 +308,9 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
             auto condition = getExpression(ifOp.getCondition());
             return mgr.mkTerm(cvc5::Kind::ITE,
                               {condition, trueValue, falseValue});
+          })
+          .Case<scf::ForOp>([this](auto) -> cvc5::Term {
+            llvm::report_fatal_error("loop-yielded values not yet supported");
           })
           .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
             // For now just deal with calls to @compute and error out on other

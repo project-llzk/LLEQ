@@ -5,6 +5,7 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Verification/FixpointVerifier.h"
+#include "Verification/VerificationUtils.h"
 #include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>

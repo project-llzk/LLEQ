@@ -653,6 +653,9 @@ void WeakestPreconditionAnalysis::populateVerificationConditions() {
   llzk::ensure(succeeded(ensureProductFunc(
                    structDef->getParentOfType<ModuleOp>(), structDef)),
                "failed to align product func");
+
+  llvm::dbgs() << structDef << "\n----\n";
+
   auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
