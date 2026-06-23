@@ -949,12 +949,12 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           pod.write %17[@count] = %19 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %20 = arith.cmpi eq, %19, %c0 {product_source = "compute"} : index
           scf.if %20 {
-            %122 = pod.read %14[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = function.call @GreaterThan_2::@GreaterThan_2::@product(%122) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> 
-            %124 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%122) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
-            pod.write %17[@comp] = %123 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_5[%125] = %17 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %124 = pod.read %14[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = function.call @GreaterThan_2::@GreaterThan_2::@product(%124) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> 
+            %126 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%124) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
+            pod.write %17[@comp] = %125 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_5[%127] = %17 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
           %21 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
           %22 = array.read %array_6[%21] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
@@ -972,11 +972,11 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           pod.write %28[@count] = %30 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %31 = arith.cmpi eq, %30, %c0 {product_source = "compute"} : index
           scf.if %31 {
-            %122 = pod.read %25[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%122) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
-            pod.write %28[@comp] = %123 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
-            %124 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_5[%124] = %28 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %124 = pod.read %25[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%124) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
+            pod.write %28[@comp] = %125 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
+            %126 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_5[%126] = %28 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
           %32 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
           %33 = array.read %array_5[%32] : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
@@ -995,194 +995,194 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           pod.write %41[@count] = %43 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %44 = arith.cmpi eq, %43, %c0 {product_source = "compute"} : index
           scf.if %44 {
-            %122 = pod.read %38[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = pod.read %38[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %124 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%122, %123) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
-            pod.write %41[@comp] = %124 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_3[%125] = %41 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %124 = pod.read %38[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = pod.read %38[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %126 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%124, %125) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
+            pod.write %41[@comp] = %126 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_3[%127] = %41 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %45 = scf.while (%arg4 = %felt_const_0) : (!felt.type<"bn128">) -> !felt.type<"bn128"> {
-            %122 = bool.cmp lt(%arg4, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            scf.condition(%122) %arg4 : !felt.type<"bn128">
-          } do {
-          ^bb0(%arg4: !felt.type<"bn128">):
-            %122 = cast.toindex %arg4 : !felt.type<"bn128"> {product_source = "compute"}
-            %123 = array.read %arg0[%122] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-            %124 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            %125 = array.read %array_4[%124] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-            %126 = pod.read %125[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %127 = cast.toindex %arg4 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %126[%127] = %123 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %45 = cast.toindex %felt_const_0 : !felt.type<"bn128">
+          %46 = cast.toindex %felt_const_4 : !felt.type<"bn128">
+          %47 = cast.toindex %felt_const_1 : !felt.type<"bn128">
+          scf.for %arg4 = %45 to %46 step %47 {
+            %124 = cast.tofelt %arg4 : index, !felt.type<"bn128">
+            %125 = bool.cmp lt(%124, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %126 = cast.toindex %124 : !felt.type<"bn128"> {product_source = "compute"}
+            %127 = array.read %arg0[%126] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %128 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
             %129 = array.read %array_4[%128] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-            pod.write %129[@in] = %126 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %130 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_4[%130] = %129 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-            %131 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            %132 = array.read %array_3[%131] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-            %133 = pod.read %132[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-            %134 = arith.subi %133, %c1 {product_source = "compute"} : index
-            pod.write %132[@count] = %134 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-            %135 = arith.cmpi eq, %134, %c0 {product_source = "compute"} : index
-            scf.if %135 {
-              %137 = pod.read %129[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-              %138 = pod.read %129[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-              %139 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%137, %138) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
-              pod.write %132[@comp] = %139 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-              %140 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-              array.write %array_3[%140] = %132 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %130 = pod.read %129[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %131 = cast.toindex %124 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %130[%131] = %127 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %132 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            %133 = array.read %array_4[%132] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+            pod.write %133[@in] = %130 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %134 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_4[%134] = %133 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+            %135 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            %136 = array.read %array_3[%135] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %137 = pod.read %136[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+            %138 = arith.subi %137, %c1 {product_source = "compute"} : index
+            pod.write %136[@count] = %138 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+            %139 = arith.cmpi eq, %138, %c0 {product_source = "compute"} : index
+            scf.if %139 {
+              %141 = pod.read %133[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+              %142 = pod.read %133[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+              %143 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%141, %142) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
+              pod.write %136[@comp] = %143 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+              %144 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+              array.write %array_3[%144] = %136 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
             } {product_source = "compute"}
-            %136 = felt.add %arg4, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            scf.yield %136 : !felt.type<"bn128">
+            %140 = felt.add %124, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           }
-          %46 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %47 = array.read %array_4[%46] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-          %48 = pod.read %47[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %48[%c4] = %felt_const_0 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %49 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %50 = array.read %array_4[%49] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %50[@in] = %48 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+          %48 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %49 = array.read %array_4[%48] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+          %50 = pod.read %49[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %50[%c4] = %felt_const_0 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %51 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_4[%51] = %50 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-          %52 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %53 = array.read %array_3[%52] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %54 = pod.read %53[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %55 = arith.subi %54, %c1 {product_source = "compute"} : index
-          pod.write %53[@count] = %55 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %56 = arith.cmpi eq, %55, %c0 {product_source = "compute"} : index
-          scf.if %56 {
-            %122 = pod.read %50[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = pod.read %50[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %124 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%122, %123) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
-            pod.write %53[@comp] = %124 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_3[%125] = %53 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %52 = array.read %array_4[%51] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %52[@in] = %50 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+          %53 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_4[%53] = %52 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+          %54 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %55 = array.read %array_3[%54] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %56 = pod.read %55[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %57 = arith.subi %56, %c1 {product_source = "compute"} : index
+          pod.write %55[@count] = %57 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %58 = arith.cmpi eq, %57, %c0 {product_source = "compute"} : index
+          scf.if %58 {
+            %124 = pod.read %52[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = pod.read %52[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %126 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%124, %125) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
+            pod.write %55[@comp] = %126 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_3[%127] = %55 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %57 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %58 = array.read %array_2[%57] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %59 = pod.read %58[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %59[%c0] = %arg2 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %60 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %61 = array.read %array_2[%60] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          pod.write %61[@in] = %59 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %59 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %60 = array.read %array_2[%59] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %61 = pod.read %60[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %61[%c0] = %arg2 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %62 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_2[%62] = %61 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %63 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %64 = array.read %array_1[%63] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %65 = pod.read %64[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %66 = arith.subi %65, %c1 {product_source = "compute"} : index
-          pod.write %64[@count] = %66 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %67 = arith.cmpi eq, %66, %c0 {product_source = "compute"} : index
-          scf.if %67 {
-            %122 = pod.read %61[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = function.call @IsEqual_5::@IsEqual_5::@product(%122) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>> 
-            %124 = function.call @IsEqual_5::@IsEqual_5::@compute(%122) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
-            pod.write %64[@comp] = %123 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_1[%125] = %64 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %63 = array.read %array_2[%62] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          pod.write %63[@in] = %61 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %64 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_2[%64] = %63 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %65 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %66 = array.read %array_1[%65] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %67 = pod.read %66[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %68 = arith.subi %67, %c1 {product_source = "compute"} : index
+          pod.write %66[@count] = %68 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %69 = arith.cmpi eq, %68, %c0 {product_source = "compute"} : index
+          scf.if %69 {
+            %124 = pod.read %63[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = function.call @IsEqual_5::@IsEqual_5::@product(%124) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>> 
+            %126 = function.call @IsEqual_5::@IsEqual_5::@compute(%124) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
+            pod.write %66[@comp] = %125 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_1[%127] = %66 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %68 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %69 = array.read %array_2[%68] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %70 = pod.read %69[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %70[%c1] = %9 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %71 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %72 = array.read %array_2[%71] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          pod.write %72[@in] = %70 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %70 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %71 = array.read %array_2[%70] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %72 = pod.read %71[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %72[%c1] = %9 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %73 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_2[%73] = %72 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %74 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %75 = array.read %array_1[%74] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %76 = pod.read %75[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %77 = arith.subi %76, %c1 {product_source = "compute"} : index
-          pod.write %75[@count] = %77 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %78 = arith.cmpi eq, %77, %c0 {product_source = "compute"} : index
-          scf.if %78 {
-            %122 = pod.read %72[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = function.call @IsEqual_5::@IsEqual_5::@compute(%122) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
-            pod.write %75[@comp] = %123 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
-            %124 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_1[%124] = %75 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %74 = array.read %array_2[%73] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          pod.write %74[@in] = %72 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %75 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_2[%75] = %74 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %76 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %77 = array.read %array_1[%76] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %78 = pod.read %77[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %79 = arith.subi %78, %c1 {product_source = "compute"} : index
+          pod.write %77[@count] = %79 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %80 = arith.cmpi eq, %79, %c0 {product_source = "compute"} : index
+          scf.if %80 {
+            %124 = pod.read %74[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = function.call @IsEqual_5::@IsEqual_5::@compute(%124) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
+            pod.write %77[@comp] = %125 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
+            %126 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_1[%126] = %77 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %79 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %80 = array.read %array_1[%79] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %81 = pod.read %80[@comp] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
-          %82 = struct.readm %81[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "compute"}
-          %83 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %84 = array.read %array_0[%83] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %84[@s] = %82 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+          %81 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %82 = array.read %array_1[%81] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %83 = pod.read %82[@comp] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
+          %84 = struct.readm %83[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "compute"}
           %85 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_0[%85] = %84 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %86 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %87 = array.read %array[%86] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %88 = pod.read %87[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %89 = arith.subi %88, %c1 {product_source = "compute"} : index
-          pod.write %87[@count] = %89 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %90 = arith.cmpi eq, %89, %c0 {product_source = "compute"} : index
-          scf.if %90 {
-            %122 = pod.read %84[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = pod.read %84[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %124 = function.call @Mux1_8::@Mux1_8::@compute(%122, %123) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
-            pod.write %87[@comp] = %124 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array[%125] = %87 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %86 = array.read %array_0[%85] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %86[@s] = %84 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+          %87 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_0[%87] = %86 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %88 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %89 = array.read %array[%88] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %90 = pod.read %89[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %91 = arith.subi %90, %c1 {product_source = "compute"} : index
+          pod.write %89[@count] = %91 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %92 = arith.cmpi eq, %91, %c0 {product_source = "compute"} : index
+          scf.if %92 {
+            %124 = pod.read %86[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = pod.read %86[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %126 = function.call @Mux1_8::@Mux1_8::@compute(%124, %125) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
+            pod.write %89[@comp] = %126 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array[%127] = %89 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %91 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %92 = array.read %array_3[%91] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %93 = pod.read %92[@comp] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-          %94 = struct.readm %93[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "compute"}
-          %95 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %96 = array.read %array_0[%95] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %97 = pod.read %96[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %97[%c0] = %94 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %98 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %99 = array.read %array_0[%98] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %99[@c] = %97 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %93 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %94 = array.read %array_3[%93] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %95 = pod.read %94[@comp] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+          %96 = struct.readm %95[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "compute"}
+          %97 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %98 = array.read %array_0[%97] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %99 = pod.read %98[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %99[%c0] = %96 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %100 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_0[%100] = %99 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %101 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %102 = array.read %array[%101] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %103 = pod.read %102[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %104 = arith.subi %103, %c1 {product_source = "compute"} : index
-          pod.write %102[@count] = %104 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %105 = arith.cmpi eq, %104, %c0 {product_source = "compute"} : index
-          scf.if %105 {
-            %122 = pod.read %99[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = pod.read %99[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %124 = function.call @Mux1_8::@Mux1_8::@compute(%122, %123) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
-            pod.write %102[@comp] = %124 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array[%125] = %102 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %101 = array.read %array_0[%100] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %101[@c] = %99 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %102 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_0[%102] = %101 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %103 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %104 = array.read %array[%103] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %105 = pod.read %104[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %106 = arith.subi %105, %c1 {product_source = "compute"} : index
+          pod.write %104[@count] = %106 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %107 = arith.cmpi eq, %106, %c0 {product_source = "compute"} : index
+          scf.if %107 {
+            %124 = pod.read %101[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = pod.read %101[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %126 = function.call @Mux1_8::@Mux1_8::@compute(%124, %125) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
+            pod.write %104[@comp] = %126 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array[%127] = %104 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %106 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %107 = array.read %array_0[%106] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %108 = pod.read %107[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %108[%c1] = %arg1 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %109 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %110 = array.read %array_0[%109] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %110[@c] = %108 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %108 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %109 = array.read %array_0[%108] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %110 = pod.read %109[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %110[%c1] = %arg1 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %111 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_0[%111] = %110 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %112 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %113 = array.read %array[%112] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %114 = pod.read %113[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %115 = arith.subi %114, %c1 {product_source = "compute"} : index
-          pod.write %113[@count] = %115 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %116 = arith.cmpi eq, %115, %c0 {product_source = "compute"} : index
-          scf.if %116 {
-            %122 = pod.read %110[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %123 = pod.read %110[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %124 = function.call @Mux1_8::@Mux1_8::@compute(%122, %123) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
-            pod.write %113[@comp] = %124 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-            %125 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array[%125] = %113 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %112 = array.read %array_0[%111] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %112[@c] = %110 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %113 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_0[%113] = %112 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %114 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %115 = array.read %array[%114] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %116 = pod.read %115[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %117 = arith.subi %116, %c1 {product_source = "compute"} : index
+          pod.write %115[@count] = %117 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %118 = arith.cmpi eq, %117, %c0 {product_source = "compute"} : index
+          scf.if %118 {
+            %124 = pod.read %112[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = pod.read %112[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %126 = function.call @Mux1_8::@Mux1_8::@compute(%124, %125) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
+            pod.write %115[@comp] = %126 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+            %127 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array[%127] = %115 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %117 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          %118 = array.read %array[%117] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %119 = pod.read %118[@comp] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-          %120 = struct.readm %119[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "compute"}
-          %121 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%121] = %120 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %119 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          %120 = array.read %array[%119] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %121 = pod.read %120[@comp] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+          %122 = struct.readm %121[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "compute"}
+          %123 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %nondet[%123] = %122 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
         } {product_source = "compute"}
         struct.writem %self[@quinSelectors$inputs] = %array_4 : <@Splicer_9::@Splicer_9<[]>>, !array.type<5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>> {product_source = "compute"}
         %array_7 = array.new  : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>  {product_source = "compute"}
@@ -1246,63 +1246,63 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           %23 = array.read %6[%22] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
           %24 = pod.read %23[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "constrain"}
           constrain.eq %24, %21 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %25 = scf.while (%arg4 = %felt_const_0) : (!felt.type<"bn128">) -> !felt.type<"bn128"> {
-            %60 = bool.cmp lt(%arg4, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            scf.condition(%60) {product_source = "constrain"} %arg4 : !felt.type<"bn128">
-          } do {
-          ^bb0(%arg4: !felt.type<"bn128">):
-            %60 = cast.toindex %arg4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %61 = array.read %arg0[%60] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %62 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-            %63 = array.read %6[%62] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
-            %64 = pod.read %63[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
-            %65 = cast.toindex %arg4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %66 = array.read %64[%65] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %66, %61 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %67 = felt.add %arg4, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            scf.yield {product_source = "constrain"} %67 : !felt.type<"bn128">
-          } attributes {product_source = "constrain"}
-          %26 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %27 = array.read %6[%26] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
-          %28 = pod.read %27[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
-          %29 = array.read %28[%c4] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %29, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %30 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %31 = array.read %4[%30] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
-          %32 = pod.read %31[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %33 = array.read %32[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %33, %arg2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %34 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %35 = array.read %4[%34] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
-          %36 = pod.read %35[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %37 = array.read %36[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %37, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %38 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %39 = array.read %3[%38] : <5 x !struct.type<@IsEqual_5::@IsEqual_5<[]>>>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "constrain"}
-          %40 = struct.readm %39[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
-          %41 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %42 = array.read %2[%41] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
-          %43 = pod.read %42[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %43, %40 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %44 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %45 = array.read %5[%44] : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "constrain"}
-          %46 = struct.readm %45[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
-          %47 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %48 = array.read %2[%47] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
-          %49 = pod.read %48[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %50 = array.read %49[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %50, %46 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %51 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %52 = array.read %2[%51] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
-          %53 = pod.read %52[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %54 = array.read %53[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %54, %arg1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %55 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %56 = array.read %1[%55] : <5 x !struct.type<@Mux1_8::@Mux1_8<[]>>>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "constrain"}
-          %57 = struct.readm %56[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
-          %58 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %59 = array.read %0[%58] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %59, %57 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %25 = cast.toindex %felt_const_0 : !felt.type<"bn128">
+          %26 = cast.toindex %felt_const_4 : !felt.type<"bn128">
+          %27 = cast.toindex %felt_const_1 : !felt.type<"bn128">
+          scf.for %arg4 = %25 to %26 step %27 {
+            %62 = cast.tofelt %arg4 : index, !felt.type<"bn128">
+            %63 = bool.cmp lt(%62, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %64 = cast.toindex %62 : !felt.type<"bn128"> {product_source = "constrain"}
+            %65 = array.read %arg0[%64] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %66 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+            %67 = array.read %6[%66] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
+            %68 = pod.read %67[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
+            %69 = cast.toindex %62 : !felt.type<"bn128"> {product_source = "constrain"}
+            %70 = array.read %68[%69] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %70, %65 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %71 = felt.add %62, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          }
+          %28 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %29 = array.read %6[%28] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
+          %30 = pod.read %29[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
+          %31 = array.read %30[%c4] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %31, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %32 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %33 = array.read %4[%32] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
+          %34 = pod.read %33[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %35 = array.read %34[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %35, %arg2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %36 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %37 = array.read %4[%36] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
+          %38 = pod.read %37[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %39 = array.read %38[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %39, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %40 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %41 = array.read %3[%40] : <5 x !struct.type<@IsEqual_5::@IsEqual_5<[]>>>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "constrain"}
+          %42 = struct.readm %41[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
+          %43 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %44 = array.read %2[%43] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
+          %45 = pod.read %44[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %45, %42 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %46 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %47 = array.read %5[%46] : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "constrain"}
+          %48 = struct.readm %47[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
+          %49 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %50 = array.read %2[%49] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
+          %51 = pod.read %50[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %52 = array.read %51[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %52, %48 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %53 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %54 = array.read %2[%53] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
+          %55 = pod.read %54[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %56 = array.read %55[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %56, %arg1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %57 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %58 = array.read %1[%57] : <5 x !struct.type<@Mux1_8::@Mux1_8<[]>>>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "constrain"}
+          %59 = struct.readm %58[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
+          %60 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %61 = array.read %0[%60] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %61, %59 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
         } {product_source = "constrain"}
         scf.for %arg3 = %c0 to %c5 step %c1 {
           %9 = array.read %5[%arg3] : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "constrain"}
@@ -1391,11 +1391,11 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           pod.write %8[@count] = %10 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %11 = arith.cmpi eq, %10, %c0 {product_source = "compute"} : index
           scf.if %11 {
-            %113 = pod.read %5[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%113) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
-            pod.write %8[@comp] = %114 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
-            %115 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_5[%115] = %8 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %115 = pod.read %5[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%115) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
+            pod.write %8[@comp] = %116 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
+            %117 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_5[%117] = %8 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
           %12 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
           %13 = array.read %array_6[%12] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
@@ -1413,11 +1413,11 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           pod.write %19[@count] = %21 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %22 = arith.cmpi eq, %21, %c0 {product_source = "compute"} : index
           scf.if %22 {
-            %113 = pod.read %16[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%113) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
-            pod.write %19[@comp] = %114 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
-            %115 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_5[%115] = %19 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %115 = pod.read %16[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = function.call @GreaterThan_2::@GreaterThan_2::@compute(%115) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>  {product_source = "compute"}
+            pod.write %19[@comp] = %116 : <[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@GreaterThan_2::@GreaterThan_2<[]>> {product_source = "compute"}
+            %117 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_5[%117] = %19 : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
           %23 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
           %24 = array.read %array_5[%23] : <5 x !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@GreaterThan_2::@GreaterThan_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
@@ -1436,193 +1436,193 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           pod.write %32[@count] = %34 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %35 = arith.cmpi eq, %34, %c0 {product_source = "compute"} : index
           scf.if %35 {
-            %113 = pod.read %29[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = pod.read %29[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %115 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%113, %114) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
-            pod.write %32[@comp] = %115 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-            %116 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_3[%116] = %32 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %115 = pod.read %29[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = pod.read %29[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %117 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%115, %116) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
+            pod.write %32[@comp] = %117 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+            %118 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_3[%118] = %32 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %36 = scf.while (%arg4 = %felt_const_0) : (!felt.type<"bn128">) -> !felt.type<"bn128"> {
-            %113 = bool.cmp lt(%arg4, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            scf.condition(%113) %arg4 : !felt.type<"bn128">
-          } do {
-          ^bb0(%arg4: !felt.type<"bn128">):
-            %113 = cast.toindex %arg4 : !felt.type<"bn128"> {product_source = "compute"}
-            %114 = array.read %arg0[%113] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-            %115 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            %116 = array.read %array_4[%115] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-            %117 = pod.read %116[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %118 = cast.toindex %arg4 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %117[%118] = %114 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %36 = cast.toindex %felt_const_0 : !felt.type<"bn128">
+          %37 = cast.toindex %felt_const_4 : !felt.type<"bn128">
+          %38 = cast.toindex %felt_const_1 : !felt.type<"bn128">
+          scf.for %arg4 = %36 to %37 step %38 {
+            %115 = cast.tofelt %arg4 : index, !felt.type<"bn128">
+            %116 = bool.cmp lt(%115, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %117 = cast.toindex %115 : !felt.type<"bn128"> {product_source = "compute"}
+            %118 = array.read %arg0[%117] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %119 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
             %120 = array.read %array_4[%119] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-            pod.write %120[@in] = %117 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %121 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_4[%121] = %120 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-            %122 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            %123 = array.read %array_3[%122] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-            %124 = pod.read %123[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-            %125 = arith.subi %124, %c1 {product_source = "compute"} : index
-            pod.write %123[@count] = %125 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-            %126 = arith.cmpi eq, %125, %c0 {product_source = "compute"} : index
-            scf.if %126 {
-              %128 = pod.read %120[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-              %129 = pod.read %120[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-              %130 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%128, %129) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
-              pod.write %123[@comp] = %130 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-              %131 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-              array.write %array_3[%131] = %123 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %121 = pod.read %120[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %122 = cast.toindex %115 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %121[%122] = %118 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %123 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            %124 = array.read %array_4[%123] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+            pod.write %124[@in] = %121 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %125 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_4[%125] = %124 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+            %126 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            %127 = array.read %array_3[%126] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            %128 = pod.read %127[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+            %129 = arith.subi %128, %c1 {product_source = "compute"} : index
+            pod.write %127[@count] = %129 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+            %130 = arith.cmpi eq, %129, %c0 {product_source = "compute"} : index
+            scf.if %130 {
+              %132 = pod.read %124[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+              %133 = pod.read %124[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+              %134 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%132, %133) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
+              pod.write %127[@comp] = %134 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+              %135 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+              array.write %array_3[%135] = %127 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
             } {product_source = "compute"}
-            %127 = felt.add %arg4, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            scf.yield %127 : !felt.type<"bn128">
+            %131 = felt.add %115, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           }
-          %37 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %38 = array.read %array_4[%37] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-          %39 = pod.read %38[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %39[%c4] = %felt_const_0 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %40 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %41 = array.read %array_4[%40] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %41[@in] = %39 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+          %39 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %40 = array.read %array_4[%39] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+          %41 = pod.read %40[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %41[%c4] = %felt_const_0 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %42 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_4[%42] = %41 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
-          %43 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %44 = array.read %array_3[%43] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %45 = pod.read %44[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %46 = arith.subi %45, %c1 {product_source = "compute"} : index
-          pod.write %44[@count] = %46 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %47 = arith.cmpi eq, %46, %c0 {product_source = "compute"} : index
-          scf.if %47 {
-            %113 = pod.read %41[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = pod.read %41[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %115 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%113, %114) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
-            pod.write %44[@comp] = %115 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-            %116 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_3[%116] = %44 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %43 = array.read %array_4[%42] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %43[@in] = %41 : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+          %44 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_4[%44] = %43 : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "compute"}
+          %45 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %46 = array.read %array_3[%45] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %47 = pod.read %46[@count] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %48 = arith.subi %47, %c1 {product_source = "compute"} : index
+          pod.write %46[@count] = %48 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %49 = arith.cmpi eq, %48, %c0 {product_source = "compute"} : index
+          scf.if %49 {
+            %115 = pod.read %43[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = pod.read %43[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %117 = function.call @QuinSelector_6::@QuinSelector_6::@compute(%115, %116) : (!array.type<5 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>  {product_source = "compute"}
+            pod.write %46[@comp] = %117 : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+            %118 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_3[%118] = %46 : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %48 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %49 = array.read %array_2[%48] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %50 = pod.read %49[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %50[%c0] = %arg2 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %51 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %52 = array.read %array_2[%51] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          pod.write %52[@in] = %50 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %50 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %51 = array.read %array_2[%50] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %52 = pod.read %51[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %52[%c0] = %arg2 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %53 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_2[%53] = %52 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %54 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %55 = array.read %array_1[%54] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %56 = pod.read %55[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %57 = arith.subi %56, %c1 {product_source = "compute"} : index
-          pod.write %55[@count] = %57 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %58 = arith.cmpi eq, %57, %c0 {product_source = "compute"} : index
-          scf.if %58 {
-            %113 = pod.read %52[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = function.call @IsEqual_5::@IsEqual_5::@compute(%113) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
-            pod.write %55[@comp] = %114 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
-            %115 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_1[%115] = %55 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %54 = array.read %array_2[%53] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          pod.write %54[@in] = %52 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %55 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_2[%55] = %54 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %56 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %57 = array.read %array_1[%56] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %58 = pod.read %57[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %59 = arith.subi %58, %c1 {product_source = "compute"} : index
+          pod.write %57[@count] = %59 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %60 = arith.cmpi eq, %59, %c0 {product_source = "compute"} : index
+          scf.if %60 {
+            %115 = pod.read %54[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = function.call @IsEqual_5::@IsEqual_5::@compute(%115) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
+            pod.write %57[@comp] = %116 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
+            %117 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_1[%117] = %57 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %59 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %60 = array.read %array_2[%59] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %61 = pod.read %60[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %61[%c1] = %0 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %62 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %63 = array.read %array_2[%62] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          pod.write %63[@in] = %61 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %61 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %62 = array.read %array_2[%61] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %63 = pod.read %62[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %63[%c1] = %0 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %64 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_2[%64] = %63 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
-          %65 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %66 = array.read %array_1[%65] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %67 = pod.read %66[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %68 = arith.subi %67, %c1 {product_source = "compute"} : index
-          pod.write %66[@count] = %68 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %69 = arith.cmpi eq, %68, %c0 {product_source = "compute"} : index
-          scf.if %69 {
-            %113 = pod.read %63[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = function.call @IsEqual_5::@IsEqual_5::@compute(%113) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
-            pod.write %66[@comp] = %114 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
-            %115 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array_1[%115] = %66 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %65 = array.read %array_2[%64] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          pod.write %65[@in] = %63 : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %66 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_2[%66] = %65 : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "compute"}
+          %67 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %68 = array.read %array_1[%67] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %69 = pod.read %68[@count] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %70 = arith.subi %69, %c1 {product_source = "compute"} : index
+          pod.write %68[@count] = %70 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %71 = arith.cmpi eq, %70, %c0 {product_source = "compute"} : index
+          scf.if %71 {
+            %115 = pod.read %65[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = function.call @IsEqual_5::@IsEqual_5::@compute(%115) : (!array.type<2 x !felt.type<"bn128">>) -> !struct.type<@IsEqual_5::@IsEqual_5<[]>>  {product_source = "compute"}
+            pod.write %68[@comp] = %116 : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
+            %117 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array_1[%117] = %68 : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %70 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %71 = array.read %array_1[%70] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %72 = pod.read %71[@comp] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
-          %73 = struct.readm %72[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "compute"}
-          %74 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %75 = array.read %array_0[%74] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %75[@s] = %73 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+          %72 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %73 = array.read %array_1[%72] : <5 x !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %74 = pod.read %73[@comp] : <[@count: index, @comp: !struct.type<@IsEqual_5::@IsEqual_5<[]>>, @params: !pod.type<[]>]>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "compute"}
+          %75 = struct.readm %74[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "compute"}
           %76 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_0[%76] = %75 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %77 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %78 = array.read %array[%77] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %79 = pod.read %78[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %80 = arith.subi %79, %c1 {product_source = "compute"} : index
-          pod.write %78[@count] = %80 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %81 = arith.cmpi eq, %80, %c0 {product_source = "compute"} : index
-          scf.if %81 {
-            %113 = pod.read %75[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = pod.read %75[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %115 = function.call @Mux1_8::@Mux1_8::@compute(%113, %114) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
-            pod.write %78[@comp] = %115 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-            %116 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array[%116] = %78 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %77 = array.read %array_0[%76] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %77[@s] = %75 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+          %78 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_0[%78] = %77 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %79 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %80 = array.read %array[%79] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %81 = pod.read %80[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %82 = arith.subi %81, %c1 {product_source = "compute"} : index
+          pod.write %80[@count] = %82 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %83 = arith.cmpi eq, %82, %c0 {product_source = "compute"} : index
+          scf.if %83 {
+            %115 = pod.read %77[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = pod.read %77[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %117 = function.call @Mux1_8::@Mux1_8::@compute(%115, %116) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
+            pod.write %80[@comp] = %117 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+            %118 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array[%118] = %80 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %82 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %83 = array.read %array_3[%82] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %84 = pod.read %83[@comp] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
-          %85 = struct.readm %84[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "compute"}
-          %86 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %87 = array.read %array_0[%86] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %88 = pod.read %87[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %88[%c0] = %85 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %89 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %90 = array.read %array_0[%89] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %90[@c] = %88 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %84 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %85 = array.read %array_3[%84] : <5 x !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %86 = pod.read %85[@comp] : <[@count: index, @comp: !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>, @params: !pod.type<[]>]>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "compute"}
+          %87 = struct.readm %86[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "compute"}
+          %88 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %89 = array.read %array_0[%88] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %90 = pod.read %89[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %90[%c0] = %87 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %91 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_0[%91] = %90 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %92 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %93 = array.read %array[%92] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %94 = pod.read %93[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %95 = arith.subi %94, %c1 {product_source = "compute"} : index
-          pod.write %93[@count] = %95 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %96 = arith.cmpi eq, %95, %c0 {product_source = "compute"} : index
-          scf.if %96 {
-            %113 = pod.read %90[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = pod.read %90[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %115 = function.call @Mux1_8::@Mux1_8::@compute(%113, %114) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
-            pod.write %93[@comp] = %115 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-            %116 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array[%116] = %93 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %92 = array.read %array_0[%91] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %92[@c] = %90 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %93 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_0[%93] = %92 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %94 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %95 = array.read %array[%94] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %96 = pod.read %95[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %97 = arith.subi %96, %c1 {product_source = "compute"} : index
+          pod.write %95[@count] = %97 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %98 = arith.cmpi eq, %97, %c0 {product_source = "compute"} : index
+          scf.if %98 {
+            %115 = pod.read %92[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = pod.read %92[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %117 = function.call @Mux1_8::@Mux1_8::@compute(%115, %116) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
+            pod.write %95[@comp] = %117 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+            %118 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array[%118] = %95 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %97 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %98 = array.read %array_0[%97] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %99 = pod.read %98[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-          array.write %99[%c1] = %arg1 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %100 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %101 = array.read %array_0[%100] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          pod.write %101[@c] = %99 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %99 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %100 = array.read %array_0[%99] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %101 = pod.read %100[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          array.write %101[%c1] = %arg1 : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           %102 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %array_0[%102] = %101 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
-          %103 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %104 = array.read %array[%103] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %105 = pod.read %104[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %106 = arith.subi %105, %c1 {product_source = "compute"} : index
-          pod.write %104[@count] = %106 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
-          %107 = arith.cmpi eq, %106, %c0 {product_source = "compute"} : index
-          scf.if %107 {
-            %113 = pod.read %101[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
-            %114 = pod.read %101[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
-            %115 = function.call @Mux1_8::@Mux1_8::@compute(%113, %114) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
-            pod.write %104[@comp] = %115 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-            %116 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %array[%116] = %104 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %103 = array.read %array_0[%102] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          pod.write %103[@c] = %101 : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+          %104 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %array_0[%104] = %103 : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "compute"}
+          %105 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %106 = array.read %array[%105] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %107 = pod.read %106[@count] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %108 = arith.subi %107, %c1 {product_source = "compute"} : index
+          pod.write %106[@count] = %108 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+          %109 = arith.cmpi eq, %108, %c0 {product_source = "compute"} : index
+          scf.if %109 {
+            %115 = pod.read %103[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "compute"}
+            %116 = pod.read %103[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "compute"}
+            %117 = function.call @Mux1_8::@Mux1_8::@compute(%115, %116) : (!array.type<2 x !felt.type<"bn128">>, !felt.type<"bn128">) -> !struct.type<@Mux1_8::@Mux1_8<[]>>  {product_source = "compute"}
+            pod.write %106[@comp] = %117 : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+            %118 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %array[%118] = %106 : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
           } {product_source = "compute"}
-          %108 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          %109 = array.read %array[%108] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-          %110 = pod.read %109[@comp] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
-          %111 = struct.readm %110[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "compute"}
-          %112 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%112] = %111 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %110 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          %111 = array.read %array[%110] : <5 x !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+          %112 = pod.read %111[@comp] : <[@count: index, @comp: !struct.type<@Mux1_8::@Mux1_8<[]>>, @params: !pod.type<[]>]>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "compute"}
+          %113 = struct.readm %112[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "compute"}
+          %114 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %nondet[%114] = %113 : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
         } {product_source = "compute"}
         struct.writem %self[@quinSelectors$inputs] = %array_4 : <@Splicer_9::@Splicer_9<[]>>, !array.type<5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>> {product_source = "compute"}
         %array_7 = array.new  : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>  {product_source = "compute"}
@@ -1696,63 +1696,63 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Splicer_9::@Splicer_9<[]
           %23 = array.read %6[%22] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
           %24 = pod.read %23[@index] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "constrain"}
           constrain.eq %24, %21 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %25 = scf.while (%arg5 = %felt_const_0) : (!felt.type<"bn128">) -> !felt.type<"bn128"> {
-            %60 = bool.cmp lt(%arg5, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            scf.condition(%60) {product_source = "constrain"} %arg5 : !felt.type<"bn128">
-          } do {
-          ^bb0(%arg5: !felt.type<"bn128">):
-            %60 = cast.toindex %arg5 : !felt.type<"bn128"> {product_source = "constrain"}
-            %61 = array.read %arg1[%60] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %62 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-            %63 = array.read %6[%62] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
-            %64 = pod.read %63[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
-            %65 = cast.toindex %arg5 : !felt.type<"bn128"> {product_source = "constrain"}
-            %66 = array.read %64[%65] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %66, %61 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %67 = felt.add %arg5, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            scf.yield {product_source = "constrain"} %67 : !felt.type<"bn128">
-          } attributes {product_source = "constrain"}
-          %26 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %27 = array.read %6[%26] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
-          %28 = pod.read %27[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
-          %29 = array.read %28[%c4] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %29, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %30 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %31 = array.read %4[%30] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
-          %32 = pod.read %31[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %33 = array.read %32[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %33, %arg3 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %34 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %35 = array.read %4[%34] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
-          %36 = pod.read %35[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %37 = array.read %36[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %37, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %38 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %39 = array.read %3[%38] : <5 x !struct.type<@IsEqual_5::@IsEqual_5<[]>>>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "constrain"}
-          %40 = struct.readm %39[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
-          %41 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %42 = array.read %2[%41] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
-          %43 = pod.read %42[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %43, %40 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %44 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %45 = array.read %5[%44] : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "constrain"}
-          %46 = struct.readm %45[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
-          %47 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %48 = array.read %2[%47] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
-          %49 = pod.read %48[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %50 = array.read %49[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %50, %46 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %51 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %52 = array.read %2[%51] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
-          %53 = pod.read %52[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
-          %54 = array.read %53[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %54, %arg2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %55 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %56 = array.read %1[%55] : <5 x !struct.type<@Mux1_8::@Mux1_8<[]>>>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "constrain"}
-          %57 = struct.readm %56[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
-          %58 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
-          %59 = array.read %0[%58] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %59, %57 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %25 = cast.toindex %felt_const_0 : !felt.type<"bn128">
+          %26 = cast.toindex %felt_const_4 : !felt.type<"bn128">
+          %27 = cast.toindex %felt_const_1 : !felt.type<"bn128">
+          scf.for %arg5 = %25 to %26 step %27 {
+            %62 = cast.tofelt %arg5 : index, !felt.type<"bn128">
+            %63 = bool.cmp lt(%62, %felt_const_4) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %64 = cast.toindex %62 : !felt.type<"bn128"> {product_source = "constrain"}
+            %65 = array.read %arg1[%64] : <4 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %66 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+            %67 = array.read %6[%66] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
+            %68 = pod.read %67[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
+            %69 = cast.toindex %62 : !felt.type<"bn128"> {product_source = "constrain"}
+            %70 = array.read %68[%69] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %70, %65 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %71 = felt.add %62, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          }
+          %28 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %29 = array.read %6[%28] : <5 x !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>>, !pod.type<[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]> {product_source = "constrain"}
+          %30 = pod.read %29[@in] : <[@in: !array.type<5 x !felt.type<"bn128">>, @index: !felt.type<"bn128">]>, !array.type<5 x !felt.type<"bn128">> {product_source = "constrain"}
+          %31 = array.read %30[%c4] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %31, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %32 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %33 = array.read %4[%32] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
+          %34 = pod.read %33[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %35 = array.read %34[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %35, %arg3 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %36 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %37 = array.read %4[%36] : <5 x !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]>>, !pod.type<[@in: !array.type<2 x !felt.type<"bn128">>]> {product_source = "constrain"}
+          %38 = pod.read %37[@in] : <[@in: !array.type<2 x !felt.type<"bn128">>]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %39 = array.read %38[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %39, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %40 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %41 = array.read %3[%40] : <5 x !struct.type<@IsEqual_5::@IsEqual_5<[]>>>, !struct.type<@IsEqual_5::@IsEqual_5<[]>> {product_source = "constrain"}
+          %42 = struct.readm %41[@out] : <@IsEqual_5::@IsEqual_5<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
+          %43 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %44 = array.read %2[%43] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
+          %45 = pod.read %44[@s] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %45, %42 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %46 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %47 = array.read %5[%46] : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "constrain"}
+          %48 = struct.readm %47[@out] : <@QuinSelector_6::@QuinSelector_6<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
+          %49 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %50 = array.read %2[%49] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
+          %51 = pod.read %50[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %52 = array.read %51[%c0] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %52, %48 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %53 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %54 = array.read %2[%53] : <5 x !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>>, !pod.type<[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]> {product_source = "constrain"}
+          %55 = pod.read %54[@c] : <[@c: !array.type<2 x !felt.type<"bn128">>, @s: !felt.type<"bn128">]>, !array.type<2 x !felt.type<"bn128">> {product_source = "constrain"}
+          %56 = array.read %55[%c1] : <2 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %56, %arg2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %57 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %58 = array.read %1[%57] : <5 x !struct.type<@Mux1_8::@Mux1_8<[]>>>, !struct.type<@Mux1_8::@Mux1_8<[]>> {product_source = "constrain"}
+          %59 = struct.readm %58[@out] : <@Mux1_8::@Mux1_8<[]>>, !felt.type<"bn128"> {product_source = "constrain"}
+          %60 = cast.toindex %9 : !felt.type<"bn128"> {product_source = "constrain"}
+          %61 = array.read %0[%60] : <5 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %61, %59 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
         } {product_source = "constrain"}
         scf.for %arg4 = %c0 to %c5 step %c1 {
           %9 = array.read %5[%arg4] : <5 x !struct.type<@QuinSelector_6::@QuinSelector_6<[]>>>, !struct.type<@QuinSelector_6::@QuinSelector_6<[]>> {product_source = "constrain"}
