@@ -22089,14 +22089,6 @@ module attributes {llzk.lang, llzk.main = !struct.type<@KeccakfRound_88::@Keccak
         array.write %nondet_0[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
         array.write %nondet_0[%c22] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
         array.write %nondet_0[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        scf.for %arg0 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %2 = felt.shr %felt_const_9223372039002292353, %1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-          %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%4] = %3 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@RC_86::@RC_86<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         %0 = struct.readm %self[@out] : <@RC_86::@RC_86<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         %nondet_1 = llzk.nondet : !array.type<24 x !felt.type<"bn128">> {product_source = "constrain"}
         array.write %nondet_1[%c0] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
@@ -22148,13 +22140,19 @@ module attributes {llzk.lang, llzk.main = !struct.type<@KeccakfRound_88::@Keccak
         array.write %nondet_1[%c22] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
         array.write %nondet_1[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
         scf.for %arg0 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.shr %felt_const_9223372039002292353, %1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-          %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %5, %3 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-        } {product_source = "constrain"}
+          %1 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "compute"}
+          %2 = felt.shr %felt_const_9223372039002292353, %1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+          %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+          array.write %nondet[%4] = %3 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %5 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = felt.shr %felt_const_9223372039002292353, %5 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %7 = felt.bit_and %6, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %8 = cast.toindex %5 : !felt.type<"bn128"> {product_source = "constrain"}
+          %9 = array.read %0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+          constrain.eq %9, %7 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@RC_86::@RC_86<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@RC_86::@RC_86<[]>>
       }
       function.def @compute() -> !struct.type<@RC_86::@RC_86<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {

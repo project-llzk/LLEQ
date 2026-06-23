@@ -12,34 +12,32 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_0::@ShR_0<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_0::@ShR_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_63 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = array.read %arg0[%c63] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%c0] = %4 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %7 = array.read %arg0[%c63] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%c0] = %7 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_0::@ShR_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_0::@ShR_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_63 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_63 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } else {
-            %4 = array.read %arg0[%c63] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%c0] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %4 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = array.read %arg0[%c63] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = array.read %0[%c0] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %7 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_0::@ShR_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_0::@ShR_0<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_0::@ShR_0<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -956,40 +954,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_8::@ShR_8<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_8::@ShR_8<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_8::@ShR_8<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_8::@ShR_8<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_58 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_8::@ShR_8<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_8::@ShR_8<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_8::@ShR_8<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -1765,40 +1761,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_14::@ShR_14<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_14::@ShR_14<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_14::@ShR_14<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_14::@ShR_14<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_49 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_14::@ShR_14<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_14::@ShR_14<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_14::@ShR_14<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -2574,40 +2568,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_20::@ShR_20<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_20::@ShR_20<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_20::@ShR_20<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_20::@ShR_20<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_36 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_20::@ShR_20<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_20::@ShR_20<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_20::@ShR_20<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -3383,40 +3375,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_26::@ShR_26<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_26::@ShR_26<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_26::@ShR_26<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_26::@ShR_26<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_26::@ShR_26<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_26::@ShR_26<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_26::@ShR_26<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -4192,40 +4182,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_32::@ShR_32<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_32::@ShR_32<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_32::@ShR_32<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_32::@ShR_32<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_62 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_32::@ShR_32<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_32::@ShR_32<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_32::@ShR_32<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -5001,40 +4989,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_38::@ShR_38<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_38::@ShR_38<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_38::@ShR_38<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_38::@ShR_38<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_37 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_38::@ShR_38<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_38::@ShR_38<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_38::@ShR_38<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -5810,40 +5796,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_44::@ShR_44<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_44::@ShR_44<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_44::@ShR_44<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_44::@ShR_44<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_8 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_44::@ShR_44<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_44::@ShR_44<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_44::@ShR_44<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -6619,40 +6603,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_50::@ShR_50<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_50::@ShR_50<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_50::@ShR_50<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_50::@ShR_50<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_39 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_50::@ShR_50<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_50::@ShR_50<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_50::@ShR_50<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -7428,40 +7410,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_56::@ShR_56<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_56::@ShR_56<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_56::@ShR_56<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_56::@ShR_56<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_56::@ShR_56<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_56::@ShR_56<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_56::@ShR_56<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -8237,40 +8217,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_62::@ShR_62<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_62::@ShR_62<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_62::@ShR_62<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_62::@ShR_62<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_25 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_62::@ShR_62<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_62::@ShR_62<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_62::@ShR_62<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -9046,40 +9024,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_68::@ShR_68<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_68::@ShR_68<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_68::@ShR_68<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_68::@ShR_68<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_44 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_68::@ShR_68<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_68::@ShR_68<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_68::@ShR_68<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -9557,40 +9533,38 @@ module attributes {llzk.lang, llzk.main = !struct.type<@RhoPi_74::@RhoPi_74<[]>>
         %felt_const_64 = felt.const  64 : <"bn128"> {product_source = "compute"}
         %self = struct.new : <@ShR_71::@ShR_71<[]>> {product_source = "compute"}
         %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@ShR_71::@ShR_71<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
           %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
           %2 = felt.add %1, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
           scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%4] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } else {
-            %4 = felt.add %1, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "compute"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
             %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-            array.write %nondet[%7] = %6 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          } {product_source = "compute"}
-        } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@ShR_71::@ShR_71<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@ShR_71::@ShR_71<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.add %1, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = bool.cmp ge(%2, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          scf.if %3 {
-            %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %5, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            array.write %nondet[%7] = %felt_const_0 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
           } else {
-            %4 = felt.add %1, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-            %5 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
-            %6 = array.read %arg0[%5] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            %7 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
+            %7 = felt.add %1, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "compute"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+            %10 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
+            array.write %nondet[%10] = %9 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          } {product_source = "compute"}
+          %4 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
+          %5 = felt.add %4, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %6 = bool.cmp ge(%5, %felt_const_64) : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          scf.if %6 {
+            %7 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
             %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-            constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %8, %felt_const_0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          } else {
+            %7 = felt.add %4, %felt_const_20 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+            %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
+            %9 = array.read %arg0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            %10 = cast.toindex %4 : !felt.type<"bn128"> {product_source = "constrain"}
+            %11 = array.read %0[%10] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+            constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
           } {product_source = "constrain"}
-        } {product_source = "constrain"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@ShR_71::@ShR_71<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
         function.return %self : !struct.type<@ShR_71::@ShR_71<[]>>
       }
       function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@ShR_71::@ShR_71<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
