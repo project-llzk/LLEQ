@@ -1,7 +1,7 @@
 module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
   poly.template @RC_0 {
     struct.def @RC_0 {
-      struct.member @out : !array.type<64 x !felt.type<"bn128">> {llzk.pub}
+      struct.member @out : !array.type<64 x !felt.type<"babybear">> {llzk.pub}
       function.def @product() -> !struct.type<@RC_0::@RC_0<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
         %c64 = arith.constant 64 : index
         %c23 = arith.constant 23 : index
@@ -28,144 +28,144 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
         %c2 = arith.constant 2 : index
         %c1 = arith.constant 1 : index
         %c0 = arith.constant 0 : index
-        %felt_const_9223372039002292232 = felt.const  9223372039002292232 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808704 = felt.const  9223372036854808704 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372039002259466 = felt.const  9223372039002259466 : <"bn128"> {product_source = "compute"}
-        %felt_const_32778 = felt.const  32778 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854775936 = felt.const  9223372036854775936 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808578 = felt.const  9223372036854808578 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808579 = felt.const  9223372036854808579 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808713 = felt.const  9223372036854808713 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854775947 = felt.const  9223372036854775947 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147516555 = felt.const  2147516555 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147483658 = felt.const  2147483658 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147516425 = felt.const  2147516425 : <"bn128"> {product_source = "compute"}
-        %felt_const_136 = felt.const  136 : <"bn128"> {product_source = "compute"}
-        %felt_const_138 = felt.const  138 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808585 = felt.const  9223372036854808585 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372039002292353 = felt.const  9223372039002292353 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147483649 = felt.const  2147483649 : <"bn128"> {product_source = "compute"}
-        %felt_const_32907 = felt.const  32907 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372039002292224 = felt.const  9223372039002292224 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808714 = felt.const  9223372036854808714 : <"bn128"> {product_source = "compute"}
-        %felt_const_32898 = felt.const  32898 : <"bn128"> {product_source = "compute"}
-        %felt_const_1 = felt.const  1 : <"bn128"> {product_source = "compute"}
-        %felt_const_0 = felt.const  0 : <"bn128"> {product_source = "compute"}
+        %felt_const_9223372039002292232 = felt.const  9223372039002292232 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808704 = felt.const  9223372036854808704 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372039002259466 = felt.const  9223372039002259466 : <"babybear"> {product_source = "compute"}
+        %felt_const_32778 = felt.const  32778 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854775936 = felt.const  9223372036854775936 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808578 = felt.const  9223372036854808578 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808579 = felt.const  9223372036854808579 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808713 = felt.const  9223372036854808713 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854775947 = felt.const  9223372036854775947 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147516555 = felt.const  2147516555 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147483658 = felt.const  2147483658 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147516425 = felt.const  2147516425 : <"babybear"> {product_source = "compute"}
+        %felt_const_136 = felt.const  136 : <"babybear"> {product_source = "compute"}
+        %felt_const_138 = felt.const  138 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808585 = felt.const  9223372036854808585 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372039002292353 = felt.const  9223372039002292353 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147483649 = felt.const  2147483649 : <"babybear"> {product_source = "compute"}
+        %felt_const_32907 = felt.const  32907 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372039002292224 = felt.const  9223372039002292224 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808714 = felt.const  9223372036854808714 : <"babybear"> {product_source = "compute"}
+        %felt_const_32898 = felt.const  32898 : <"babybear"> {product_source = "compute"}
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "compute"}
         %self = struct.new : <@RC_0::@RC_0<[]>> {product_source = "compute"}
-        %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %nondet_0 = llzk.nondet : !array.type<24 x !felt.type<"bn128">> {product_source = "compute"}
-        array.write %nondet_0[%c0] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c1] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c2] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c3] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c4] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c5] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c6] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c7] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c8] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c9] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c10] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c11] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c12] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c13] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c14] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c15] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c16] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c17] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c18] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c19] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c20] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c21] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c22] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c23] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c0] = %felt_const_1 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c1] = %felt_const_32898 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c4] = %felt_const_32907 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c5] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c8] = %felt_const_138 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c9] = %felt_const_136 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c10] = %felt_const_2147516425 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c11] = %felt_const_2147483658 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c12] = %felt_const_2147516555 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c18] = %felt_const_32778 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c22] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        %0 = struct.readm %self[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        %nondet_1 = llzk.nondet : !array.type<24 x !felt.type<"bn128">> {product_source = "constrain"}
-        array.write %nondet_1[%c0] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c1] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c2] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c3] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c4] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c5] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c6] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c7] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c8] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c9] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c10] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c11] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c12] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c13] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c14] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c15] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c16] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c17] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c18] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c19] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c20] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c21] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c22] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c23] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c0] = %felt_const_1 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c1] = %felt_const_32898 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c4] = %felt_const_32907 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c5] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c8] = %felt_const_138 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c9] = %felt_const_136 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c10] = %felt_const_2147516425 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c11] = %felt_const_2147483658 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c12] = %felt_const_2147516555 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c18] = %felt_const_32778 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c22] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet_1[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+        %nondet = llzk.nondet : !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+        %nondet_0 = llzk.nondet : !array.type<24 x !felt.type<"babybear">> {product_source = "compute"}
+        array.write %nondet_0[%c0] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c1] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c2] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c3] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c4] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c5] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c6] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c7] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c8] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c9] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c10] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c11] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c12] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c13] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c14] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c15] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c16] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c17] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c18] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c19] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c20] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c21] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c22] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c23] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c0] = %felt_const_1 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c1] = %felt_const_32898 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c4] = %felt_const_32907 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c5] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c8] = %felt_const_138 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c9] = %felt_const_136 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c10] = %felt_const_2147516425 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c11] = %felt_const_2147483658 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c12] = %felt_const_2147516555 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c18] = %felt_const_32778 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c22] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+        %nondet_1 = llzk.nondet : !array.type<24 x !felt.type<"babybear">> {product_source = "constrain"}
+        array.write %nondet_1[%c0] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c1] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c2] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c3] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c4] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c5] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c6] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c7] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c8] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c9] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c10] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c11] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c12] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c13] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c14] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c15] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c16] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c17] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c18] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c19] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c20] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c21] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c22] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c23] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c0] = %felt_const_1 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c1] = %felt_const_32898 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c4] = %felt_const_32907 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c5] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c8] = %felt_const_138 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c9] = %felt_const_136 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c10] = %felt_const_2147516425 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c11] = %felt_const_2147483658 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c12] = %felt_const_2147516555 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c18] = %felt_const_32778 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c22] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet_1[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
         scf.for %arg0 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %2 = felt.shr %felt_const_2147516425, %1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-          %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%4] = %3 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %5 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %6 = felt.shr %felt_const_2147516425, %5 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %7 = felt.bit_and %6, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %8 = cast.toindex %5 : !felt.type<"bn128"> {product_source = "constrain"}
-          %9 = array.read %0[%8] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %9, %7 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %1 = cast.tofelt %arg0 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %2 = felt.shr %felt_const_2147516425, %1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%4] = %3 : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %5 = cast.tofelt %arg0 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %6 = felt.shr %felt_const_2147516425, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %7 = felt.bit_and %6, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %8 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "constrain"}
+          %9 = array.read %0[%8] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %9, %7 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "fused"}
-        struct.writem %self[@out] = %nondet : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
         function.return %self : !struct.type<@RC_0::@RC_0<[]>>
       }
       function.def @compute() -> !struct.type<@RC_0::@RC_0<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
@@ -194,88 +194,88 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
         %c2 = arith.constant 2 : index
         %c1 = arith.constant 1 : index
         %c0 = arith.constant 0 : index
-        %felt_const_9223372039002292232 = felt.const  9223372039002292232 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808704 = felt.const  9223372036854808704 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372039002259466 = felt.const  9223372039002259466 : <"bn128"> {product_source = "compute"}
-        %felt_const_32778 = felt.const  32778 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854775936 = felt.const  9223372036854775936 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808578 = felt.const  9223372036854808578 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808579 = felt.const  9223372036854808579 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808713 = felt.const  9223372036854808713 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854775947 = felt.const  9223372036854775947 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147516555 = felt.const  2147516555 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147483658 = felt.const  2147483658 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147516425 = felt.const  2147516425 : <"bn128"> {product_source = "compute"}
-        %felt_const_136 = felt.const  136 : <"bn128"> {product_source = "compute"}
-        %felt_const_138 = felt.const  138 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808585 = felt.const  9223372036854808585 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372039002292353 = felt.const  9223372039002292353 : <"bn128"> {product_source = "compute"}
-        %felt_const_2147483649 = felt.const  2147483649 : <"bn128"> {product_source = "compute"}
-        %felt_const_32907 = felt.const  32907 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372039002292224 = felt.const  9223372039002292224 : <"bn128"> {product_source = "compute"}
-        %felt_const_9223372036854808714 = felt.const  9223372036854808714 : <"bn128"> {product_source = "compute"}
-        %felt_const_32898 = felt.const  32898 : <"bn128"> {product_source = "compute"}
-        %felt_const_1 = felt.const  1 : <"bn128"> {product_source = "compute"}
-        %felt_const_0 = felt.const  0 : <"bn128"> {product_source = "compute"}
+        %felt_const_9223372039002292232 = felt.const  9223372039002292232 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808704 = felt.const  9223372036854808704 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372039002259466 = felt.const  9223372039002259466 : <"babybear"> {product_source = "compute"}
+        %felt_const_32778 = felt.const  32778 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854775936 = felt.const  9223372036854775936 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808578 = felt.const  9223372036854808578 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808579 = felt.const  9223372036854808579 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808713 = felt.const  9223372036854808713 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854775947 = felt.const  9223372036854775947 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147516555 = felt.const  2147516555 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147483658 = felt.const  2147483658 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147516425 = felt.const  2147516425 : <"babybear"> {product_source = "compute"}
+        %felt_const_136 = felt.const  136 : <"babybear"> {product_source = "compute"}
+        %felt_const_138 = felt.const  138 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808585 = felt.const  9223372036854808585 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372039002292353 = felt.const  9223372039002292353 : <"babybear"> {product_source = "compute"}
+        %felt_const_2147483649 = felt.const  2147483649 : <"babybear"> {product_source = "compute"}
+        %felt_const_32907 = felt.const  32907 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372039002292224 = felt.const  9223372039002292224 : <"babybear"> {product_source = "compute"}
+        %felt_const_9223372036854808714 = felt.const  9223372036854808714 : <"babybear"> {product_source = "compute"}
+        %felt_const_32898 = felt.const  32898 : <"babybear"> {product_source = "compute"}
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "compute"}
         %self = struct.new : <@RC_0::@RC_0<[]>> {product_source = "compute"}
-        %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-        %nondet_0 = llzk.nondet : !array.type<24 x !felt.type<"bn128">> {product_source = "compute"}
-        array.write %nondet_0[%c0] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c1] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c2] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c3] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c4] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c5] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c6] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c7] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c8] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c9] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c10] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c11] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c12] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c13] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c14] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c15] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c16] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c17] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c18] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c19] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c20] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c21] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c22] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c23] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c0] = %felt_const_1 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c1] = %felt_const_32898 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c4] = %felt_const_32907 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c5] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c8] = %felt_const_138 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c9] = %felt_const_136 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c10] = %felt_const_2147516425 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c11] = %felt_const_2147483658 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c12] = %felt_const_2147516555 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c18] = %felt_const_32778 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c22] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-        array.write %nondet_0[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+        %nondet_0 = llzk.nondet : !array.type<24 x !felt.type<"babybear">> {product_source = "compute"}
+        array.write %nondet_0[%c0] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c1] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c2] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c3] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c4] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c5] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c6] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c7] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c8] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c9] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c10] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c11] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c12] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c13] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c14] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c15] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c16] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c17] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c18] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c19] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c20] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c21] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c22] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c23] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c0] = %felt_const_1 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c1] = %felt_const_32898 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c4] = %felt_const_32907 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c5] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c8] = %felt_const_138 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c9] = %felt_const_136 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c10] = %felt_const_2147516425 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c11] = %felt_const_2147483658 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c12] = %felt_const_2147516555 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c18] = %felt_const_32778 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c22] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet_0[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
         scf.for %arg0 = %c0 to %c64 step %c1 {
-          %0 = cast.tofelt %arg0 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %1 = felt.shr %felt_const_2147516425, %0 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-          %2 = felt.bit_and %1, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "compute"}
-          %3 = cast.toindex %0 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%3] = %2 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %0 = cast.tofelt %arg0 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %1 = felt.shr %felt_const_2147516425, %0 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %2 = felt.bit_and %1, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %3 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%3] = %2 : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
         } {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
         function.return {product_source = "compute"} %self : !struct.type<@RC_0::@RC_0<[]>>
       }
       function.def @constrain(%arg0: !struct.type<@RC_0::@RC_0<[]>>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
@@ -304,86 +304,86 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
         %c2 = arith.constant 2 : index
         %c1 = arith.constant 1 : index
         %c0 = arith.constant 0 : index
-        %felt_const_9223372039002292232 = felt.const  9223372039002292232 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854808704 = felt.const  9223372036854808704 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372039002259466 = felt.const  9223372039002259466 : <"bn128"> {product_source = "constrain"}
-        %felt_const_32778 = felt.const  32778 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854775936 = felt.const  9223372036854775936 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854808578 = felt.const  9223372036854808578 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854808579 = felt.const  9223372036854808579 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854808713 = felt.const  9223372036854808713 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854775947 = felt.const  9223372036854775947 : <"bn128"> {product_source = "constrain"}
-        %felt_const_2147516555 = felt.const  2147516555 : <"bn128"> {product_source = "constrain"}
-        %felt_const_2147483658 = felt.const  2147483658 : <"bn128"> {product_source = "constrain"}
-        %felt_const_2147516425 = felt.const  2147516425 : <"bn128"> {product_source = "constrain"}
-        %felt_const_136 = felt.const  136 : <"bn128"> {product_source = "constrain"}
-        %felt_const_138 = felt.const  138 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854808585 = felt.const  9223372036854808585 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372039002292353 = felt.const  9223372039002292353 : <"bn128"> {product_source = "constrain"}
-        %felt_const_2147483649 = felt.const  2147483649 : <"bn128"> {product_source = "constrain"}
-        %felt_const_32907 = felt.const  32907 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372039002292224 = felt.const  9223372039002292224 : <"bn128"> {product_source = "constrain"}
-        %felt_const_9223372036854808714 = felt.const  9223372036854808714 : <"bn128"> {product_source = "constrain"}
-        %felt_const_32898 = felt.const  32898 : <"bn128"> {product_source = "constrain"}
-        %felt_const_1 = felt.const  1 : <"bn128"> {product_source = "constrain"}
-        %felt_const_0 = felt.const  0 : <"bn128"> {product_source = "constrain"}
-        %0 = struct.readm %arg0[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        %nondet = llzk.nondet : !array.type<24 x !felt.type<"bn128">> {product_source = "constrain"}
-        array.write %nondet[%c0] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c1] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c2] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c3] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c4] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c5] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c6] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c7] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c8] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c9] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c10] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c11] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c12] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c13] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c14] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c15] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c16] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c17] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c18] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c19] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c20] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c21] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c22] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c23] = %felt_const_0 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c0] = %felt_const_1 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c1] = %felt_const_32898 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c4] = %felt_const_32907 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c5] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c8] = %felt_const_138 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c9] = %felt_const_136 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c10] = %felt_const_2147516425 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c11] = %felt_const_2147483658 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c12] = %felt_const_2147516555 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c18] = %felt_const_32778 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c22] = %felt_const_2147483649 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-        array.write %nondet[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
+        %felt_const_9223372039002292232 = felt.const  9223372039002292232 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854808704 = felt.const  9223372036854808704 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372039002259466 = felt.const  9223372039002259466 : <"babybear"> {product_source = "constrain"}
+        %felt_const_32778 = felt.const  32778 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854775936 = felt.const  9223372036854775936 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854808578 = felt.const  9223372036854808578 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854808579 = felt.const  9223372036854808579 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854808713 = felt.const  9223372036854808713 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854775947 = felt.const  9223372036854775947 : <"babybear"> {product_source = "constrain"}
+        %felt_const_2147516555 = felt.const  2147516555 : <"babybear"> {product_source = "constrain"}
+        %felt_const_2147483658 = felt.const  2147483658 : <"babybear"> {product_source = "constrain"}
+        %felt_const_2147516425 = felt.const  2147516425 : <"babybear"> {product_source = "constrain"}
+        %felt_const_136 = felt.const  136 : <"babybear"> {product_source = "constrain"}
+        %felt_const_138 = felt.const  138 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854808585 = felt.const  9223372036854808585 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372039002292353 = felt.const  9223372039002292353 : <"babybear"> {product_source = "constrain"}
+        %felt_const_2147483649 = felt.const  2147483649 : <"babybear"> {product_source = "constrain"}
+        %felt_const_32907 = felt.const  32907 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372039002292224 = felt.const  9223372039002292224 : <"babybear"> {product_source = "constrain"}
+        %felt_const_9223372036854808714 = felt.const  9223372036854808714 : <"babybear"> {product_source = "constrain"}
+        %felt_const_32898 = felt.const  32898 : <"babybear"> {product_source = "constrain"}
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "constrain"}
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+        %nondet = llzk.nondet : !array.type<24 x !felt.type<"babybear">> {product_source = "constrain"}
+        array.write %nondet[%c0] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c1] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c2] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c3] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c4] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c5] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c6] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c7] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c8] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c9] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c10] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c11] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c12] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c13] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c14] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c15] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c16] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c17] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c18] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c19] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c20] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c21] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c22] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c23] = %felt_const_0 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c0] = %felt_const_1 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c1] = %felt_const_32898 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c2] = %felt_const_9223372036854808714 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c3] = %felt_const_9223372039002292224 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c4] = %felt_const_32907 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c5] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c6] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c7] = %felt_const_9223372036854808585 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c8] = %felt_const_138 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c9] = %felt_const_136 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c10] = %felt_const_2147516425 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c11] = %felt_const_2147483658 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c12] = %felt_const_2147516555 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c13] = %felt_const_9223372036854775947 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c14] = %felt_const_9223372036854808713 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c15] = %felt_const_9223372036854808579 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c16] = %felt_const_9223372036854808578 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c17] = %felt_const_9223372036854775936 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c18] = %felt_const_32778 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c19] = %felt_const_9223372039002259466 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c20] = %felt_const_9223372039002292353 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c21] = %felt_const_9223372036854808704 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c22] = %felt_const_2147483649 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        array.write %nondet[%c23] = %felt_const_9223372039002292232 : <24 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %1 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %2 = felt.shr %felt_const_2147516425, %1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %4 = cast.toindex %1 : !felt.type<"bn128"> {product_source = "constrain"}
-          %5 = array.read %0[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %5, %3 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %1 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %2 = felt.shr %felt_const_2147516425, %1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %3 = felt.bit_and %2, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %4 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "constrain"}
+          %5 = array.read %0[%4] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %5, %3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         function.return {product_source = "constrain"}
       }
@@ -391,103 +391,103 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
   }
   poly.template @XOR_1 {
     struct.def @XOR_1 {
-      struct.member @out : !felt.type<"bn128"> {llzk.pub}
-      function.def @compute(%arg0: !felt.type<"bn128">, %arg1: !felt.type<"bn128">) -> !struct.type<@XOR_1::@XOR_1<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness} {
-        %felt_const_2 = felt.const  2 : <"bn128">
+      struct.member @out : !felt.type<"babybear"> {llzk.pub}
+      function.def @compute(%arg0: !felt.type<"babybear">, %arg1: !felt.type<"babybear">) -> !struct.type<@XOR_1::@XOR_1<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness} {
+        %felt_const_2 = felt.const  2 : <"babybear">
         %self = struct.new : <@XOR_1::@XOR_1<[]>>
-        %0 = felt.add %arg0, %arg1 : !felt.type<"bn128">, !felt.type<"bn128">
-        %1 = felt.mul %arg0, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128">
-        %2 = felt.mul %1, %arg1 : !felt.type<"bn128">, !felt.type<"bn128">
-        %3 = felt.sub %0, %2 : !felt.type<"bn128">, !felt.type<"bn128">
-        struct.writem %self[@out] = %3 : <@XOR_1::@XOR_1<[]>>, !felt.type<"bn128">
+        %0 = felt.add %arg0, %arg1 : !felt.type<"babybear">, !felt.type<"babybear">
+        %1 = felt.mul %arg0, %felt_const_2 : !felt.type<"babybear">, !felt.type<"babybear">
+        %2 = felt.mul %1, %arg1 : !felt.type<"babybear">, !felt.type<"babybear">
+        %3 = felt.sub %0, %2 : !felt.type<"babybear">, !felt.type<"babybear">
+        struct.writem %self[@out] = %3 : <@XOR_1::@XOR_1<[]>>, !felt.type<"babybear">
         function.return %self : !struct.type<@XOR_1::@XOR_1<[]>>
       }
-      function.def @constrain(%arg0: !struct.type<@XOR_1::@XOR_1<[]>>, %arg1: !felt.type<"bn128">, %arg2: !felt.type<"bn128">) attributes {function.allow_constraint, function.allow_non_native_field_ops} {
-        %felt_const_2 = felt.const  2 : <"bn128">
-        %0 = struct.readm %arg0[@out] : <@XOR_1::@XOR_1<[]>>, !felt.type<"bn128">
-        %1 = felt.add %arg1, %arg2 : !felt.type<"bn128">, !felt.type<"bn128">
-        %2 = felt.mul %arg1, %felt_const_2 : !felt.type<"bn128">, !felt.type<"bn128">
-        %3 = felt.mul %2, %arg2 : !felt.type<"bn128">, !felt.type<"bn128">
-        %4 = felt.sub %1, %3 : !felt.type<"bn128">, !felt.type<"bn128">
-        constrain.eq %0, %4 : !felt.type<"bn128">, !felt.type<"bn128">
+      function.def @constrain(%arg0: !struct.type<@XOR_1::@XOR_1<[]>>, %arg1: !felt.type<"babybear">, %arg2: !felt.type<"babybear">) attributes {function.allow_constraint, function.allow_non_native_field_ops} {
+        %felt_const_2 = felt.const  2 : <"babybear">
+        %0 = struct.readm %arg0[@out] : <@XOR_1::@XOR_1<[]>>, !felt.type<"babybear">
+        %1 = felt.add %arg1, %arg2 : !felt.type<"babybear">, !felt.type<"babybear">
+        %2 = felt.mul %arg1, %felt_const_2 : !felt.type<"babybear">, !felt.type<"babybear">
+        %3 = felt.mul %2, %arg2 : !felt.type<"babybear">, !felt.type<"babybear">
+        %4 = felt.sub %1, %3 : !felt.type<"babybear">, !felt.type<"babybear">
+        constrain.eq %0, %4 : !felt.type<"babybear">, !felt.type<"babybear">
         function.return
       }
     }
   }
   poly.template @XorArray_2 {
     struct.def @XorArray_2 {
-      struct.member @out : !array.type<64 x !felt.type<"bn128">> {llzk.pub}
+      struct.member @out : !array.type<64 x !felt.type<"babybear">> {llzk.pub}
       struct.member @aux : !array.type<64 x !struct.type<@XOR_1::@XOR_1<[]>>>
-      struct.member @aux$inputs : !array.type<64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>
-      function.def @compute(%arg0: !array.type<64 x !felt.type<"bn128">>, %arg1: !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness} {
+      struct.member @aux$inputs : !array.type<64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>
+      function.def @compute(%arg0: !array.type<64 x !felt.type<"babybear">>, %arg1: !array.type<64 x !felt.type<"babybear">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness} {
         %c2 = arith.constant 2 : index
         %c1 = arith.constant 1 : index
         %c0 = arith.constant 0 : index
         %c64 = arith.constant 64 : index
         %self = struct.new : <@XorArray_2::@XorArray_2<[]>>
-        %nondet = llzk.nondet : !array.type<64 x !felt.type<"bn128">>
+        %nondet = llzk.nondet : !array.type<64 x !felt.type<"babybear">>
         %array = array.new  : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>> 
         scf.for %arg2 = %c0 to %c64 step %c1 {
           %0 = array.read %array[%arg2] : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
           pod.write %0[@count] = %c2 : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, index
           array.write %array[%arg2] = %0 : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
         }
-        %array_0 = array.new  : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>> 
+        %array_0 = array.new  : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>> 
         scf.for %arg2 = %c0 to %c64 step %c1 {
-          %0 = cast.tofelt %arg2 : index, !felt.type<"bn128">
-          %1 = cast.toindex %0 : !felt.type<"bn128">
-          %2 = array.read %arg0[%1] : <64 x !felt.type<"bn128">>, !felt.type<"bn128">
-          %3 = cast.toindex %0 : !felt.type<"bn128">
-          %4 = array.read %array_0[%3] : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          pod.write %4[@a] = %2 : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-          %5 = cast.toindex %0 : !felt.type<"bn128">
-          array.write %array_0[%5] = %4 : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          %6 = cast.toindex %0 : !felt.type<"bn128">
+          %0 = cast.tofelt %arg2 : index, !felt.type<"babybear">
+          %1 = cast.toindex %0 : !felt.type<"babybear">
+          %2 = array.read %arg0[%1] : <64 x !felt.type<"babybear">>, !felt.type<"babybear">
+          %3 = cast.toindex %0 : !felt.type<"babybear">
+          %4 = array.read %array_0[%3] : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          pod.write %4[@a] = %2 : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+          %5 = cast.toindex %0 : !felt.type<"babybear">
+          array.write %array_0[%5] = %4 : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          %6 = cast.toindex %0 : !felt.type<"babybear">
           %7 = array.read %array[%6] : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
           %8 = pod.read %7[@count] : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, index
           %9 = arith.subi %8, %c1 : index
           pod.write %7[@count] = %9 : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, index
           %10 = arith.cmpi eq, %9, %c0 : index
           scf.if %10 {
-            %21 = pod.read %4[@a] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-            %22 = pod.read %4[@b] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-            %23 = function.call @XOR_1::@XOR_1::@compute(%21, %22) : (!felt.type<"bn128">, !felt.type<"bn128">) -> !struct.type<@XOR_1::@XOR_1<[]>> 
+            %21 = pod.read %4[@a] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+            %22 = pod.read %4[@b] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+            %23 = function.call @XOR_1::@XOR_1::@compute(%21, %22) : (!felt.type<"babybear">, !felt.type<"babybear">) -> !struct.type<@XOR_1::@XOR_1<[]>> 
             pod.write %7[@comp] = %23 : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@XOR_1::@XOR_1<[]>>
-            %24 = cast.toindex %0 : !felt.type<"bn128">
+            %24 = cast.toindex %0 : !felt.type<"babybear">
             array.write %array[%24] = %7 : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
           }
-          %11 = cast.toindex %0 : !felt.type<"bn128">
-          %12 = array.read %arg1[%11] : <64 x !felt.type<"bn128">>, !felt.type<"bn128">
-          %13 = cast.toindex %0 : !felt.type<"bn128">
-          %14 = array.read %array_0[%13] : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          pod.write %14[@b] = %12 : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-          %15 = cast.toindex %0 : !felt.type<"bn128">
-          array.write %array_0[%15] = %14 : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          %16 = cast.toindex %0 : !felt.type<"bn128">
+          %11 = cast.toindex %0 : !felt.type<"babybear">
+          %12 = array.read %arg1[%11] : <64 x !felt.type<"babybear">>, !felt.type<"babybear">
+          %13 = cast.toindex %0 : !felt.type<"babybear">
+          %14 = array.read %array_0[%13] : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          pod.write %14[@b] = %12 : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+          %15 = cast.toindex %0 : !felt.type<"babybear">
+          array.write %array_0[%15] = %14 : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          %16 = cast.toindex %0 : !felt.type<"babybear">
           %17 = array.read %array[%16] : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
           %18 = pod.read %17[@count] : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, index
           %19 = arith.subi %18, %c1 : index
           pod.write %17[@count] = %19 : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, index
           %20 = arith.cmpi eq, %19, %c0 : index
           scf.if %20 {
-            %21 = pod.read %14[@a] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-            %22 = pod.read %14[@b] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-            %23 = function.call @XOR_1::@XOR_1::@compute(%21, %22) : (!felt.type<"bn128">, !felt.type<"bn128">) -> !struct.type<@XOR_1::@XOR_1<[]>> 
+            %21 = pod.read %14[@a] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+            %22 = pod.read %14[@b] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+            %23 = function.call @XOR_1::@XOR_1::@compute(%21, %22) : (!felt.type<"babybear">, !felt.type<"babybear">) -> !struct.type<@XOR_1::@XOR_1<[]>> 
             pod.write %17[@comp] = %23 : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@XOR_1::@XOR_1<[]>>
-            %24 = cast.toindex %0 : !felt.type<"bn128">
+            %24 = cast.toindex %0 : !felt.type<"babybear">
             array.write %array[%24] = %17 : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
           }
         }
         scf.for %arg2 = %c0 to %c64 step %c1 {
-          %0 = cast.tofelt %arg2 : index, !felt.type<"bn128">
-          %1 = cast.toindex %0 : !felt.type<"bn128">
+          %0 = cast.tofelt %arg2 : index, !felt.type<"babybear">
+          %1 = cast.toindex %0 : !felt.type<"babybear">
           %2 = array.read %array[%1] : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
           %3 = pod.read %2[@comp] : <[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@XOR_1::@XOR_1<[]>>
-          %4 = struct.readm %3[@out] : <@XOR_1::@XOR_1<[]>>, !felt.type<"bn128">
-          %5 = cast.toindex %0 : !felt.type<"bn128">
-          array.write %nondet[%5] = %4 : <64 x !felt.type<"bn128">>, !felt.type<"bn128">
+          %4 = struct.readm %3[@out] : <@XOR_1::@XOR_1<[]>>, !felt.type<"babybear">
+          %5 = cast.toindex %0 : !felt.type<"babybear">
+          array.write %nondet[%5] = %4 : <64 x !felt.type<"babybear">>, !felt.type<"babybear">
         }
-        struct.writem %self[@aux$inputs] = %array_0 : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>
+        struct.writem %self[@aux$inputs] = %array_0 : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>
         %array_1 = array.new  : <64 x !struct.type<@XOR_1::@XOR_1<[]>>> 
         scf.for %arg2 = %c0 to %c64 step %c1 {
           %0 = array.read %array[%arg2] : <64 x !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@XOR_1::@XOR_1<[]>>, @params: !pod.type<[]>]>
@@ -495,46 +495,46 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
           array.write %array_1[%arg2] = %1 : <64 x !struct.type<@XOR_1::@XOR_1<[]>>>, !struct.type<@XOR_1::@XOR_1<[]>>
         }
         struct.writem %self[@aux] = %array_1 : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !struct.type<@XOR_1::@XOR_1<[]>>>
-        struct.writem %self[@out] = %nondet : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">>
+        struct.writem %self[@out] = %nondet : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">>
         function.return %self : !struct.type<@XorArray_2::@XorArray_2<[]>>
       }
-      function.def @constrain(%arg0: !struct.type<@XorArray_2::@XorArray_2<[]>>, %arg1: !array.type<64 x !felt.type<"bn128">>, %arg2: !array.type<64 x !felt.type<"bn128">>) attributes {function.allow_constraint, function.allow_non_native_field_ops} {
+      function.def @constrain(%arg0: !struct.type<@XorArray_2::@XorArray_2<[]>>, %arg1: !array.type<64 x !felt.type<"babybear">>, %arg2: !array.type<64 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops} {
         %c1 = arith.constant 1 : index
         %c0 = arith.constant 0 : index
         %c64 = arith.constant 64 : index
-        %0 = struct.readm %arg0[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">>
+        %0 = struct.readm %arg0[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">>
         %1 = struct.readm %arg0[@aux] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !struct.type<@XOR_1::@XOR_1<[]>>>
-        %2 = struct.readm %arg0[@aux$inputs] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>
+        %2 = struct.readm %arg0[@aux$inputs] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>
         scf.for %arg3 = %c0 to %c64 step %c1 {
-          %3 = cast.tofelt %arg3 : index, !felt.type<"bn128">
-          %4 = cast.toindex %3 : !felt.type<"bn128">
-          %5 = array.read %arg1[%4] : <64 x !felt.type<"bn128">>, !felt.type<"bn128">
-          %6 = cast.toindex %3 : !felt.type<"bn128">
-          %7 = array.read %2[%6] : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          %8 = pod.read %7[@a] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-          constrain.eq %8, %5 : !felt.type<"bn128">, !felt.type<"bn128">
-          %9 = cast.toindex %3 : !felt.type<"bn128">
-          %10 = array.read %arg2[%9] : <64 x !felt.type<"bn128">>, !felt.type<"bn128">
-          %11 = cast.toindex %3 : !felt.type<"bn128">
-          %12 = array.read %2[%11] : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          %13 = pod.read %12[@b] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-          constrain.eq %13, %10 : !felt.type<"bn128">, !felt.type<"bn128">
+          %3 = cast.tofelt %arg3 : index, !felt.type<"babybear">
+          %4 = cast.toindex %3 : !felt.type<"babybear">
+          %5 = array.read %arg1[%4] : <64 x !felt.type<"babybear">>, !felt.type<"babybear">
+          %6 = cast.toindex %3 : !felt.type<"babybear">
+          %7 = array.read %2[%6] : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          %8 = pod.read %7[@a] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+          constrain.eq %8, %5 : !felt.type<"babybear">, !felt.type<"babybear">
+          %9 = cast.toindex %3 : !felt.type<"babybear">
+          %10 = array.read %arg2[%9] : <64 x !felt.type<"babybear">>, !felt.type<"babybear">
+          %11 = cast.toindex %3 : !felt.type<"babybear">
+          %12 = array.read %2[%11] : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          %13 = pod.read %12[@b] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+          constrain.eq %13, %10 : !felt.type<"babybear">, !felt.type<"babybear">
         }
         scf.for %arg3 = %c0 to %c64 step %c1 {
-          %3 = cast.tofelt %arg3 : index, !felt.type<"bn128">
-          %4 = cast.toindex %3 : !felt.type<"bn128">
+          %3 = cast.tofelt %arg3 : index, !felt.type<"babybear">
+          %4 = cast.toindex %3 : !felt.type<"babybear">
           %5 = array.read %1[%4] : <64 x !struct.type<@XOR_1::@XOR_1<[]>>>, !struct.type<@XOR_1::@XOR_1<[]>>
-          %6 = struct.readm %5[@out] : <@XOR_1::@XOR_1<[]>>, !felt.type<"bn128">
-          %7 = cast.toindex %3 : !felt.type<"bn128">
-          %8 = array.read %0[%7] : <64 x !felt.type<"bn128">>, !felt.type<"bn128">
-          constrain.eq %8, %6 : !felt.type<"bn128">, !felt.type<"bn128">
+          %6 = struct.readm %5[@out] : <@XOR_1::@XOR_1<[]>>, !felt.type<"babybear">
+          %7 = cast.toindex %3 : !felt.type<"babybear">
+          %8 = array.read %0[%7] : <64 x !felt.type<"babybear">>, !felt.type<"babybear">
+          constrain.eq %8, %6 : !felt.type<"babybear">, !felt.type<"babybear">
         }
         scf.for %arg3 = %c0 to %c64 step %c1 {
           %3 = array.read %1[%arg3] : <64 x !struct.type<@XOR_1::@XOR_1<[]>>>, !struct.type<@XOR_1::@XOR_1<[]>>
-          %4 = array.read %2[%arg3] : <64 x !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>>, !pod.type<[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>
-          %5 = pod.read %4[@a] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-          %6 = pod.read %4[@b] : <[@a: !felt.type<"bn128">, @b: !felt.type<"bn128">]>, !felt.type<"bn128">
-          function.call @XOR_1::@XOR_1::@constrain(%3, %5, %6) : (!struct.type<@XOR_1::@XOR_1<[]>>, !felt.type<"bn128">, !felt.type<"bn128">) -> () 
+          %4 = array.read %2[%arg3] : <64 x !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>>, !pod.type<[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>
+          %5 = pod.read %4[@a] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+          %6 = pod.read %4[@b] : <[@a: !felt.type<"babybear">, @b: !felt.type<"babybear">]>, !felt.type<"babybear">
+          function.call @XOR_1::@XOR_1::@constrain(%3, %5, %6) : (!struct.type<@XOR_1::@XOR_1<[]>>, !felt.type<"babybear">, !felt.type<"babybear">) -> () 
         }
         function.return
       }
@@ -542,253 +542,253 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Iota_3::@Iota_3<[]>>} {
   }
   poly.template @Iota_3 {
     struct.def @Iota_3 {
-      struct.member @out : !array.type<1600 x !felt.type<"bn128">> {llzk.pub}
+      struct.member @out : !array.type<1600 x !felt.type<"babybear">> {llzk.pub}
       struct.member @iota : !struct.type<@XorArray_2::@XorArray_2<[]>>
-      struct.member @iota$inputs : !pod.type<[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>
+      struct.member @iota$inputs : !pod.type<[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>
       struct.member @rc : !struct.type<@RC_0::@RC_0<[]>>
       struct.member @rc$inputs : !pod.type<[]>
-      function.def @product(%arg0: !array.type<1600 x !felt.type<"bn128">>) -> !struct.type<@Iota_3::@Iota_3<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+      function.def @product(%arg0: !array.type<1600 x !felt.type<"babybear">>) -> !struct.type<@Iota_3::@Iota_3<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
         %c1600 = arith.constant 1600 : index
         %c64 = arith.constant 64 : index
         %c0 = arith.constant {product_source = "compute"} 0 : index
         %c1 = arith.constant {product_source = "compute"} 1 : index
         %c128 = arith.constant {product_source = "compute"} 128 : index
         %self = struct.new : <@Iota_3::@Iota_3<[]>> {product_source = "compute"}
-        %nondet = llzk.nondet : !array.type<1600 x !felt.type<"bn128">> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<1600 x !felt.type<"babybear">> {product_source = "compute"}
         %pod = pod.new { @count = %c128 }  : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-        %pod_0 = pod.new : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]> {product_source = "compute"}
+        %pod_0 = pod.new : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]> {product_source = "compute"}
         %pod_1 = pod.new : <[]> {product_source = "compute"}
         %0 = function.call @RC_0::@RC_0::@product() : () -> !struct.type<@RC_0::@RC_0<[]>> 
         %1 = function.call @RC_0::@RC_0::@compute() : () -> !struct.type<@RC_0::@RC_0<[]>>  {product_source = "compute"}
         %pod_2 = pod.new { @comp = %0 }  : <[@count: index, @comp: !struct.type<@RC_0::@RC_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
         %pod_3 = pod.new : <[]> {product_source = "compute"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %11 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %12 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          %13 = array.read %arg0[%12] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %14 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %15 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %14[%15] = %13 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          pod.write %pod_0[@a] = %14 : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+          %11 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %12 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          %13 = array.read %arg0[%12] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %14 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %15 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %14[%15] = %13 : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          pod.write %pod_0[@a] = %14 : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
           %16 = pod.read %pod[@count] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %17 = arith.subi %16, %c1 {product_source = "compute"} : index
           pod.write %pod[@count] = %17 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %18 = arith.cmpi eq, %17, %c0 {product_source = "compute"} : index
           scf.if %18 {
-            %28 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %29 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %30 = function.call @XorArray_2::@XorArray_2::@compute(%28, %29) : (!array.type<64 x !felt.type<"bn128">>, !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
+            %28 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %29 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %30 = function.call @XorArray_2::@XorArray_2::@compute(%28, %29) : (!array.type<64 x !felt.type<"babybear">>, !array.type<64 x !felt.type<"babybear">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
             pod.write %pod[@comp] = %30 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
           } {product_source = "compute"}
           %19 = pod.read %pod_2[@comp] : <[@count: index, @comp: !struct.type<@RC_0::@RC_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "compute"}
-          %20 = struct.readm %19[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %21 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          %22 = array.read %20[%21] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %23 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %24 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %23[%24] = %22 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          pod.write %pod_0[@b] = %23 : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+          %20 = struct.readm %19[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %21 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          %22 = array.read %20[%21] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %23 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %24 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %23[%24] = %22 : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          pod.write %pod_0[@b] = %23 : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
           %25 = pod.read %pod[@count] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %26 = arith.subi %25, %c1 {product_source = "compute"} : index
           pod.write %pod[@count] = %26 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %27 = arith.cmpi eq, %26, %c0 {product_source = "compute"} : index
           scf.if %27 {
-            %28 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %29 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %30 = function.call @XorArray_2::@XorArray_2::@compute(%28, %29) : (!array.type<64 x !felt.type<"bn128">>, !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
+            %28 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %29 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %30 = function.call @XorArray_2::@XorArray_2::@compute(%28, %29) : (!array.type<64 x !felt.type<"babybear">>, !array.type<64 x !felt.type<"babybear">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
             pod.write %pod[@comp] = %30 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
           } {product_source = "compute"}
         } {product_source = "compute"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %11 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
+          %11 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
           %12 = pod.read %pod[@comp] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
-          %13 = struct.readm %12[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %14 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          %15 = array.read %13[%14] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %16 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%16] = %15 : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %13 = struct.readm %12[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %14 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          %15 = array.read %13[%14] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %16 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%16] = %15 : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
         } {product_source = "compute"}
         scf.for %arg1 = %c64 to %c1600 step %c1 {
-          %11 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %12 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          %13 = array.read %arg0[%12] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %14 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%14] = %13 : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %11 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %12 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          %13 = array.read %arg0[%12] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %14 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%14] = %13 : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
         } {product_source = "compute"}
         struct.writem %self[@rc$inputs] = %pod_3 : <@Iota_3::@Iota_3<[]>>, !pod.type<[]> {product_source = "compute"}
         %2 = pod.read %pod_2[@comp] : <[@count: index, @comp: !struct.type<@RC_0::@RC_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "compute"}
         struct.writem %self[@rc] = %2 : <@Iota_3::@Iota_3<[]>>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "compute"}
-        struct.writem %self[@iota$inputs] = %pod_0 : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]> {product_source = "compute"}
+        struct.writem %self[@iota$inputs] = %pod_0 : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]> {product_source = "compute"}
         %3 = pod.read %pod[@comp] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
         struct.writem %self[@iota] = %3 : <@Iota_3::@Iota_3<[]>>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"bn128">> {product_source = "compute"}
-        %4 = struct.readm %self[@out] : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"bn128">> {product_source = "constrain"}
+        struct.writem %self[@out] = %nondet : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"babybear">> {product_source = "compute"}
+        %4 = struct.readm %self[@out] : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"babybear">> {product_source = "constrain"}
         %5 = struct.readm %self[@iota] : <@Iota_3::@Iota_3<[]>>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "constrain"}
-        %6 = struct.readm %self[@iota$inputs] : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]> {product_source = "constrain"}
+        %6 = struct.readm %self[@iota$inputs] : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]> {product_source = "constrain"}
         %7 = struct.readm %self[@rc] : <@Iota_3::@Iota_3<[]>>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "constrain"}
         %8 = struct.readm %self[@rc$inputs] : <@Iota_3::@Iota_3<[]>>, !pod.type<[]> {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %11 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %12 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %13 = array.read %arg0[%12] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %14 = pod.read %6[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %15 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %16 = array.read %14[%15] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %16, %13 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %17 = struct.readm %7[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %18 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %19 = array.read %17[%18] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %20 = pod.read %6[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %21 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %22 = array.read %20[%21] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %22, %19 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %11 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %13 = array.read %arg0[%12] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %14 = pod.read %6[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %15 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %16 = array.read %14[%15] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %16, %13 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %17 = struct.readm %7[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %18 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %19 = array.read %17[%18] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %20 = pod.read %6[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %21 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %22 = array.read %20[%21] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %22, %19 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %11 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %12 = struct.readm %5[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %13 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %14 = array.read %12[%13] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %15 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %16 = array.read %4[%15] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %16, %14 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %11 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = struct.readm %5[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %13 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %14 = array.read %12[%13] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %15 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %16 = array.read %4[%15] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %16, %14 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         scf.for %arg1 = %c64 to %c1600 step %c1 {
-          %11 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %12 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %13 = array.read %arg0[%12] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %14 = cast.toindex %11 : !felt.type<"bn128"> {product_source = "constrain"}
-          %15 = array.read %4[%14] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %15, %13 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %11 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %13 = array.read %arg0[%12] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %14 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+          %15 = array.read %4[%14] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %15, %13 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         function.call @RC_0::@RC_0::@constrain(%7) : (!struct.type<@RC_0::@RC_0<[]>>) -> ()  {product_source = "constrain"}
-        %9 = pod.read %6[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        %10 = pod.read %6[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        function.call @XorArray_2::@XorArray_2::@constrain(%5, %9, %10) : (!struct.type<@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">>, !array.type<64 x !felt.type<"bn128">>) -> ()  {product_source = "constrain"}
+        %9 = pod.read %6[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+        %10 = pod.read %6[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+        function.call @XorArray_2::@XorArray_2::@constrain(%5, %9, %10) : (!struct.type<@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">>, !array.type<64 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
         function.return %self : !struct.type<@Iota_3::@Iota_3<[]>>
       }
-      function.def @compute(%arg0: !array.type<1600 x !felt.type<"bn128">>) -> !struct.type<@Iota_3::@Iota_3<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+      function.def @compute(%arg0: !array.type<1600 x !felt.type<"babybear">>) -> !struct.type<@Iota_3::@Iota_3<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
         %c1600 = arith.constant 1600 : index
         %c64 = arith.constant 64 : index
         %c0 = arith.constant {product_source = "compute"} 0 : index
         %c1 = arith.constant {product_source = "compute"} 1 : index
         %c128 = arith.constant {product_source = "compute"} 128 : index
         %self = struct.new : <@Iota_3::@Iota_3<[]>> {product_source = "compute"}
-        %nondet = llzk.nondet : !array.type<1600 x !felt.type<"bn128">> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<1600 x !felt.type<"babybear">> {product_source = "compute"}
         %pod = pod.new { @count = %c128 }  : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
-        %pod_0 = pod.new : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]> {product_source = "compute"}
+        %pod_0 = pod.new : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]> {product_source = "compute"}
         %pod_1 = pod.new : <[]> {product_source = "compute"}
         %0 = function.call @RC_0::@RC_0::@compute() : () -> !struct.type<@RC_0::@RC_0<[]>>  {product_source = "compute"}
         %pod_2 = pod.new { @comp = %0 }  : <[@count: index, @comp: !struct.type<@RC_0::@RC_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
         %pod_3 = pod.new : <[]> {product_source = "compute"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %3 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %4 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          %5 = array.read %arg0[%4] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %6 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %7 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %6[%7] = %5 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          pod.write %pod_0[@a] = %6 : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+          %3 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %5 = array.read %arg0[%4] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %6 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %7 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %6[%7] = %5 : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          pod.write %pod_0[@a] = %6 : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
           %8 = pod.read %pod[@count] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %9 = arith.subi %8, %c1 {product_source = "compute"} : index
           pod.write %pod[@count] = %9 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %10 = arith.cmpi eq, %9, %c0 {product_source = "compute"} : index
           scf.if %10 {
-            %20 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %21 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %22 = function.call @XorArray_2::@XorArray_2::@compute(%20, %21) : (!array.type<64 x !felt.type<"bn128">>, !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
+            %20 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %21 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %22 = function.call @XorArray_2::@XorArray_2::@compute(%20, %21) : (!array.type<64 x !felt.type<"babybear">>, !array.type<64 x !felt.type<"babybear">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
             pod.write %pod[@comp] = %22 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
           } {product_source = "compute"}
           %11 = pod.read %pod_2[@comp] : <[@count: index, @comp: !struct.type<@RC_0::@RC_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "compute"}
-          %12 = struct.readm %11[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %13 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          %14 = array.read %12[%13] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %15 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %16 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %15[%16] = %14 : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          pod.write %pod_0[@b] = %15 : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
+          %12 = struct.readm %11[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %13 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %14 = array.read %12[%13] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %15 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %16 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %15[%16] = %14 : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          pod.write %pod_0[@b] = %15 : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
           %17 = pod.read %pod[@count] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %18 = arith.subi %17, %c1 {product_source = "compute"} : index
           pod.write %pod[@count] = %18 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
           %19 = arith.cmpi eq, %18, %c0 {product_source = "compute"} : index
           scf.if %19 {
-            %20 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %21 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-            %22 = function.call @XorArray_2::@XorArray_2::@compute(%20, %21) : (!array.type<64 x !felt.type<"bn128">>, !array.type<64 x !felt.type<"bn128">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
+            %20 = pod.read %pod_0[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %21 = pod.read %pod_0[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+            %22 = function.call @XorArray_2::@XorArray_2::@compute(%20, %21) : (!array.type<64 x !felt.type<"babybear">>, !array.type<64 x !felt.type<"babybear">>) -> !struct.type<@XorArray_2::@XorArray_2<[]>>  {product_source = "compute"}
             pod.write %pod[@comp] = %22 : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
           } {product_source = "compute"}
         } {product_source = "compute"}
         scf.for %arg1 = %c0 to %c64 step %c1 {
-          %3 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
+          %3 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
           %4 = pod.read %pod[@comp] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
-          %5 = struct.readm %4[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "compute"}
-          %6 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          %7 = array.read %5[%6] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %8 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%8] = %7 : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %5 = struct.readm %4[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "compute"}
+          %6 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %7 = array.read %5[%6] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %8 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%8] = %7 : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
         } {product_source = "compute"}
         scf.for %arg1 = %c64 to %c1600 step %c1 {
-          %3 = cast.tofelt %arg1 : index, !felt.type<"bn128"> {product_source = "compute"}
-          %4 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          %5 = array.read %arg0[%4] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
-          %6 = cast.toindex %3 : !felt.type<"bn128"> {product_source = "compute"}
-          array.write %nondet[%6] = %5 : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "compute"}
+          %3 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %5 = array.read %arg0[%4] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %6 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%6] = %5 : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
         } {product_source = "compute"}
         struct.writem %self[@rc$inputs] = %pod_3 : <@Iota_3::@Iota_3<[]>>, !pod.type<[]> {product_source = "compute"}
         %1 = pod.read %pod_2[@comp] : <[@count: index, @comp: !struct.type<@RC_0::@RC_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "compute"}
         struct.writem %self[@rc] = %1 : <@Iota_3::@Iota_3<[]>>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "compute"}
-        struct.writem %self[@iota$inputs] = %pod_0 : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]> {product_source = "compute"}
+        struct.writem %self[@iota$inputs] = %pod_0 : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]> {product_source = "compute"}
         %2 = pod.read %pod[@comp] : <[@count: index, @comp: !struct.type<@XorArray_2::@XorArray_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
         struct.writem %self[@iota] = %2 : <@Iota_3::@Iota_3<[]>>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "compute"}
-        struct.writem %self[@out] = %nondet : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"bn128">> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"babybear">> {product_source = "compute"}
         function.return {product_source = "compute"} %self : !struct.type<@Iota_3::@Iota_3<[]>>
       }
-      function.def @constrain(%arg0: !struct.type<@Iota_3::@Iota_3<[]>>, %arg1: !array.type<1600 x !felt.type<"bn128">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+      function.def @constrain(%arg0: !struct.type<@Iota_3::@Iota_3<[]>>, %arg1: !array.type<1600 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
         %c1600 = arith.constant 1600 : index
         %c1 = arith.constant 1 : index
         %c64 = arith.constant 64 : index
         %c0 = arith.constant 0 : index
-        %0 = struct.readm %arg0[@out] : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"bn128">> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@Iota_3::@Iota_3<[]>>, !array.type<1600 x !felt.type<"babybear">> {product_source = "constrain"}
         %1 = struct.readm %arg0[@iota] : <@Iota_3::@Iota_3<[]>>, !struct.type<@XorArray_2::@XorArray_2<[]>> {product_source = "constrain"}
-        %2 = struct.readm %arg0[@iota$inputs] : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]> {product_source = "constrain"}
+        %2 = struct.readm %arg0[@iota$inputs] : <@Iota_3::@Iota_3<[]>>, !pod.type<[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]> {product_source = "constrain"}
         %3 = struct.readm %arg0[@rc] : <@Iota_3::@Iota_3<[]>>, !struct.type<@RC_0::@RC_0<[]>> {product_source = "constrain"}
         %4 = struct.readm %arg0[@rc$inputs] : <@Iota_3::@Iota_3<[]>>, !pod.type<[]> {product_source = "constrain"}
         scf.for %arg2 = %c0 to %c64 step %c1 {
-          %7 = cast.tofelt %arg2 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %9 = array.read %arg1[%8] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %10 = pod.read %2[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %11 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %12 = array.read %10[%11] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %12, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
-          %13 = struct.readm %3[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %14 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %15 = array.read %13[%14] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %16 = pod.read %2[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %17 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %18 = array.read %16[%17] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %18, %15 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %7 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %8 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %9 = array.read %arg1[%8] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %10 = pod.read %2[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %11 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = array.read %10[%11] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %12, %9 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %13 = struct.readm %3[@out] : <@RC_0::@RC_0<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %14 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %15 = array.read %13[%14] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %16 = pod.read %2[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %17 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %18 = array.read %16[%17] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %18, %15 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         scf.for %arg2 = %c0 to %c64 step %c1 {
-          %7 = cast.tofelt %arg2 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %8 = struct.readm %1[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-          %9 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %10 = array.read %8[%9] : <64 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %11 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %12 = array.read %0[%11] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %12, %10 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %7 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %8 = struct.readm %1[@out] : <@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+          %9 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %10 = array.read %8[%9] : <64 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %11 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = array.read %0[%11] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %12, %10 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         scf.for %arg2 = %c64 to %c1600 step %c1 {
-          %7 = cast.tofelt %arg2 : index, !felt.type<"bn128"> {product_source = "constrain"}
-          %8 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %9 = array.read %arg1[%8] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          %10 = cast.toindex %7 : !felt.type<"bn128"> {product_source = "constrain"}
-          %11 = array.read %0[%10] : <1600 x !felt.type<"bn128">>, !felt.type<"bn128"> {product_source = "constrain"}
-          constrain.eq %11, %9 : !felt.type<"bn128">, !felt.type<"bn128"> {product_source = "constrain"}
+          %7 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %8 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %9 = array.read %arg1[%8] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %10 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+          %11 = array.read %0[%10] : <1600 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %11, %9 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
         } {product_source = "constrain"}
         function.call @RC_0::@RC_0::@constrain(%3) : (!struct.type<@RC_0::@RC_0<[]>>) -> ()  {product_source = "constrain"}
-        %5 = pod.read %2[@a] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        %6 = pod.read %2[@b] : <[@a: !array.type<64 x !felt.type<"bn128">>, @b: !array.type<64 x !felt.type<"bn128">>]>, !array.type<64 x !felt.type<"bn128">> {product_source = "constrain"}
-        function.call @XorArray_2::@XorArray_2::@constrain(%1, %5, %6) : (!struct.type<@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"bn128">>, !array.type<64 x !felt.type<"bn128">>) -> ()  {product_source = "constrain"}
+        %5 = pod.read %2[@a] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+        %6 = pod.read %2[@b] : <[@a: !array.type<64 x !felt.type<"babybear">>, @b: !array.type<64 x !felt.type<"babybear">>]>, !array.type<64 x !felt.type<"babybear">> {product_source = "constrain"}
+        function.call @XorArray_2::@XorArray_2::@constrain(%1, %5, %6) : (!struct.type<@XorArray_2::@XorArray_2<[]>>, !array.type<64 x !felt.type<"babybear">>, !array.type<64 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
         function.return {product_source = "constrain"}
       }
     }
