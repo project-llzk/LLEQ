@@ -1,0 +1,230 @@
+Benchmark,Source File,Optimized File,Root Struct,Preprocess Result,Time Seconds,Message
+AveragePooling2D_stride_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/AveragePooling2D_stride_test_llzk/AveragePooling2D_stride_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/AveragePooling2D_stride_test.llzk,AveragePooling2D_2,success,0.193133,
+AveragePooling2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/AveragePooling2D_test_llzk/AveragePooling2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/AveragePooling2D_test.llzk,AveragePooling2D_2,success,0.100781,
+BatchNormalization_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/BatchNormalization_test_llzk/BatchNormalization_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/BatchNormalization_test.llzk,BatchNormalization2D_0,success,0.056640,
+Conv1D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Conv1D_test_llzk/Conv1D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Conv1D_test.llzk,Conv1D_3,success,0.131240,
+Conv2D_stride_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Conv2D_stride_test_llzk/Conv2D_stride_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Conv2D_stride_test.llzk,Conv2D_3,success,0.166751,
+Conv2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Conv2D_test_llzk/Conv2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Conv2D_test.llzk,Conv2D_3,success,0.166621,
+Dense_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Dense_test_llzk/Dense_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Dense_test.llzk,Dense_3,success,0.095087,
+Flatten2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Flatten2D_test_llzk/Flatten2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Flatten2D_test.llzk,Flatten2D_0,success,0.055048,
+GlobalAveragePooling2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/GlobalAveragePooling2D_test_llzk/GlobalAveragePooling2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/GlobalAveragePooling2D_test.llzk,GlobalAveragePooling2D_2,success,0.081431,
+GlobalMaxPooling2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/GlobalMaxPooling2D_test_llzk/GlobalMaxPooling2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/GlobalMaxPooling2D_test.llzk,GlobalMaxPooling2D_5,success,0.130368,
+IsNegative_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/IsNegative_test_llzk/IsNegative_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/IsNegative_test.llzk,IsNegative_4,success,0.083048,
+IsPositive_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/IsPositive_test_llzk/IsPositive_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/IsPositive_test.llzk,IsPositive_4,success,0.082629,
+MaxPooling2D_stride_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/MaxPooling2D_stride_test_llzk/MaxPooling2D_stride_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/MaxPooling2D_stride_test.llzk,MaxPooling2D_5,success,0.113755,
+MaxPooling2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/MaxPooling2D_test_llzk/MaxPooling2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/MaxPooling2D_test.llzk,MaxPooling2D_5,success,0.113002,
+Max_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Max_test_llzk/Max_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Max_test.llzk,Max_4,success,0.090770,
+Num2Bits,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/Num2Bits_llzk/Num2Bits.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/Num2Bits.llzk,Num2Bits_0,success,0.050024,
+ReLU_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/ReLU_test_llzk/ReLU_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/ReLU_test.llzk,relu_test_6,success,0.087024,
+SumPooling2D_stride_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/SumPooling2D_stride_test_llzk/SumPooling2D_stride_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/SumPooling2D_stride_test.llzk,SumPooling2D_1,success,0.081563,
+SumPooling2D_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/SumPooling2D_test_llzk/SumPooling2D_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/SumPooling2D_test.llzk,SumPooling2D_1,success,0.081708,
+aes_256_ctr_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/aes_256_ctr_test_llzk/aes_256_ctr_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/aes_256_ctr_test.llzk,AES256CTR_8,success,1.214869,
+aes_256_encrypt_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/aes_256_encrypt_test_llzk/aes_256_encrypt_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/aes_256_encrypt_test.llzk,AES256Encrypt_6,success,1.022826,
+aes_256_key_expansion_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/aes_256_key_expansion_test_llzk/aes_256_key_expansion_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/aes_256_key_expansion_test.llzk,AES256KeyExpansion_3,success,0.813749,
+aliascheck_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/aliascheck_test_llzk/aliascheck_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/aliascheck_test.llzk,AliasCheck_2,success,0.074434,
+babyadd_tester,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/babyadd_tester_llzk/babyadd_tester.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/babyadd_tester.llzk,BabyAdd_0,success,0.052204,
+babycheck_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/babycheck_test_llzk/babycheck_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/babycheck_test.llzk,BabyCheck_0,success,0.049092,
+binsub_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/binsub_test_llzk/binsub_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/binsub_test.llzk,A_3,success,0.078903,
+calculateTotal_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/calculateTotal_test_llzk/calculateTotal_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/calculateTotal_test.llzk,CalculateTotal_0,success,0.054077,
+chi_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/chi_test_llzk/chi_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/chi_test.llzk,Chi_6,success,0.946488,
+constants_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/constants_test_llzk/constants_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/constants_test.llzk,A_1,success,0.108238,
+decryptMultiple_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/decryptMultiple_test_llzk/decryptMultiple_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/decryptMultiple_test.llzk,DecryptBits_1,success,0.119303,
+decrypt_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/decrypt_test_llzk/decrypt_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/decrypt_test.llzk,Decrypt_1,success,0.116534,
+edwards2montgomery,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/edwards2montgomery_llzk/edwards2montgomery.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/edwards2montgomery.llzk,Edwards2Montgomery_0,success,0.050867,
+encryptMultiple_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/encryptMultiple_test_llzk/encryptMultiple_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/encryptMultiple_test.llzk,EncryptBits_2,success,0.127958,
+encrypt_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/encrypt_test_llzk/encrypt_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/encrypt_test.llzk,Encrypt_2,success,0.118132,
+escalarmulw4table,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_llzk/escalarmulw4table.llzk,,Main_0,error,0.360849,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_llzk/escalarmulw4table.llzk:82:26: error: 'felt.const' op operation destroyed but still has uses
+      %felt_const_4_24 = felt.const  4 : <""bn128"">
+                         ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_llzk/escalarmulw4table.llzk:82:26: note: see current operation: %0 = ""felt.const""() <{value = #felt<const 4 : <""bn128"">> : !felt.type<""bn128"">}> : () -> !felt.type<""bn128"">
+/Users/r"
+escalarmulw4table_test3,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_test3_llzk/escalarmulw4table_test3.llzk,,Main_0,error,0.330900,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_test3_llzk/escalarmulw4table_test3.llzk:82:26: error: 'felt.const' op operation destroyed but still has uses
+      %felt_const_4_24 = felt.const  4 : <""bn128"">
+                         ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_test3_llzk/escalarmulw4table_test3.llzk:82:26: note: see current operation: %0 = ""felt.const""() <{value = #felt<const 4 : <""bn128"">> : !felt.type<""bn128"">}> : () -> !fel"
+escalarmulw4table_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_test_llzk/escalarmulw4table_test.llzk,,Main_0,error,0.324271,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_test_llzk/escalarmulw4table_test.llzk:82:26: error: 'felt.const' op operation destroyed but still has uses
+      %felt_const_4_24 = felt.const  4 : <""bn128"">
+                         ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/escalarmulw4table_test_llzk/escalarmulw4table_test.llzk:82:26: note: see current operation: %0 = ""felt.const""() <{value = #felt<const 4 : <""bn128"">> : !felt.type<""bn128"">}> : () -> !felt.ty"
+fp12multiply,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/fp12multiply_llzk/fp12multiply.llzk,,Fp12Multiply_14,error,1.020967,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/fp12multiply_llzk/fp12multiply.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/fp12multiply_llzk/fp12multiply.llzk:2270:14: note: see current operation: 
+%5"
+greatereqthan,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/greatereqthan_llzk/Num2Bits_0_unrolled.llzk,,,error,0.000000,failed to find llzk.main root struct
+greatereqthan,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/greatereqthan_llzk/greatereqthan.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/greatereqthan.llzk,GreaterEqThan_2,success,0.062055,
+greaterthan,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/greaterthan_llzk/greaterthan.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/greaterthan.llzk,GreaterThan_2,success,0.059652,
+inTest,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/inTest_llzk/inTest.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/inTest.llzk,IN_5,success,0.077535,
+iota10_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/iota10_test_llzk/iota10_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/iota10_test.llzk,Iota_3,success,0.086787,
+iota3_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/iota3_test_llzk/iota3_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/iota3_test.llzk,Iota_3,success,0.087816,
+isequal,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/isequal_llzk/isequal.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/isequal.llzk,IsEqual_1,success,0.054302,
+iszero,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/iszero_llzk/iszero.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/iszero.llzk,IsZero_0,success,0.049722,
+keccakfRound0_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/keccakfRound0_test_llzk/keccakfRound0_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/keccakfRound0_test.llzk,KeccakfRound_88,success,3.889800,
+keccakfRound20_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/keccakfRound20_test_llzk/keccakfRound20_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/keccakfRound20_test.llzk,KeccakfRound_88,success,3.971782,
+lesseqthan,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/lesseqthan_llzk/lesseqthan.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/lesseqthan.llzk,LessEqThan_2,success,0.063208,
+lessthan,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/lessthan_llzk/lessthan.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/lessthan.llzk,LessThan_1,success,0.055721,
+linefunctionequal_35_11,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/linefunctionequal_35_11_llzk/linefunctionequal_35_11.llzk,,LineFunctionEqual_15,error,1.087144,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/linefunctionequal_35_11_llzk/linefunctionequal_35_11.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/linefunctionequal_35_11_llzk/linefunctionequal_35_11.ll"
+linefunctionequal,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/linefunctionequal_llzk/linefunctionequal.llzk,,LineFunctionEqual_15,error,1.068064,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/linefunctionequal_llzk/linefunctionequal.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/linefunctionequal_llzk/linefunctionequal.llzk:2270:14: note: see cu"
+main,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/main_llzk/main.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/main.llzk,fulladder_0,success,0.047750,
+matAdd_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matAdd_test_llzk/matAdd_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matAdd_test.llzk,matAdd_0,success,0.053498,
+matElemMul_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matElemMul_test_llzk/matElemMul_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matElemMul_test.llzk,matElemMul_0,success,0.051740,
+matElemPow_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matElemPow_test_llzk/matElemPow_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matElemPow_test.llzk,matElemPow_1,success,0.063273,
+matMul_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matMul_test_llzk/matMul_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matMul_test.llzk,matMul_2,success,0.096011,
+matPow_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matPow_test_llzk/matPow_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matPow_test.llzk,matPow_3,success,0.139229,
+matScalarAdd_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matScalarAdd_test_llzk/matScalarAdd_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matScalarAdd_test.llzk,matScalarAdd_0,success,0.051679,
+matScalarMul_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matScalarMul_test_llzk/matScalarMul_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matScalarMul_test.llzk,matScalarMul_0,success,0.053842,
+matScalarSub_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matScalarSub_test_llzk/matScalarSub_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matScalarSub_test.llzk,matScalarSub_0,success,0.051045,
+matSub_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/matSub_test_llzk/matSub_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/matSub_test.llzk,matSub_0,success,0.052684,
+millerloop_35_11,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/millerloop_35_11_llzk/millerloop_35_11.llzk,,MillerLoop1_55,error,3.440892,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/millerloop_35_11_llzk/millerloop_35_11.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/millerloop_35_11_llzk/millerloop_35_11.llzk:2270:14: note: see curren"
+mimc_sponge_hash_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mimc_sponge_hash_test_llzk/mimc_sponge_hash_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mimc_sponge_hash_test.llzk,MiMCSponge_1,success,0.219785,
+mimc_sponge_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mimc_sponge_test_llzk/mimc_sponge_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mimc_sponge_test.llzk,MiMCFeistel_0,success,0.255137,
+mimc_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mimc_test_llzk/mimc_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mimc_test.llzk,MiMC7_0,success,0.135068,
+mnist_convnet_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mnist_convnet_test_llzk/mnist_convnet_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mnist_convnet_test.llzk,mnist_convnet_21,success,0.706058,
+mnist_latest_precision_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mnist_latest_precision_test_llzk/mnist_latest_precision_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mnist_latest_precision_test.llzk,mnist_latest_precision_29,success,0.868617,
+mnist_latest_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mnist_latest_test_llzk/mnist_latest_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mnist_latest_test.llzk,mnist_latest_25,success,0.828857,
+mnist_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mnist_test_llzk/mnist_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mnist_test.llzk,mnist_20,success,0.333557,
+model1_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/model1_test_llzk/model1_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/model1_test.llzk,model1_14,success,0.199973,
+montgomery2edwards,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/montgomery2edwards_llzk/montgomery2edwards.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/montgomery2edwards.llzk,Montgomery2Edwards_0,success,0.049780,
+montgomeryadd,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/montgomeryadd_llzk/montgomeryadd.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/montgomeryadd.llzk,MontgomeryAdd_0,success,0.053118,
+montgomerydouble,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/montgomerydouble_llzk/montgomerydouble.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/montgomerydouble.llzk,MontgomeryDouble_0,success,0.053034,
+mul_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mul_test_llzk/mul_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mul_test.llzk,Mul_1,success,0.465425,
+mux1_1,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mux1_1_llzk/mux1_1.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux1_1.llzk,Main_4,success,0.068116,
+mux2_1,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mux2_1_llzk/mux2_1.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux2_1.llzk,Main_4,success,0.078751,
+mux3_1,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mux3_1_llzk/mux3_1.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux3_1.llzk,Main_4,success,0.090269,
+mux4_1,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mux4_1_llzk/mux4_1.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux4_1.llzk,Main_4,success,0.122975,
+mux_decode,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mux_decode_llzk/mux_decode.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux_decode.llzk,Decoder_0,success,0.050447,
+mux_ep,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/mux_ep_llzk/mux_ep.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/mux_ep.llzk,EscalarProduct_0,success,0.050304,
+outer_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/outer_test_llzk/outer_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/outer_test.llzk,outer_0,success,0.052229,
+pad_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/pad_test_llzk/pad_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/pad_test.llzk,Pad_0,success,0.075207,
+pointbits_loopback,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/pointbits_loopback_llzk/pointbits_loopback.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/pointbits_loopback.llzk,Main_9,success,0.149901,
+pubkeygen,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/pubkeygen_llzk/pubkeygen.llzk,,ECDSAPrivToPub_30,error,28.303155,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/pubkeygen_llzk/pubkeygen.llzk:2029:16: warning: failed to transform op: could not identify an upper bound
+      %410:2 = scf.while (%arg5 = %409, %arg6 = %407) : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> (!felt.type<""bn128"">, !felt.type<""bn128"">) {
+               ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/pubkeygen_llzk/pubkeygen.llzk:2029:16: note: see current operation: 
+%414:2 = scf.while (%arg5 = %413, %arg6 = %411) : (!f"
+queryTest,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/queryTest_llzk/queryTest.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/queryTest.llzk,Query_9,success,0.141533,
+quinGeneratePathIndices_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/quinGeneratePathIndices_test_llzk/quinGeneratePathIndices_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/quinGeneratePathIndices_test.llzk,QuinGeneratePathIndices_3,success,0.083173,
+quinSelector_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/quinSelector_test_llzk/quinSelector_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/quinSelector_test.llzk,QuinSelector_5,success,0.082768,
+rhopi_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/rhopi_test_llzk/rhopi_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/rhopi_test.llzk,RhoPi_74,success,1.015659,
+sign_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/sign_test_llzk/sign_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/sign_test.llzk,Sign_2,success,0.075081,
+splicer_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/splicer_test_llzk/splicer_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/splicer_test.llzk,Splicer_9,success,0.127248,
+squeeze_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/squeeze_test_llzk/squeeze_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/squeeze_test.llzk,Squeeze_0,success,0.052897,
+subgroupcheckG1,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/subgroupcheckG1_llzk/subgroupcheckG1.llzk,,SubgroupCheckG1_60,error,3.344275,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/subgroupcheckG1_llzk/subgroupcheckG1.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/subgroupcheckG1_llzk/subgroupcheckG1.llzk:2270:14: note: see current op"
+sum_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/sum_test_llzk/sum_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/sum_test.llzk,A_3,success,0.079506,
+test_bigadd_15,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigadd_15_llzk/test_bigadd_15.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigadd_15.llzk,BigAdd_4,success,0.082526,
+test_bigadd_23,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigadd_23_llzk/test_bigadd_23.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigadd_23.llzk,BigAdd_4,success,0.082833,
+test_biglessthan_23,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_biglessthan_23_llzk/test_biglessthan_23.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_biglessthan_23.llzk,BigLessThan_6,success,0.150334,
+test_bigmod_22,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigmod_22_llzk/test_bigmod_22.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigmod_22.llzk,BigMod_16,success,1.127600,
+test_bigmod_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigmod_32_llzk/test_bigmod_32.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigmod_32.llzk,BigMod_16,success,1.162831,
+test_bigmult_21,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigmult_21_llzk/test_bigmult_21.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigmult_21.llzk,BigMult_4,success,0.109814,
+test_bigmult_22,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigmult_22_llzk/test_bigmult_22.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigmult_22.llzk,BigMult_4,success,0.157409,
+test_bigmult_23,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigmult_23_llzk/test_bigmult_23.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigmult_23.llzk,BigMult_4,success,0.169844,
+test_bigsub_15,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigsub_15_llzk/test_bigsub_15.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigsub_15.llzk,BigSub_6,success,0.087779,
+test_bigsub_23,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigsub_23_llzk/test_bigsub_23.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigsub_23.llzk,BigSub_6,success,0.087350,
+test_bigsubmodp_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bigsubmodp_32_llzk/test_bigsubmodp_32.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_bigsubmodp_32.llzk,BigSubModP_10,success,0.108798,
+test_bls12-381_add,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bls12-381_add_llzk/test_bls12-381_add.llzk,,EllipticCurveAddUnequal_20,error,1.534037,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bls12-381_add_llzk/test_bls12-381_add.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bls12-381_add_llzk/test_bls12-381_add.llzk:2270:14: note: se"
+test_bls12-381_double,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bls12-381_double_llzk/test_bls12-381_double.llzk,,EllipticCurveDouble_29,error,2.079688,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bls12-381_double_llzk/test_bls12-381_double.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_bls12-381_double_llzk/test_bls12-381_double.llzk:2270:"
+test_ecdsa,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_ecdsa_llzk/test_ecdsa.llzk,,ECDSAPrivToPub_30,error,28.150417,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_ecdsa_llzk/test_ecdsa.llzk:2029:16: warning: failed to transform op: could not identify an upper bound
+      %410:2 = scf.while (%arg5 = %407, %arg6 = %409) : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> (!felt.type<""bn128"">, !felt.type<""bn128"">) {
+               ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_ecdsa_llzk/test_ecdsa.llzk:2029:16: note: see current operation: 
+%414:2 = scf.while (%arg5 = %411, %arg6 = %413) :"
+test_ecdsa_verify,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_ecdsa_verify_llzk/test_ecdsa_verify.llzk,,ECDSAVerifyNoPubkeyCheck_57,error,48.482615,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_ecdsa_verify_llzk/test_ecdsa_verify.llzk:2890:17: warning: failed to transform op: could not identify an upper bound
+        %1024 = scf.while (%arg6 = %1023) : (!felt.type<""bn128"">) -> !felt.type<""bn128""> {
+                ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_ecdsa_verify_llzk/test_ecdsa_verify.llzk:2890:17: note: see current operation: 
+%1027 = scf.while (%arg6 = %1026) : (!felt.type<""bn128"">) -> !felt.type<""bn1"
+test_fp12_add_22,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_add_22_llzk/test_fp12_add_22.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_fp12_add_22.llzk,Fp12Add_16,success,0.184616,
+test_fp12_compression_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_compression_32_llzk/test_fp12_compression_32.llzk,,test_46,error,2.653165,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_compression_32_llzk/test_fp12_compression_32.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_compression_32_llzk/test_fp12_compression_3"
+test_fp12_cyclotomicExp_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_cyclotomicExp_32_llzk/test_fp12_cyclotomicExp_32.llzk,,Fp12CyclotomicExp_66,error,3.513594,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_cyclotomicExp_32_llzk/test_fp12_cyclotomicExp_32.llzk:2768:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_cyclotomicExp_32_llzk/test_fp12_cycloto"
+test_fp12_cyclotomicSquare_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_cyclotomicSquare_32_llzk/test_fp12_cyclotomicSquare_32.llzk,,Fp12CyclotomicSquare_17,error,1.109076,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_cyclotomicSquare_32_llzk/test_fp12_cyclotomicSquare_32.llzk:2768:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_cyclotomicSquare_32_llzk/test_fp1"
+test_fp12_invert_42,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_invert_42_llzk/test_fp12_invert_42.llzk,,Fp12Invert_15,error,1.929146,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_invert_42_llzk/test_fp12_invert_42.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_invert_42_llzk/test_fp12_invert_42.llzk:2270:14: note"
+test_fp12_multiply_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_multiply_32_llzk/test_fp12_multiply_32.llzk,,Fp12Multiply_14,error,1.023798,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_multiply_32_llzk/test_fp12_multiply_32.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp12_multiply_32_llzk/test_fp12_multiply_32.llzk:2270:"
+test_fp2_add_22,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_add_22_llzk/test_fp2_add_22.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_fp2_add_22.llzk,Fp2Add_16,success,0.183541,
+test_fp2_invert_42,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_invert_42_llzk/test_fp2_invert_42.llzk,,Fp2Invert_15,error,1.411220,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_invert_42_llzk/test_fp2_invert_42.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_invert_42_llzk/test_fp2_invert_42.llzk:2270:14: note: se"
+test_fp2_multiply_42,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_multiply_42_llzk/test_fp2_multiply_42.llzk,,Fp2Multiply_14,error,0.995432,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_multiply_42_llzk/test_fp2_multiply_42.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_fp2_multiply_42_llzk/test_fp2_multiply_42.llzk:2270:14: "
+test_linefunc_equal_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_linefunc_equal_32_llzk/test_linefunc_equal_32.llzk,,LineFunctionEqual_15,error,1.119471,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_linefunc_equal_32_llzk/test_linefunc_equal_32.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_linefunc_equal_32_llzk/test_linefunc_equal_32.llzk:2"
+test_linefunc_unequal_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_linefunc_unequal_32_llzk/test_linefunc_unequal_32.llzk,,LineFunctionUnequal_12,error,0.982520,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_linefunc_unequal_32_llzk/test_linefunc_unequal_32.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %nondet_502, %arg6 = %553) : (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) -> (!array.type<50 x !felt.type<""bn128"">>, !felt.type<""bn128"">) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_linefunc_unequal_32_llzk/test_linefunc_unequal_3"
+test_multiply_linefunc_unequal_32,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_multiply_linefunc_unequal_32_llzk/test_multiply_linefunc_unequal_32.llzk,,Fp12MultiplyWithLineUnequal_15,error,1.064143,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_multiply_linefunc_unequal_32_llzk/test_multiply_linefunc_unequal_32.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_multiply_linefunc_unequal_32_l"
+test_secp256k1_add,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_add_llzk/test_secp256k1_add.llzk,,EllipticCurveAddUnequal_20,error,1.540582,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_add_llzk/test_secp256k1_add.llzk:2270:14: warning: failed to transform op: could not identify an upper bound
+    %554:2 = scf.while (%arg5 = %553, %arg6 = %nondet_502) : (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) -> (!felt.type<""bn128"">, !array.type<50 x !felt.type<""bn128"">>) {
+             ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_add_llzk/test_secp256k1_add.llzk:2270:14: note: se"
+test_secp256k1_double,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_double_llzk/test_secp256k1_double.llzk,,Secp256k1Double_22,error,2.756534,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_double_llzk/test_secp256k1_double.llzk:2029:16: warning: failed to transform op: could not identify an upper bound
+      %410:2 = scf.while (%arg5 = %409, %arg6 = %407) : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> (!felt.type<""bn128"">, !felt.type<""bn128"">) {
+               ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_double_llzk/test_secp256k1_double.llzk:2029:16: note: see current operation: 
+%414:"
+test_secp256k1_poc,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_poc_llzk/test_secp256k1_poc.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/test_secp256k1_poc.llzk,Secp256k1PointOnCurve_10,success,1.388702,
+test_secp256k1_scalarmult,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_scalarmult_llzk/test_secp256k1_scalarmult.llzk,,Secp256k1ScalarMult_36,error,4.495140,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_scalarmult_llzk/test_secp256k1_scalarmult.llzk:2029:16: warning: failed to transform op: could not identify an upper bound
+      %410:2 = scf.while (%arg5 = %407, %arg6 = %409) : (!felt.type<""bn128"">, !felt.type<""bn128"">) -> (!felt.type<""bn128"">, !felt.type<""bn128"">) {
+               ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_secp256k1_scalarmult_llzk/test_secp256k1_scalarmult.llzk:2029:16: note: see current o"
+test_template_assert_valid_signed_header,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_template_assert_valid_signed_header_llzk/test_template_assert_valid_signed_header.llzk,,TemplateAssertValidSignedHeader_0,error,0.045361,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/test_template_assert_valid_signed_header_llzk/test_template_assert_valid_signed_header.llzk:2:48: error: expected '{' to begin a region
+  struct.def @TemplateAssertValidSignedHeader_0<[]> {
+                                               ^"
+theta_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/theta_test_llzk/theta_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/theta_test.llzk,Theta_9,success,2.247112,
+trace_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/trace_test_llzk/trace_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/trace_test.llzk,trace_1,success,0.059649,
+tranpose_test,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/tranpose_test_llzk/tranpose_test.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/tranpose_test.llzk,transpose_0,success,0.052249,
+utils_GetValueByIndex,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_GetValueByIndex_llzk/utils_GetValueByIndex.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_GetValueByIndex.llzk,getValueByIndex_3,success,0.088999,
+utils_getClaimExpiration,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_getClaimExpiration_llzk/utils_getClaimExpiration.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_getClaimExpiration.llzk,getClaimExpiration_2,success,0.063632,
+utils_getClaimSubjectOtherIden,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_getClaimSubjectOtherIden_llzk/utils_getClaimSubjectOtherIden.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_getClaimSubjectOtherIden.llzk,getClaimSubjectOtherIden_8,success,0.108467,
+utils_getSubjectLocation,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_getSubjectLocation_llzk/utils_getSubjectLocation.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_getSubjectLocation.llzk,getSubjectLocation_1,success,0.056595,
+utils_isExpirable,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_isExpirable_llzk/utils_isExpirable.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_isExpirable.llzk,isExpirable_0,success,0.046854,
+utils_isUpdatable,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_isUpdatable_llzk/utils_isUpdatable.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_isUpdatable.llzk,isUpdatable_0,success,0.048857,
+utils_verifyCredentialSubject,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_verifyCredentialSubject_llzk/utils_verifyCredentialSubject.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_verifyCredentialSubject.llzk,verifyCredentialSubject_9,success,0.111880,
+utils_verifyExpirationTime,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/utils_verifyExpirationTime_llzk/utils_verifyExpirationTime.llzk,/Users/raghav/Veridise/LLEQ/examples/circom-demo/utils_verifyExpirationTime.llzk,verifyExpirationTime_10,success,0.106554,
+verify,/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/verify_llzk/verify.llzk,,ECDSAVerifyNoPubkeyCheck_57,error,49.135559,"/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/verify_llzk/verify.llzk:2890:17: warning: failed to transform op: could not identify an upper bound
+        %1024 = scf.while (%arg6 = %1023) : (!felt.type<""bn128"">) -> !felt.type<""bn128""> {
+                ^
+/Users/raghav/Veridise/circom-benchmarks/llzk-outputs/verify_llzk/verify.llzk:2890:17: note: see current operation: 
+%1027 = scf.while (%arg6 = %1026) : (!felt.type<""bn128"">) -> !felt.type<""bn128""> {
+  %felt_const_0_1820 = felt.const  0 "
