@@ -5,6 +5,7 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Verification/FixpointVerifier.h"
+#include "Verification/SymbolicVerifier.h"
 #include "Verification/VerificationUtils.h"
 #include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
@@ -186,6 +187,18 @@ int main(int argc, char **argv) {
     }
 
     WeakestPreconditionAnalysis analysis{structDef, *field};
+    SymbolicVerifier symbolicStore{structDef};
+    if (failed(symbolicStore.buildStore())) {
+      llvm::errs() << "Failed to build symbolic store\n";
+      return EXIT_FAILURE;
+    }
+
+    for (auto memberDef : structDef.getMemberDefs()) {
+      if (symbolicStore.areEquivalent(memberDef.getSymName())) {
+        analysis.addEquivalentMember(memberDef);
+      }
+    }
+
     analysis.emit(llvm::outs());
 
     return EXIT_SUCCESS;

@@ -80,7 +80,6 @@ class WeakestPreconditionAnalysis {
     });
   }
 
-  TermBuilder::TermSet conjecturePredicates(mlir::scf::ForOp loop);
   llvm::FailureOr<cvc5::Term>
   computeInvariant(mlir::scf::ForOp loop, const ConjunctionTerm &postcondition);
 
@@ -95,6 +94,8 @@ public:
   ImplicationTerm getPostcondition();
   void populateVerificationConditions();
   cvc5::Term generateVerificationConditions();
+
+  void addEquivalentMember(llzk::component::MemberDefOp memberDef);
 
   void emit(llvm::raw_ostream &os);
 

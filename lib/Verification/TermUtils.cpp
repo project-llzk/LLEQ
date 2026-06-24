@@ -349,7 +349,17 @@ cvc5::Term TermBuilder::getConstant(Value value) {
   return newConst;
 }
 
-cvc5::Term TermBuilder::getConstant(llzk::component::MemberDefOp memberDef,
+void TermBuilder::addEquivalentMember(component::MemberDefOp memberDef) {
+  StringRef memberName = memberDef.getSymName();
+  auto memberConst =
+      mgr.mkConst(_sort_of_type(memberDef.getType()), memberName.str());
+
+  witnessMembers.insert({memberName, memberConst});
+  constraintMembers.insert({memberName, memberConst});
+  termTypes.insert({memberConst, memberDef.getType()});
+}
+
+cvc5::Term TermBuilder::getConstant(component::MemberDefOp memberDef,
                                     bool isWitness) {
   return getConstant(memberDef.getSymName(), memberDef.getType(), isWitness);
 }

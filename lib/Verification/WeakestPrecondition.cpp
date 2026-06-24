@@ -8,8 +8,8 @@
 #include "Verification/TermUtils.h"
 #include "Verification/VerificationUtils.h"
 
-#include <complex>
 #include <fstream>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -38,6 +38,7 @@
 #include <mlir/IR/SymbolTable.h>
 #include <mlir/IR/Value.h>
 #include <optional>
+#include <unistd.h>
 #include <vector>
 
 using namespace llzk;
@@ -103,32 +104,47 @@ std::string buildSMTQuery(cvc5::Term query, TermBuilder &builder,
 }
 
 bool checkUnsatWithZ3(StringRef query) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  auto tempStdin = std::tmpnam(nullptr);
-  auto tempStdout = std::tmpnam(nullptr);
-#pragma clang diagnostic pop
+  int stdinFd = -1;
+  SmallString<128> tempStdin;
+  llzk::ensure(llvm::sys::fs::createTemporaryFile("lleq-z3-stdin", "smt2",
+                                                  stdinFd, tempStdin) ==
+                   std::error_code{},
+               "failed to create temporary file for z3 stdin");
+  int stdoutFd = -1;
+  SmallString<128> tempStdout;
+  llzk::ensure(llvm::sys::fs::createTemporaryFile("lleq-z3-stdout", "txt",
+                                                  stdoutFd, tempStdout) ==
+                   std::error_code{},
+               "failed to create temporary file for z3 stdout");
 
-  std::ofstream os{tempStdin};
-  os << query.data();
+  std::ofstream os{tempStdin.c_str()};
+  os.write(query.data(), query.size());
   os.close();
+  if (stdinFd >= 0) {
+    ::close(stdinFd);
+  }
+  if (stdoutFd >= 0) {
+    ::close(stdoutFd);
+  }
 
   auto solverPath = resolveZ3Path();
-  SmallVector<StringRef> args{"z3", "-in", "-smt2"};
+  SmallVector<StringRef> args{solverPath, "-smt2", tempStdin};
 
   std::string error;
-  auto code = llvm::sys::ExecuteAndWait(
-      solverPath, args,
-      /*Env=*/std::nullopt,
-      /*Redirects=*/
-      {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);
+  auto code = llvm::sys::ExecuteAndWait(solverPath, args,
+                                        /*Env=*/std::nullopt,
+                                        /*Redirects=*/
+                                        {"", std::string{tempStdout}, ""}, 0, 0,
+                                        &error);
   if (code) {
     llvm::report_fatal_error(error.c_str());
   }
 
-  std::ifstream is{tempStdout};
+  std::ifstream is{tempStdout.c_str()};
   std::string result;
   is >> result;
+  llvm::sys::fs::remove(tempStdin);
+  llvm::sys::fs::remove(tempStdout);
   return result == "unsat";
 }
 
@@ -149,6 +165,150 @@ struct FailingCore {
   SmallVector<cvc5::Term> terms;
   SmallVector<Annotation> annotations;
 };
+
+cvc5::Term valueInRange(cvc5::Term value, Range range, cvc5::TermManager &mgr) {
+  auto [lb, ub, step] = range;
+  auto lBound = mgr.mkTerm(cvc5::Kind::LEQ, {lb, value});
+  auto uBound = mgr.mkTerm(cvc5::Kind::LT, {value, ub});
+  auto sBound =
+      mgr.mkTerm(cvc5::Kind::EQUAL,
+                 {mgr.mkTerm(cvc5::Kind::INTS_MODULUS,
+                             {mgr.mkTerm(cvc5::Kind::SUB, {value, lb}), step}),
+                  mgr.mkInteger(0)});
+  return conjunctAll({lBound, uBound, sBound}, mgr);
+}
+
+// Returns the lexicographic prefix of the nested iteration space induced by
+// `counters` and `ranges`.
+//
+// With `stepIter == false`, this is the set of tuples strictly before the
+// current tuple `counters`.
+//
+// With `stepIter == true`, this is the set of tuples strictly before the
+// lexicographic successor of `counters`, i.e. the visited region after the
+// current body iteration executes once.
+cvc5::Term getLoopAntecedent(ArrayRef<cvc5::Term> variables,
+                             ArrayRef<cvc5::Term> counters,
+                             ArrayRef<Range> ranges, cvc5::TermManager &mgr,
+                             bool stepIter = false) {
+  llzk::ensure(variables.size() == counters.size() &&
+                   counters.size() == ranges.size(),
+               "mismatched loop info");
+
+  auto successorCounter = [&](int dim) -> cvc5::Term {
+    if (!stepIter) {
+      return counters[dim];
+    }
+
+    cvc5::Term result = counters[dim];
+    for (int carryAt = counters.size() - 1; carryAt >= 0; carryAt--) {
+      SmallVector<cvc5::Term> carryCondition;
+
+      // All inner counters must be exhausted, otherwise the carry occurs at a
+      // deeper nesting level.
+      for (int inner = carryAt + 1; inner < counters.size(); inner++) {
+        auto [innerLb, innerUb, innerStep] = ranges[inner];
+        auto innerNext =
+            mgr.mkTerm(cvc5::Kind::ADD, {counters[inner], innerStep});
+        carryCondition.push_back(
+            mgr.mkTerm(cvc5::Kind::NOT,
+                       {mgr.mkTerm(cvc5::Kind::LT, {innerNext, innerUb})}));
+      }
+
+      // The carry lands here only if this counter can still advance.
+      auto [carryLb, carryUb, carryStep] = ranges[carryAt];
+      auto carryNext =
+          mgr.mkTerm(cvc5::Kind::ADD, {counters[carryAt], carryStep});
+      carryCondition.push_back(
+          mgr.mkTerm(cvc5::Kind::LT, {carryNext, carryUb}));
+
+      cvc5::Term successorValue = counters[dim];
+      if (dim == carryAt) {
+        successorValue =
+            mgr.mkTerm(cvc5::Kind::ADD, {counters[dim], ranges[dim].step});
+      } else if (dim > carryAt) {
+        successorValue = ranges[dim].lb;
+      }
+
+      result = mgr.mkTerm(cvc5::Kind::ITE, {conjunctAll(carryCondition, mgr),
+                                            successorValue, result});
+    }
+
+    return result;
+  };
+
+  SmallVector<cvc5::Term> disjuncts;
+  for (auto [i, info] :
+       llvm::enumerate(llvm::zip(variables, counters, ranges))) {
+    auto [x, k, r] = info;
+    SmallVector<cvc5::Term> conjuncts;
+    conjuncts.push_back(
+        valueInRange(x, Range{r.lb, successorCounter(i), r.step}, mgr));
+    for (int j = 0; j < i; j++) {
+      conjuncts.push_back(
+          mgr.mkTerm(cvc5::Kind::EQUAL, {successorCounter(j), variables[j]}));
+    }
+    for (int j = i + 1; j < variables.size(); j++) {
+      conjuncts.push_back(valueInRange(variables[j], ranges[j], mgr));
+    }
+    disjuncts.push_back(conjunctAll(conjuncts, mgr));
+  }
+
+  return disjunctAll(disjuncts, mgr);
+}
+
+cvc5::Term currentIterationTuple(ArrayRef<cvc5::Term> variables,
+                                 ArrayRef<cvc5::Term> counters,
+                                 cvc5::TermManager &mgr) {
+  llzk::ensure(variables.size() == counters.size(), "mismatched loop info");
+
+  SmallVector<cvc5::Term> equalities;
+  for (auto [x, k] : llvm::zip(variables, counters)) {
+    equalities.push_back(mgr.mkTerm(cvc5::Kind::EQUAL, {x, k}));
+  }
+  return conjunctAll(equalities, mgr);
+}
+
+// Turn `predicate(var)` into `forall x in range(lb, ub, step), predicate(x)`
+// cvc5::Term quantifyPredicate(cvc5::Term predicate,
+//                              SmallVector<cvc5::Term> counters,
+//                              SmallVector<Range> ranges, cvc5::TermManager
+//                              &mgr, bool stepIter = false) {
+//   llzk::ensure(counters.size() == ranges.size(), "mismatched loop info");
+
+//   SmallVector<cvc5::Term> vars;
+//   for (int i = 0; i < counters.size(); i++) {
+//     vars.push_back(mgr.mkVar(mgr.getIntegerSort(), "x" + std::to_string(i)));
+//   }
+
+//   auto bound = getLoopAntecedent(vars, counters, ranges, mgr, stepIter);
+//   return mgr.mkTerm(
+//       cvc5::Kind::FORALL,
+//       {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {vars.begin(), vars.end()}),
+//        mgr.mkTerm(
+//            cvc5::Kind::IMPLIES,
+//            {bound, predicate.substitute({counters.begin(), counters.end()},
+//                                         {vars.begin(), vars.end()})})});
+// }
+
+// Turn `predicate(vars...)` into `forall xs, bound(xs...) => predicate(xs...)`
+cvc5::Term
+quantifyPredicate(cvc5::Term predicate, ArrayRef<cvc5::Term> vars,
+                  std::function<cvc5::Term(ArrayRef<cvc5::Term>)> bound,
+                  cvc5::TermManager &mgr) {
+  std::vector<cvc5::Term> xs;
+  for (int i = 0; i < vars.size(); i++) {
+    xs.push_back(mgr.mkVar(mgr.getIntegerSort(), "x" + std::to_string(i)));
+  }
+
+  auto predicateBound = bound(xs);
+  return mgr.mkTerm(
+      cvc5::Kind::FORALL,
+      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, xs),
+       mgr.mkTerm(cvc5::Kind::IMPLIES,
+                  {predicateBound,
+                   predicate.substitute({vars.begin(), vars.end()}, xs)})});
+}
 
 FailingCore getFailingCore(cvc5::Term invariant,
                            const ConjunctionTerm &postcondition,
@@ -192,72 +352,71 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     }
   });
 
-  llzk::ensure(loopInfo.size() == 1, "nested loop support in-progress");
+  // llzk::ensure(loopInfo.size() == 1, "nested loop support in-progress");
 
-  auto [i, range] = loopInfo.front();
-  auto [lb, ub, step] = range;
+  SmallVector<cvc5::Term> loopCounters;
+  SmallVector<Range> loopBounds;
+  for (auto [counter, bound] : loopInfo) {
+    loopCounters.push_back(counter);
+    loopBounds.push_back(bound);
+  }
+
+  // auto [i, range] = loopInfo.front();
+  // auto [lb, ub, step] = range;
 
   SmallVector<cvc5::Term> predicates;
   SmallVector<int64_t> arraySizes;
   for (auto [write, index] : witnessWrites) {
     auto memberDef = write.getMemberDefOp(tables)->get();
-    auto arr_w_i = builder.arrayRead(builder.getConstant(memberDef, true), i);
-    auto arr_c_i = builder.arrayRead(builder.getConstant(memberDef, false), i);
+    auto arr_w_i =
+        builder.arrayRead(builder.getConstant(memberDef, true), index);
+    auto arr_c_i =
+        builder.arrayRead(builder.getConstant(memberDef, false), index);
     predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
+
     // We've already asserted that the array is not multidimensional
     arraySizes.push_back(
         dyn_cast<array::ArrayType>(memberDef.getType()).getShape().front());
   }
 
-  // Turn `predicate(var)` into `forall x in range(lb, ub, step), predicate(x)`
-  auto quantifyPredicate = [this](cvc5::Term predicate, cvc5::Term var,
-                                  cvc5::Term lb, cvc5::Term ub,
-                                  cvc5::Term step) {
-    auto x = mgr.mkVar(mgr.getIntegerSort(), "x");
-    auto boundPos = mgr.mkTerm(cvc5::Kind::LEQ, {lb, x});
-    auto boundInv = mgr.mkTerm(cvc5::Kind::LT, {x, ub});
-
-    auto boundStep =
-        mgr.mkTerm(cvc5::Kind::EQUAL,
-                   {mgr.mkTerm(cvc5::Kind::INTS_MODULUS,
-                               {mgr.mkTerm(cvc5::Kind::SUB, {x, lb}), step}),
-                    builder.getInteger(0)});
-    auto bound = mgr.mkTerm(cvc5::Kind::AND, {boundPos, boundInv, boundStep});
-
-    return mgr.mkTerm(cvc5::Kind::FORALL,
-                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {x}),
-                       mgr.mkTerm(cvc5::Kind::IMPLIES,
-                                  {bound, predicate.substitute(var, x)})});
-  };
-
   // Filter out which predicates are inductive
   SmallVector<cvc5::Term> inductivePredicates;
   // Conjuncts necessary to strengthen the inductive invariant
-  // SmallVector<cvc5::Term> strengthenings;
   // forall x in range(lb, i, step), forall sig, sig_c[x] == sig_w[x]
-  cvc5::Term bodyPrecondition =
-      quantifyPredicate(conjunctAll(predicates, mgr), i, lb, i, step);
-  cvc5::Term nextI = mgr.mkTerm(cvc5::Kind::ADD, {i, step});
+  cvc5::Term bodyPrecondition = quantifyPredicate(
+      conjunctAll(predicates, mgr), loopCounters,
+      [this, &loopCounters, &loopBounds](auto xs) {
+        return getLoopAntecedent(xs, loopCounters, loopBounds, mgr);
+      },
+      mgr);
 
-  SmallVector<cvc5::Term> sliceAssertions;
+  SmallVector<cvc5::Term> strengthenings;
   for (auto [size, predicate] : llvm::zip(arraySizes, predicates)) {
     // We can strengthen the invariant to say the array is equal outside the
     // slice visited by the for loop as well (note: this isn't quite right if,
     // e.g., the loop isn't a basic "step 1, write to arr[i]", but its pretty
     // hard to do much better in general)
-    sliceAssertions.push_back(
-        quantifyPredicate(predicate, i, builder.getInteger(0), lb, step));
-    sliceAssertions.push_back(
-        quantifyPredicate(predicate, i, ub, builder.getInteger(size), step));
+    // TODO: do something smarter here
+    // strengthenings.push_back(
+    //     quantifyPredicate(predicate, i, builder.getInteger(0), lb, step));
+    // strengthenings.push_back(
+    //     quantifyPredicate(predicate, i, ub, builder.getInteger(size), step));
   }
 
-  auto strengthened = conjunctAll(sliceAssertions, mgr);
+  auto strengthened = conjunctAll(strengthenings, mgr);
   auto strengthenedPrecondition =
       conjunctAll({bodyPrecondition, strengthened}, mgr);
 
   for (auto [size, predicate] : llvm::zip(arraySizes, predicates)) {
-    auto postcondition =
-        ConjunctionTerm::of(quantifyPredicate(predicate, i, lb, nextI, step));
+    auto postcondition = ConjunctionTerm::of(quantifyPredicate(
+        predicate, loopCounters,
+        [this, &loopCounters, &loopBounds](auto xs) {
+          return disjunctAll(
+              {getLoopAntecedent(xs, loopCounters, loopBounds, mgr),
+               currentIterationTuple(xs, loopCounters, mgr)},
+              mgr);
+        },
+        mgr));
 
     llvm::dbgs() << postcondition.buildTerm(mgr).toString() << "\n";
 
@@ -270,16 +429,31 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     // llvm::dbgs() << "Is inductive: " << isInductive.toString() << "\n";
     auto query = buildSMTQuery(isInductive, builder, field);
     // llvm::dbgs() << invariant.toString() << "\n";
+    llvm::dbgs() << "Checking whether [" << predicate.toString()
+                 << "] is inductive\n";
     llvm::dbgs() << query << "\n";
     if (checkUnsatWithZ3(query)) {
+      llvm::dbgs() << "Predicate " << predicate.toString() << " is inductive\n";
       inductivePredicates.push_back(predicate);
-      // TODO: Also add annotations for the strengthenings
     }
   }
 
   // Check that the resulting predicate entails the postcondition
   auto inductiveInvariant = conjunctAll(inductivePredicates, mgr);
-  inductiveInvariant = quantifyPredicate(inductiveInvariant, i, lb, ub, step);
+  auto withinLoopBounds = [this, &loopCounters,
+                           &loopBounds](ArrayRef<cvc5::Term> xs) {
+    SmallVector<cvc5::Term> xInBound =
+        llvm::map_to_vector(llvm::zip(xs, loopBounds), [&](auto pair) {
+          auto [x, range] = pair;
+          return valueInRange(x, range, mgr);
+        });
+    return conjunctAll(xInBound, mgr);
+  };
+  inductiveInvariant = quantifyPredicate(inductiveInvariant, loopCounters,
+                                         withinLoopBounds, mgr);
+
+  llvm::dbgs() << "Checking invariant " << inductiveInvariant.toString()
+               << "\n";
 
   auto entailsPostcondition = postcondition;
   entailsPostcondition.addAntecedent(inductiveInvariant);
@@ -298,118 +472,25 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
          llvm::zip(failingCore.annotations, failingCore.terms)) {
       llvm::dbgs() << "Loop invariant was not strong enough to prove: "
                    << elem.toString() << "\n";
-      if (!ann.isArray) {
-        sliceAssertions.push_back(elem);
-      } else {
-        return failure();
-      }
+      // NOTE: Just asserting the full thing, even when its an array, should be
+      // fine. Asserting equivalence of the full array should never overlap with
+      // something provable by the invariant, because the "slice" strengthenings
+      // we added above already covered the "rest" of any array mentioned in the
+      // invariant.
+      strengthenings.push_back(elem);
     }
-    return conjunctAll(sliceAssertions, mgr);
+    // TODO: Technically we should check here that the strengthened thing
+    // entails the postcondition; though it trivially should since we've added
+    // everything that was missing
+    return conjunctAll(strengthenings, mgr);
   }
 
   // TODO: add strengthenings
 }
 
-TermBuilder::TermSet
-WeakestPreconditionAnalysis::conjecturePredicates(mlir::scf::ForOp loop) {
-  SmallVector<LoopCounterInfo> loopInfo;
-  auto *body = nestedLoopBody(loop, loopInfo, builder);
-
-  // Maps a witness *array* that's written in the loop to the index at which its
-  // written
-  DenseMap<component::MemberWriteOp, Value> witnessWrites;
-  body->walk([&witnessWrites](array::WriteArrayOp write) {
-    llzk::ensure(write.getIndices().size() == 1,
-                 "multidimensional arrays not yet supported");
-    auto dest = getArrayDestination(write.getArrRef());
-    if (dest.has_value()) {
-      witnessWrites.insert({*dest, write.getIndices().front()});
-    }
-  });
-
-  llzk::ensure(loopInfo.size() == 1, "nested loop support in-progress");
-
-  std::vector<cvc5::Term> predicates;
-  for (auto [write, index] : witnessWrites) {
-    auto arr_w_i = builder.arrayRead(
-        builder.getConstant(write.getMemberDefOp(tables)->get(), true),
-        builder.getExpression(index));
-    auto arr_c_i = builder.arrayRead(
-        builder.getConstant(write.getMemberDefOp(tables)->get(), false),
-        builder.getExpression(index));
-    predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
-  }
-
-  TermBuilder::TermSet invariants;
-  auto [i, range] = loopInfo.front();
-  auto [lb, ub, step] = range;
-
-  // all signals are equal at i
-  auto equalAtI = predicates.size() == 1
-                      ? predicates.front()
-                      : mgr.mkTerm(cvc5::Kind::AND, predicates);
-
-  // Turn `P(i)` into `forall lb <= x < ub and step | (x - lb), P(x)`
-  auto quantifyPredicate = [this](cvc5::Term predicate, cvc5::Term var,
-                                  cvc5::Term ub, cvc5::Term lb,
-                                  cvc5::Term step) {
-    auto x = mgr.mkVar(mgr.getIntegerSort(), "x");
-    auto boundPos = mgr.mkTerm(cvc5::Kind::LEQ, {lb, x});
-    auto boundInv = mgr.mkTerm(cvc5::Kind::LT, {x, ub});
-
-    auto boundStep =
-        mgr.mkTerm(cvc5::Kind::EQUAL,
-                   {mgr.mkTerm(cvc5::Kind::INTS_MODULUS,
-                               {mgr.mkTerm(cvc5::Kind::SUB, {x, lb}), step}),
-                    builder.getInteger(0)});
-    auto bound = mgr.mkTerm(cvc5::Kind::AND, {boundPos, boundInv, boundStep});
-
-    return mgr.mkTerm(cvc5::Kind::FORALL,
-                      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {x}),
-                       mgr.mkTerm(cvc5::Kind::IMPLIES,
-                                  {bound, predicate.substitute(var, x)})});
-  };
-
-  // Turn "all signals equal at i" to "all signals equal at all x < i"
-  auto allEqualUpToCurrent = quantifyPredicate(equalAtI, i, i, lb, step);
-
-  // Now, filter out the ones that aren't loop invariants
-  for (auto invariant : predicates) {
-    // P(i) is an invariant if:
-    //  {C /\ forall x < i, P(x)} B {forall x < i + step, P(x)}
-    // holds
-    auto invariantHeld =
-        mgr.mkTerm(cvc5::Kind::AND,
-                   {mgr.mkTerm(cvc5::Kind::LT, {i, ub}), allEqualUpToCurrent});
-
-    // We need to say something about intermediate signals that show up in the
-    // loop body but won't be proven equivalent by the invariant (either because
-    // they're scalar or because they aren't visited by the loop). For now, just
-    // do something stupid and assert equality for all array elements that come
-    // before the loop.
-    auto extraAssertions =
-        quantifyPredicate(equalAtI, i, lb, builder.getInteger(0), step);
-
-    // Calculate wp(B, I)
-    auto precondition = ConjunctionTerm::of(quantifyPredicate(
-        invariant, i, mgr.mkTerm(cvc5::Kind::ADD, {i, step}), lb, step));
-    precondition.addAntecedent(extraAssertions);
-    calculateWP(body, precondition);
-
-    // Check C /\ AllI => wp(B, I)
-    auto isInvariant = mgr.mkTerm(cvc5::Kind::IMPLIES,
-                                  {invariantHeld, precondition.buildTerm(mgr)});
-
-    auto query = buildSMTQuery(isInvariant, builder, field);
-    llvm::dbgs() << invariant.toString() << "\n";
-    llvm::dbgs() << query << "\n";
-    if (checkUnsatWithZ3(query)) {
-      // Assume the invariant holds after exiting the loop
-      invariants.insert(quantifyPredicate(invariant, i, ub, lb, step));
-    }
-  }
-
-  return invariants;
+void WeakestPreconditionAnalysis::addEquivalentMember(
+    component::MemberDefOp memberDef) {
+  builder.addEquivalentMember(memberDef);
 }
 
 // TODO: I *think* its enough to implement subcmp calls to @compute/@constrain

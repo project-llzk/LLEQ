@@ -47,6 +47,17 @@ static inline cvc5::Term conjunctAll(llvm::ArrayRef<cvc5::Term> terms,
   return mgr.mkTerm(cvc5::Kind::AND, {terms.begin(), terms.end()});
 }
 
+static inline cvc5::Term disjunctAll(llvm::ArrayRef<cvc5::Term> terms,
+                                     cvc5::TermManager &mgr) {
+  if (terms.size() == 0) {
+    return mgr.mkBoolean(false);
+  }
+  if (terms.size() == 1) {
+    return terms.front();
+  }
+  return mgr.mkTerm(cvc5::Kind::OR, {terms.begin(), terms.end()});
+}
+
 template <class T>
 concept FormulaTerm =
     std::convertible_to<T, cvc5::Term> || std::convertible_to<T, mlir::Value>;
@@ -62,6 +73,8 @@ struct TermBuilder {
   cvc5::Term getInteger(auto val) {
     return getInteger(llzk::toDynamicAPInt(val));
   }
+
+  void addEquivalentMember(llzk::component::MemberDefOp memberDef);
 
   // Return a constant term of the appropriate sort for an SSA value
   cvc5::Term getConstant(mlir::Value value);
