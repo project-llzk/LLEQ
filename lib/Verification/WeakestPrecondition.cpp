@@ -365,6 +365,7 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
   // auto [lb, ub, step] = range;
 
   SmallVector<cvc5::Term> predicates;
+  SmallVector<cvc5::Term> indices;
   SmallVector<int64_t> arraySizes;
   for (auto [write, index] : witnessWrites) {
     auto memberDef = write.getMemberDefOp(tables)->get();
@@ -373,6 +374,7 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     auto arr_c_i =
         builder.arrayRead(builder.getConstant(memberDef, false), index);
     predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
+    indices.push_back(builder.getExpression(index));
 
     // We've already asserted that the array is not multidimensional
     arraySizes.push_back(
@@ -391,11 +393,36 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
       mgr);
 
   SmallVector<cvc5::Term> strengthenings;
-  for (auto [size, predicate] : llvm::zip(arraySizes, predicates)) {
+  for (auto [size, predicate, index] :
+       llvm::zip(arraySizes, predicates, indices)) {
     // We can strengthen the invariant to say the array is equal outside the
     // slice visited by the for loop as well (note: this isn't quite right if,
     // e.g., the loop isn't a basic "step 1, write to arr[i]", but its pretty
     // hard to do much better in general)
+
+    // Add a strengthening that asserts that the array outside the slice visited
+    // by the loop is equivalent. So for an array write at index f(k...),
+    // say something like: forall x..., (x \not\in R) /\ (f(x...) in array
+    // bounds) -> predicate
+
+    auto missesSlice = [this, &loopBounds, &index, &loopCounters,
+                        &size](ArrayRef<cvc5::Term> xs) {
+      SmallVector<cvc5::Term> xNotInRange;
+      for (auto [x, range] : llvm::zip(xs, loopBounds)) {
+        xNotInRange.push_back(valueInRange(x, range, mgr).notTerm());
+      }
+      auto arrayAccessIndex =
+          index.substitute({loopCounters.begin(), loopCounters.end()}, xs);
+      Range arrayBounds{mgr.mkInteger(0), mgr.mkInteger(size),
+                        mgr.mkInteger(1)};
+
+      return mgr.mkTerm(cvc5::Kind::AND,
+                        {disjunctAll(xNotInRange, mgr),
+                         valueInRange(arrayAccessIndex, arrayBounds, mgr)});
+    };
+    strengthenings.push_back(
+        quantifyPredicate(predicate, loopCounters, missesSlice, mgr));
+
     // TODO: do something smarter here
     // strengthenings.push_back(
     //     quantifyPredicate(predicate, i, builder.getInteger(0), lb, step));
