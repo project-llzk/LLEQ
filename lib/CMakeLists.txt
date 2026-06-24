@@ -21,8 +21,7 @@ set(Verification_SRC
     Verification/SymbolicVerifier.cpp
     Verification/FixpointVerifier.cpp
     Verification/TermUtils.cpp
-    Verification/WeakestPrecondition.cpp
-    Verification/StrongestPostcondition.cpp)
+    Verification/WeakestPrecondition.cpp)
 
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}
