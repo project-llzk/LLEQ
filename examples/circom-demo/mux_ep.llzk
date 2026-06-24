@@ -1,7 +1,7 @@
 module attributes {llzk.lang, llzk.main = !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>>} {
   poly.template @EscalarProduct_0 {
     struct.def @EscalarProduct_0 {
-      struct.member @out : !felt.type<"babybear"> {llzk.pub}
+      struct.member @out : !felt.type<"babybear"> {llzk.pub, signal}
       struct.member @aux : !array.type<16 x !felt.type<"babybear">>
       function.def @product(%arg0: !array.type<16 x !felt.type<"babybear">>, %arg1: !array.type<16 x !felt.type<"babybear">>) -> !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
         %c1 = arith.constant 1 : index
