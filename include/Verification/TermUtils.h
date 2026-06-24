@@ -15,9 +15,48 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/Field.h>
+#include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/Value.h>
 
 namespace lleq {
+
+static inline std::optional<llzk::component::MemberWriteOp>
+getArrayDestination(mlir::Value array) {
+  std::optional<llzk::component::MemberWriteOp> destination;
+  for (auto *user : array.getUsers()) {
+    if (auto writeOp = mlir::dyn_cast<llzk::component::MemberWriteOp>(user)) {
+      if (destination.has_value()) {
+        mlir::emitWarning(array.getLoc())
+            << "array value written to multiple members\n";
+        return {};
+      }
+      destination.emplace(writeOp);
+    }
+  }
+  return destination;
+}
+
+static inline cvc5::Term conjunctAll(llvm::ArrayRef<cvc5::Term> terms,
+                                     cvc5::TermManager &mgr) {
+  if (terms.size() == 0) {
+    return mgr.mkBoolean(true);
+  }
+  if (terms.size() == 1) {
+    return terms.front();
+  }
+  return mgr.mkTerm(cvc5::Kind::AND, {terms.begin(), terms.end()});
+}
+
+static inline cvc5::Term disjunctAll(llvm::ArrayRef<cvc5::Term> terms,
+                                     cvc5::TermManager &mgr) {
+  if (terms.size() == 0) {
+    return mgr.mkBoolean(false);
+  }
+  if (terms.size() == 1) {
+    return terms.front();
+  }
+  return mgr.mkTerm(cvc5::Kind::OR, {terms.begin(), terms.end()});
+}
 
 template <class T>
 concept FormulaTerm =
@@ -25,8 +64,9 @@ concept FormulaTerm =
 
 // A helper class for building common term shapes from MLIR SSA values
 struct TermBuilder {
-
   using TermSet = std::unordered_set<cvc5::Term, std::hash<cvc5::Term>>;
+
+  cvc5::TermManager &manager() { return mgr; }
 
   // Build an integer constant
   cvc5::Term getInteger(llvm::DynamicAPInt val);
@@ -34,12 +74,19 @@ struct TermBuilder {
     return getInteger(llzk::toDynamicAPInt(val));
   }
 
+  void addEquivalentMember(llzk::component::MemberDefOp memberDef);
+
   // Return a constant term of the appropriate sort for an SSA value
   cvc5::Term getConstant(mlir::Value value);
 
   // Return a constant of the appropriate sort for a struct member
   cvc5::Term getConstant(llzk::component::MemberDefOp memberDef,
                          bool isWitness);
+  cvc5::Term getConstant(llvm::StringRef symbolName, mlir::Type type,
+                         bool isWitness);
+
+  // Trace the use-def chain to build an expression for an SSA value
+  cvc5::Term getExpression(mlir::Value value);
 
   // Return all free variables in `term` that are tracked as constants
   TermSet getExtraDecls(cvc5::Term term);
@@ -86,6 +133,7 @@ private:
   cvc5::Sort _sort_of_type(mlir::Type);
 
   llvm::DenseMap<mlir::Value, cvc5::Term> constants;
+  llvm::DenseMap<mlir::Value, cvc5::Term> expressions;
   llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
 
   std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
@@ -111,7 +159,7 @@ private:
   cvc5::Term _get_term(FormulaTerm auto t) {
     using T = decltype(t);
     if constexpr (std::convertible_to<T, mlir::Value>) {
-      return getConstant(t);
+      return getExpression(t);
     } else {
       return t;
     }
@@ -126,13 +174,27 @@ private:
 // But its better to encode these as `((A1 /\ ... An-1) -> An) /\ ...`
 // So we have to track our own implication and top-level conjunction terms
 
-// A term of the shape (A1 /\ ... An-1) -> An
+struct Range {
+  cvc5::Term lb, ub, step;
+};
+
+struct Annotation {
+  bool isArray;
+  std::optional<Range> arraySlice;
+};
+
+// A term of the shape (A1 /\ ... /\ An) -> (B1 /\ ... /\ Bm)
 struct ImplicationTerm {
   llvm::SmallVector<cvc5::Term> antecedents;
-  cvc5::Term consequent;
+  llvm::SmallVector<cvc5::Term> consequents;
+
+  // Optional annotations on each consequent term. The annotation is present if
+  // the term is expressing equality between two signals, and the `arraySlice`
+  // field is present if the signals are arrays.
+  llvm::SmallVector<std::optional<Annotation>> annotations;
 
   static ImplicationTerm of(cvc5::Term term) {
-    return ImplicationTerm{{}, term};
+    return ImplicationTerm{{}, {term}};
   }
 
   void addAntecedent(cvc5::Term term) { antecedents.push_back(term); }

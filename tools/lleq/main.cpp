@@ -5,6 +5,8 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Verification/FixpointVerifier.h"
+#include "Verification/SymbolicVerifier.h"
+#include "Verification/VerificationUtils.h"
 #include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
@@ -183,25 +185,22 @@ int main(int argc, char **argv) {
       // already emits an error
       return EXIT_FAILURE;
     }
+
     WeakestPreconditionAnalysis analysis{structDef, *field};
+    SymbolicVerifier symbolicStore{structDef};
+    if (failed(symbolicStore.buildStore())) {
+      llvm::errs() << "Failed to build symbolic store\n";
+      return EXIT_FAILURE;
+    }
+
+    for (auto memberDef : structDef.getMemberDefs()) {
+      if (symbolicStore.areEquivalent(memberDef.getSymName())) {
+        analysis.addEquivalentMember(memberDef);
+      }
+    }
+
     analysis.emit(llvm::outs());
-    // analysis.populateVerificationConditions();
-    // auto vc = analysis.verificationConditions;
-    // auto decls = analysis.extraDecls;
-    // auto bounds = analysis.declBounds;
-    // llvm::outs() << "(set-logic ALL)\n";
-    // llvm::outs() << "; Extra declarations\n";
-    // for (auto decl : decls) {
-    //   llvm::outs() << "(declare-const " << decl.toString() << " "
-    //                << decl.getSort().toString() << ")\n";
-    // }
-    // llvm::outs() << "; Bounds\n";
-    // for (auto bound : bounds) {
-    //   llvm::outs() << "(assert " << bound.toString() << ")\n";
-    // }
-    // llvm::outs() << "; Verification condition\n";
-    // llvm::outs() << "(assert " << vc.notTerm().toString() << ")\n";
-    // llvm::outs() << "(check-sat)\n(get-model)\n";
+
     return EXIT_SUCCESS;
   }
   case cli::SubCmd::Verify:

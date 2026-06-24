@@ -1,0 +1,83 @@
+module attributes {llzk.lang, llzk.main = !struct.type<@transpose_0::@transpose_0<[]>>} {
+  poly.template @transpose_0 {
+    struct.def @transpose_0 {
+      struct.member @out : !array.type<3,2 x !felt.type<"babybear">> {llzk.pub}
+      function.def @product(%arg0: !array.type<2,3 x !felt.type<"babybear">>) -> !struct.type<@transpose_0::@transpose_0<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+        %c3 = arith.constant 3 : index
+        %c1 = arith.constant 1 : index
+        %c2 = arith.constant 2 : index
+        %c0 = arith.constant 0 : index
+        %self = struct.new : <@transpose_0::@transpose_0<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@transpose_0::@transpose_0<[]>>, !array.type<3,2 x !felt.type<"babybear">> {product_source = "constrain"}
+        scf.for %arg1 = %c0 to %c2 step %c1 {
+          %1 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %2 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          scf.for %arg2 = %c0 to %c3 step %c1 {
+            %3 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "compute"}
+            %4 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+            %5 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+            %6 = array.read %arg0[%4, %5] : <2,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            %7 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+            %8 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+            array.write %nondet[%7, %8] = %6 : <3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            %9 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+            %10 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "constrain"}
+            %11 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+            %12 = array.read %arg0[%10, %11] : <2,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+            %13 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+            %14 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "constrain"}
+            %15 = array.read %0[%13, %14] : <3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+            constrain.eq %15, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          } {product_source = "fused"}
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %nondet : <@transpose_0::@transpose_0<[]>>, !array.type<3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return %self : !struct.type<@transpose_0::@transpose_0<[]>>
+      }
+      function.def @compute(%arg0: !array.type<2,3 x !felt.type<"babybear">>) -> !struct.type<@transpose_0::@transpose_0<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+        %c3 = arith.constant 3 : index
+        %c1 = arith.constant 1 : index
+        %c2 = arith.constant 2 : index
+        %c0 = arith.constant 0 : index
+        %self = struct.new : <@transpose_0::@transpose_0<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        scf.for %arg1 = %c0 to %c2 step %c1 {
+          %0 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          scf.for %arg2 = %c0 to %c3 step %c1 {
+            %1 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "compute"}
+            %2 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+            %3 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+            %4 = array.read %arg0[%2, %3] : <2,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            %5 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+            %6 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+            array.write %nondet[%5, %6] = %4 : <3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@transpose_0::@transpose_0<[]>>, !array.type<3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return {product_source = "compute"} %self : !struct.type<@transpose_0::@transpose_0<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@transpose_0::@transpose_0<[]>>, %arg1: !array.type<2,3 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+        %c3 = arith.constant 3 : index
+        %c1 = arith.constant 1 : index
+        %c2 = arith.constant 2 : index
+        %c0 = arith.constant 0 : index
+        %0 = struct.readm %arg0[@out] : <@transpose_0::@transpose_0<[]>>, !array.type<3,2 x !felt.type<"babybear">> {product_source = "constrain"}
+        scf.for %arg2 = %c0 to %c2 step %c1 {
+          %1 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          scf.for %arg3 = %c0 to %c3 step %c1 {
+            %2 = cast.tofelt %arg3 : index, !felt.type<"babybear"> {product_source = "constrain"}
+            %3 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "constrain"}
+            %4 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "constrain"}
+            %5 = array.read %arg1[%3, %4] : <2,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+            %6 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "constrain"}
+            %7 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "constrain"}
+            %8 = array.read %0[%6, %7] : <3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+            constrain.eq %8, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        function.return {product_source = "constrain"}
+      }
+    }
+  }
+}
+

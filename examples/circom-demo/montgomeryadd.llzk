@@ -1,0 +1,136 @@
+module attributes {llzk.lang, llzk.main = !struct.type<@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>} {
+  poly.template @MontgomeryAdd_0 {
+    struct.def @MontgomeryAdd_0 {
+      struct.member @out : !array.type<2 x !felt.type<"babybear">> {llzk.pub}
+      struct.member @lamda : !felt.type<"babybear">
+      function.def @product(%arg0: !array.type<2 x !felt.type<"babybear">>, %arg1: !array.type<2 x !felt.type<"babybear">>) -> !struct.type<@MontgomeryAdd_0::@MontgomeryAdd_0<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+        %c0 = arith.constant 0 : index
+        %c1 = arith.constant 1 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %felt_const_168698 = felt.const  168698 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<2 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = array.read %arg1[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %1 = array.read %arg0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %2 = felt.sub %0, %1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %3 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %4 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %5 = felt.sub %3, %4 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %6 = felt.div %2, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@lamda] = %6 : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        %7 = felt.mul %6, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %8 = felt.mul %7, %6 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %9 = felt.sub %8, %felt_const_168698 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %10 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %11 = felt.sub %9, %10 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %12 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %13 = felt.sub %11, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c0] = %13 : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %14 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %15 = array.read %nondet[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %16 = felt.sub %14, %15 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %17 = felt.mul %6, %16 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %18 = array.read %arg0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %19 = felt.sub %17, %18 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c1] = %19 : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !array.type<2 x !felt.type<"babybear">> {product_source = "compute"}
+        %20 = struct.readm %self[@out] : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !array.type<2 x !felt.type<"babybear">> {product_source = "constrain"}
+        %21 = struct.readm %self[@lamda] : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %22 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %23 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %24 = felt.sub %22, %23 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %25 = felt.mul %21, %24 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %26 = array.read %arg1[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %27 = array.read %arg0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %28 = felt.sub %26, %27 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %25, %28 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %29 = felt.mul %21, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %30 = felt.mul %29, %21 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %31 = felt.sub %30, %felt_const_168698 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %32 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %33 = felt.sub %31, %32 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %34 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %35 = felt.sub %33, %34 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %36 = array.read %20[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %36, %35 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %37 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %38 = array.read %20[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %39 = felt.sub %37, %38 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %40 = felt.mul %21, %39 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %41 = array.read %arg0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %42 = felt.sub %40, %41 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %43 = array.read %20[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %43, %42 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return %self : !struct.type<@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>
+      }
+      function.def @compute(%arg0: !array.type<2 x !felt.type<"babybear">>, %arg1: !array.type<2 x !felt.type<"babybear">>) -> !struct.type<@MontgomeryAdd_0::@MontgomeryAdd_0<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+        %c0 = arith.constant 0 : index
+        %c1 = arith.constant 1 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %felt_const_168698 = felt.const  168698 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<2 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = array.read %arg1[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %1 = array.read %arg0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %2 = felt.sub %0, %1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %3 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %4 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %5 = felt.sub %3, %4 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %6 = felt.div %2, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@lamda] = %6 : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        %7 = felt.mul %6, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %8 = felt.mul %7, %6 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %9 = felt.sub %8, %felt_const_168698 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %10 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %11 = felt.sub %9, %10 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %12 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %13 = felt.sub %11, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c0] = %13 : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %14 = array.read %arg0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %15 = array.read %nondet[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %16 = felt.sub %14, %15 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %17 = felt.mul %6, %16 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        %18 = array.read %arg0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %19 = felt.sub %17, %18 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c1] = %19 : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !array.type<2 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return {product_source = "compute"} %self : !struct.type<@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, %arg1: !array.type<2 x !felt.type<"babybear">>, %arg2: !array.type<2 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+        %c1 = arith.constant 1 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "constrain"}
+        %felt_const_168698 = felt.const  168698 : <"babybear"> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !array.type<2 x !felt.type<"babybear">> {product_source = "constrain"}
+        %1 = struct.readm %arg0[@lamda] : <@MontgomeryAdd_0::@MontgomeryAdd_0<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %2 = array.read %arg2[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %3 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %4 = felt.sub %2, %3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %5 = felt.mul %1, %4 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %6 = array.read %arg2[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %7 = array.read %arg1[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %8 = felt.sub %6, %7 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %5, %8 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %9 = felt.mul %1, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %10 = felt.mul %9, %1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %11 = felt.sub %10, %felt_const_168698 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %12 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %13 = felt.sub %11, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %14 = array.read %arg2[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %15 = felt.sub %13, %14 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %16 = array.read %0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %16, %15 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %17 = array.read %arg1[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %18 = array.read %0[%c0] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %19 = felt.sub %17, %18 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %20 = felt.mul %1, %19 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %21 = array.read %arg1[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %22 = felt.sub %20, %21 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %23 = array.read %0[%c1] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %23, %22 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return {product_source = "constrain"}
+      }
+    }
+  }
+}
+

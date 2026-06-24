@@ -1,0 +1,1256 @@
+module attributes {llzk.lang, llzk.main = !struct.type<@Conv2D_3::@Conv2D_3<[]>>} {
+  poly.template @matElemMul_0 {
+    struct.def @matElemMul_0 {
+      struct.member @out : !array.type<4,4 x !felt.type<"babybear">> {llzk.pub}
+      function.def @compute(%arg0: !array.type<4,4 x !felt.type<"babybear">>, %arg1: !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemMul_0::@matElemMul_0<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness} {
+        %c1 = arith.constant 1 : index
+        %c4 = arith.constant 4 : index
+        %c0 = arith.constant 0 : index
+        %self = struct.new : <@matElemMul_0::@matElemMul_0<[]>>
+        %nondet = llzk.nondet : !array.type<4,4 x !felt.type<"babybear">>
+        scf.for %arg2 = %c0 to %c4 step %c1 {
+          %0 = cast.tofelt %arg2 : index, !felt.type<"babybear">
+          scf.for %arg3 = %c0 to %c4 step %c1 {
+            %1 = cast.tofelt %arg3 : index, !felt.type<"babybear">
+            %2 = cast.toindex %0 : !felt.type<"babybear">
+            %3 = cast.toindex %1 : !felt.type<"babybear">
+            %4 = array.read %arg0[%2, %3] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear">
+            %5 = cast.toindex %0 : !felt.type<"babybear">
+            %6 = cast.toindex %1 : !felt.type<"babybear">
+            %7 = array.read %arg1[%5, %6] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear">
+            %8 = felt.mul %4, %7 : !felt.type<"babybear">, !felt.type<"babybear">
+            %9 = cast.toindex %0 : !felt.type<"babybear">
+            %10 = cast.toindex %1 : !felt.type<"babybear">
+            array.write %nondet[%9, %10] = %8 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear">
+          }
+        }
+        struct.writem %self[@out] = %nondet : <@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">>
+        function.return %self : !struct.type<@matElemMul_0::@matElemMul_0<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, %arg1: !array.type<4,4 x !felt.type<"babybear">>, %arg2: !array.type<4,4 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops} {
+        %c1 = arith.constant 1 : index
+        %c4 = arith.constant 4 : index
+        %c0 = arith.constant 0 : index
+        %0 = struct.readm %arg0[@out] : <@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">>
+        scf.for %arg3 = %c0 to %c4 step %c1 {
+          %1 = cast.tofelt %arg3 : index, !felt.type<"babybear">
+          scf.for %arg4 = %c0 to %c4 step %c1 {
+            %2 = cast.tofelt %arg4 : index, !felt.type<"babybear">
+            %3 = cast.toindex %1 : !felt.type<"babybear">
+            %4 = cast.toindex %2 : !felt.type<"babybear">
+            %5 = array.read %arg1[%3, %4] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear">
+            %6 = cast.toindex %1 : !felt.type<"babybear">
+            %7 = cast.toindex %2 : !felt.type<"babybear">
+            %8 = array.read %arg2[%6, %7] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear">
+            %9 = felt.mul %5, %8 : !felt.type<"babybear">, !felt.type<"babybear">
+            %10 = cast.toindex %1 : !felt.type<"babybear">
+            %11 = cast.toindex %2 : !felt.type<"babybear">
+            %12 = array.read %0[%10, %11] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear">
+            constrain.eq %12, %9 : !felt.type<"babybear">, !felt.type<"babybear">
+          }
+        }
+        function.return
+      }
+    }
+  }
+  poly.template @matElemSum_1 {
+    struct.def @matElemSum_1 {
+      struct.member @out : !felt.type<"babybear"> {llzk.pub}
+      struct.member @sum : !array.type<16 x !felt.type<"babybear">>
+      function.def @product(%arg0: !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemSum_1::@matElemSum_1<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+        %c15 = arith.constant 15 : index
+        %c1 = arith.constant 1 : index
+        %c4 = arith.constant 4 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = array.read %arg0[%c0, %c0] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c0] = %0 : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %1 = struct.readm %self[@out] : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %2 = struct.readm %self[@sum] : <@matElemSum_1::@matElemSum_1<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "constrain"}
+        %3 = array.read %arg0[%c0, %c0] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %4 = array.read %2[%c0] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %4, %3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %5:2 = scf.for %arg1 = %c0 to %c4 step %c1 iter_args(%arg2 = %felt_const_0, %arg3 = %felt_const_0) -> (!felt.type<"babybear">, !felt.type<"babybear">) {
+          %8 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %9 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %10:2 = scf.for %arg4 = %c0 to %c4 step %c1 iter_args(%arg5 = %arg2, %arg6 = %arg3) -> (!felt.type<"babybear">, !felt.type<"babybear">) {
+            %11 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "compute"}
+            %12 = bool.cmp gt(%arg5, %felt_const_0) : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+            scf.if %12 {
+              %17 = felt.sub %arg5, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+              %18 = cast.toindex %17 : !felt.type<"babybear"> {product_source = "compute"}
+              %19 = array.read %nondet[%18] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+              %20 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+              %21 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+              %22 = array.read %arg0[%20, %21] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+              %23 = felt.add %19, %22 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+              %24 = cast.toindex %arg5 : !felt.type<"babybear"> {product_source = "compute"}
+              array.write %nondet[%24] = %23 : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            } {product_source = "compute"}
+            %13 = felt.add %arg5, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+            %14 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "constrain"}
+            %15 = bool.cmp gt(%arg6, %felt_const_0) : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            scf.if %15 {
+              %17 = felt.sub %arg6, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              %18 = cast.toindex %17 : !felt.type<"babybear"> {product_source = "constrain"}
+              %19 = array.read %2[%18] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              %20 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %21 = cast.toindex %14 : !felt.type<"babybear"> {product_source = "constrain"}
+              %22 = array.read %arg0[%20, %21] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              %23 = felt.add %19, %22 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              %24 = cast.toindex %arg6 : !felt.type<"babybear"> {product_source = "constrain"}
+              %25 = array.read %2[%24] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              constrain.eq %25, %23 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            } {product_source = "constrain"}
+            %16 = felt.add %arg6, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            scf.yield %13, %16 : !felt.type<"babybear">, !felt.type<"babybear">
+          } {product_source = "fused"}
+          scf.yield %10#0, %10#1 : !felt.type<"babybear">, !felt.type<"babybear">
+        } {product_source = "fused"}
+        %6 = array.read %nondet[%c15] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@out] = %6 : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@sum] = %nondet : <@matElemSum_1::@matElemSum_1<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        %7 = array.read %2[%c15] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %1, %7 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return %self : !struct.type<@matElemSum_1::@matElemSum_1<[]>>
+      }
+      function.def @compute(%arg0: !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemSum_1::@matElemSum_1<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+        %c15 = arith.constant 15 : index
+        %c1 = arith.constant 1 : index
+        %c4 = arith.constant 4 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = array.read %arg0[%c0, %c0] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c0] = %0 : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %1 = scf.for %arg1 = %c0 to %c4 step %c1 iter_args(%arg2 = %felt_const_0) -> (!felt.type<"babybear">) {
+          %3 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = scf.for %arg3 = %c0 to %c4 step %c1 iter_args(%arg4 = %arg2) -> (!felt.type<"babybear">) {
+            %5 = cast.tofelt %arg3 : index, !felt.type<"babybear"> {product_source = "compute"}
+            %6 = bool.cmp gt(%arg4, %felt_const_0) : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+            scf.if %6 {
+              %8 = felt.sub %arg4, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+              %9 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+              %10 = array.read %nondet[%9] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+              %11 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+              %12 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "compute"}
+              %13 = array.read %arg0[%11, %12] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+              %14 = felt.add %10, %13 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+              %15 = cast.toindex %arg4 : !felt.type<"babybear"> {product_source = "compute"}
+              array.write %nondet[%15] = %14 : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            } {product_source = "compute"}
+            %7 = felt.add %arg4, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+            scf.yield {product_source = "compute"} %7 : !felt.type<"babybear">
+          } {product_source = "compute"}
+          scf.yield {product_source = "compute"} %4 : !felt.type<"babybear">
+        } {product_source = "compute"}
+        %2 = array.read %nondet[%c15] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@out] = %2 : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@sum] = %nondet : <@matElemSum_1::@matElemSum_1<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return {product_source = "compute"} %self : !struct.type<@matElemSum_1::@matElemSum_1<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, %arg1: !array.type<4,4 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+        %c15 = arith.constant 15 : index
+        %c1 = arith.constant 1 : index
+        %c4 = arith.constant 4 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "constrain"}
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %1 = struct.readm %arg0[@sum] : <@matElemSum_1::@matElemSum_1<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "constrain"}
+        %2 = array.read %arg1[%c0, %c0] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %3 = array.read %1[%c0] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %3, %2 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        %4 = scf.for %arg2 = %c0 to %c4 step %c1 iter_args(%arg3 = %felt_const_0) -> (!felt.type<"babybear">) {
+          %6 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %7 = scf.for %arg4 = %c0 to %c4 step %c1 iter_args(%arg5 = %arg3) -> (!felt.type<"babybear">) {
+            %8 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "constrain"}
+            %9 = bool.cmp gt(%arg5, %felt_const_0) : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            scf.if %9 {
+              %11 = felt.sub %arg5, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              %12 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+              %13 = array.read %1[%12] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              %14 = cast.toindex %6 : !felt.type<"babybear"> {product_source = "constrain"}
+              %15 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+              %16 = array.read %arg1[%14, %15] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              %17 = felt.add %13, %16 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              %18 = cast.toindex %arg5 : !felt.type<"babybear"> {product_source = "constrain"}
+              %19 = array.read %1[%18] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              constrain.eq %19, %17 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            } {product_source = "constrain"}
+            %10 = felt.add %arg5, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            scf.yield {product_source = "constrain"} %10 : !felt.type<"babybear">
+          } {product_source = "constrain"}
+          scf.yield {product_source = "constrain"} %7 : !felt.type<"babybear">
+        } {product_source = "constrain"}
+        %5 = array.read %1[%c15] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %0, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return {product_source = "constrain"}
+      }
+    }
+  }
+  poly.template @Sum_2 {
+    struct.def @Sum_2 {
+      struct.member @out : !felt.type<"babybear"> {llzk.pub}
+      struct.member @partialSum : !array.type<3 x !felt.type<"babybear">>
+      function.def @product(%arg0: !array.type<3 x !felt.type<"babybear">>) -> !struct.type<@Sum_2::@Sum_2<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+        %c2 = arith.constant 2 : index
+        %c3 = arith.constant 3 : index
+        %c1 = arith.constant 1 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = array.read %arg0[%c0] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c0] = %0 : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        %1 = struct.readm %self[@out] : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %2 = struct.readm %self[@partialSum] : <@Sum_2::@Sum_2<[]>>, !array.type<3 x !felt.type<"babybear">> {product_source = "constrain"}
+        %3 = array.read %arg0[%c0] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %4 = array.read %2[%c0] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %4, %3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        scf.for %arg1 = %c1 to %c3 step %c1 {
+          %7 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %8 = felt.sub %7, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %9 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+          %10 = array.read %nondet[%9] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %11 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+          %12 = array.read %arg0[%11] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %13 = felt.add %10, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %14 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%14] = %13 : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %15 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %16 = felt.sub %15, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %17 = cast.toindex %16 : !felt.type<"babybear"> {product_source = "constrain"}
+          %18 = array.read %2[%17] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %19 = cast.toindex %15 : !felt.type<"babybear"> {product_source = "constrain"}
+          %20 = array.read %arg0[%19] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %21 = felt.add %18, %20 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %22 = cast.toindex %15 : !felt.type<"babybear"> {product_source = "constrain"}
+          %23 = array.read %2[%22] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %23, %21 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        } {product_source = "fused"}
+        %5 = array.read %nondet[%c2] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@out] = %5 : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@partialSum] = %nondet : <@Sum_2::@Sum_2<[]>>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+        %6 = array.read %2[%c2] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %1, %6 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return %self : !struct.type<@Sum_2::@Sum_2<[]>>
+      }
+      function.def @compute(%arg0: !array.type<3 x !felt.type<"babybear">>) -> !struct.type<@Sum_2::@Sum_2<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+        %c2 = arith.constant 2 : index
+        %c3 = arith.constant 3 : index
+        %c1 = arith.constant 1 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = array.read %arg0[%c0] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        array.write %nondet[%c0] = %0 : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        scf.for %arg1 = %c1 to %c3 step %c1 {
+          %2 = cast.tofelt %arg1 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %3 = felt.sub %2, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %5 = array.read %nondet[%4] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %6 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+          %7 = array.read %arg0[%6] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %8 = felt.add %5, %7 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %9 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%9] = %8 : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        } {product_source = "compute"}
+        %1 = array.read %nondet[%c2] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@out] = %1 : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@partialSum] = %nondet : <@Sum_2::@Sum_2<[]>>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return {product_source = "compute"} %self : !struct.type<@Sum_2::@Sum_2<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@Sum_2::@Sum_2<[]>>, %arg1: !array.type<3 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+        %c2 = arith.constant 2 : index
+        %c3 = arith.constant 3 : index
+        %c1 = arith.constant 1 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_1 = felt.const  1 : <"babybear"> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %1 = struct.readm %arg0[@partialSum] : <@Sum_2::@Sum_2<[]>>, !array.type<3 x !felt.type<"babybear">> {product_source = "constrain"}
+        %2 = array.read %arg1[%c0] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        %3 = array.read %1[%c0] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %3, %2 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        scf.for %arg2 = %c1 to %c3 step %c1 {
+          %5 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %6 = felt.sub %5, %felt_const_1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %7 = cast.toindex %6 : !felt.type<"babybear"> {product_source = "constrain"}
+          %8 = array.read %1[%7] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %9 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "constrain"}
+          %10 = array.read %arg1[%9] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %11 = felt.add %8, %10 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "constrain"}
+          %13 = array.read %1[%12] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %13, %11 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        } {product_source = "constrain"}
+        %4 = array.read %1[%c2] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+        constrain.eq %0, %4 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return {product_source = "constrain"}
+      }
+    }
+  }
+  poly.template @Conv2D_3 {
+    struct.def @Conv2D_3 {
+      struct.member @out : !array.type<3,3,2 x !felt.type<"babybear">> {llzk.pub}
+      struct.member @mul : !array.type<3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>
+      struct.member @mul$inputs : !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>
+      struct.member @elemSum : !array.type<3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>
+      struct.member @elemSum$inputs : !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>
+      struct.member @sum : !array.type<3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>
+      struct.member @sum$inputs : !array.type<3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>
+      function.def @product(%arg0: !array.type<10,10,3 x !felt.type<"babybear">>, %arg1: !array.type<4,4,3,2 x !felt.type<"babybear">>, %arg2: !array.type<2 x !felt.type<"babybear">>) -> !struct.type<@Conv2D_3::@Conv2D_3<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+        %c4 = arith.constant 4 : index
+        %felt_const_3 = felt.const  3 : <"babybear"> {product_source = "compute"}
+        %c16 = arith.constant {product_source = "compute"} 16 : index
+        %c32 = arith.constant {product_source = "compute"} 32 : index
+        %c1 = arith.constant {product_source = "compute"} 1 : index
+        %c0 = arith.constant {product_source = "compute"} 0 : index
+        %c2 = arith.constant {product_source = "compute"} 2 : index
+        %c3 = arith.constant {product_source = "compute"} 3 : index
+        %self = struct.new : <@Conv2D_3::@Conv2D_3<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<3,3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        %array = array.new  : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %7 = array.read %array[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                pod.write %7[@count] = %c32 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                array.write %array[%arg3, %arg4, %arg5, %arg6] = %7 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        %array_0 = array.new  : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>  {product_source = "compute"}
+        %array_1 = array.new  : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %7 = array.read %array_1[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                pod.write %7[@count] = %c16 : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                array.write %array_1[%arg3, %arg4, %arg5, %arg6] = %7 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        %array_2 = array.new  : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>  {product_source = "compute"}
+        %array_3 = array.new  : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %7 = array.read %array_3[%arg3, %arg4, %arg5] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              pod.write %7[@count] = %c3 : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+              array.write %array_3[%arg3, %arg4, %arg5] = %7 : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        %array_4 = array.new  : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          %7 = cast.tofelt %arg3 : index, !felt.type<"babybear"> {product_source = "compute"}
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            %8 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "compute"}
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              %9 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "compute"}
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %10 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "compute"}
+                scf.for %arg7 = %c0 to %c4 step %c1 {
+                  %11 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "compute"}
+                  scf.for %arg8 = %c0 to %c4 step %c1 {
+                    %12 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "compute"}
+                    %13 = felt.mul %7, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %14 = felt.add %13, %11 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %15 = cast.toindex %14 : !felt.type<"babybear"> {product_source = "compute"}
+                    %16 = felt.mul %8, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %17 = felt.add %16, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %18 = cast.toindex %17 : !felt.type<"babybear"> {product_source = "compute"}
+                    %19 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %20 = array.read %arg0[%15, %18, %19] : <10,10,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %21 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %22 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %23 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %24 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %25 = array.read %array_0[%21, %22, %23, %24] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %26 = pod.read %25[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %27 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+                    %28 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %26[%27, %28] = %20 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %29 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %30 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %31 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %32 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %33 = array.read %array_0[%29, %30, %31, %32] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    pod.write %33[@a] = %26 : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %34 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %35 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %36 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %37 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %array_0[%34, %35, %36, %37] = %33 : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %38 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %39 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %40 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %41 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %42 = array.read %array[%38, %39, %40, %41] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %43 = pod.read %42[@count] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %44 = arith.subi %43, %c1 {product_source = "compute"} : index
+                    pod.write %42[@count] = %44 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %45 = arith.cmpi eq, %44, %c0 {product_source = "compute"} : index
+                    scf.if %45 {
+                      %76 = pod.read %33[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %77 = pod.read %33[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %78 = function.call @matElemMul_0::@matElemMul_0::@compute(%76, %77) : (!array.type<4,4 x !felt.type<"babybear">>, !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemMul_0::@matElemMul_0<[]>>  {product_source = "compute"}
+                      pod.write %42[@comp] = %78 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                      %79 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                      %80 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                      %81 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                      %82 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                      array.write %array[%79, %80, %81, %82] = %42 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    } {product_source = "compute"}
+                    %46 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+                    %47 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "compute"}
+                    %48 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %49 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %50 = array.read %arg1[%46, %47, %48, %49] : <4,4,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %51 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %52 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %53 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %54 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %55 = array.read %array_0[%51, %52, %53, %54] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %56 = pod.read %55[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %57 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+                    %58 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %56[%57, %58] = %50 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %59 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %60 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %61 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %62 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %63 = array.read %array_0[%59, %60, %61, %62] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    pod.write %63[@b] = %56 : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %64 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %65 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %66 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %67 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %array_0[%64, %65, %66, %67] = %63 : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %68 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %69 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %70 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %71 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %72 = array.read %array[%68, %69, %70, %71] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %73 = pod.read %72[@count] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %74 = arith.subi %73, %c1 {product_source = "compute"} : index
+                    pod.write %72[@count] = %74 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %75 = arith.cmpi eq, %74, %c0 {product_source = "compute"} : index
+                    scf.if %75 {
+                      %76 = pod.read %63[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %77 = pod.read %63[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %78 = function.call @matElemMul_0::@matElemMul_0::@compute(%76, %77) : (!array.type<4,4 x !felt.type<"babybear">>, !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemMul_0::@matElemMul_0<[]>>  {product_source = "compute"}
+                      pod.write %72[@comp] = %78 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                      %79 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                      %80 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                      %81 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                      %82 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                      array.write %array[%79, %80, %81, %82] = %72 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    } {product_source = "compute"}
+                  } {product_source = "compute"}
+                } {product_source = "compute"}
+                scf.for %arg7 = %c0 to %c4 step %c1 {
+                  %11 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "compute"}
+                  scf.for %arg8 = %c0 to %c4 step %c1 {
+                    %12 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "compute"}
+                    %13 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %14 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %15 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %16 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %17 = array.read %array[%13, %14, %15, %16] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %18 = pod.read %17[@comp] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                    %19 = struct.readm %18[@out] : <@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %20 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+                    %21 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "compute"}
+                    %22 = array.read %19[%20, %21] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %23 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %24 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %25 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %26 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %27 = array.read %array_2[%23, %24, %25, %26] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %28 = pod.read %27[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %29 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "compute"}
+                    %30 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %28[%29, %30] = %22 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %31 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %32 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %33 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %34 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %35 = array.read %array_2[%31, %32, %33, %34] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    pod.write %35[@a] = %28 : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %36 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %37 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %38 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %39 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %array_2[%36, %37, %38, %39] = %35 : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %40 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %41 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                    %42 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                    %43 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %44 = array.read %array_1[%40, %41, %42, %43] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %45 = pod.read %44[@count] : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %46 = arith.subi %45, %c1 {product_source = "compute"} : index
+                    pod.write %44[@count] = %46 : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %47 = arith.cmpi eq, %46, %c0 {product_source = "compute"} : index
+                    scf.if %47 {
+                      %48 = pod.read %35[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %49 = function.call @matElemSum_1::@matElemSum_1::@product(%48) : (!array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemSum_1::@matElemSum_1<[]>> 
+                      %50 = function.call @matElemSum_1::@matElemSum_1::@compute(%48) : (!array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemSum_1::@matElemSum_1<[]>>  {product_source = "compute"}
+                      pod.write %44[@comp] = %49 : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+                      %51 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                      %52 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                      %53 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                      %54 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                      array.write %array_1[%51, %52, %53, %54] = %44 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    } {product_source = "compute"}
+                  } {product_source = "compute"}
+                } {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %9 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "compute"}
+              scf.for %arg6 = %c0 to %c3 step %c1 {
+                %22 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "compute"}
+                %23 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                %24 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                %25 = cast.toindex %22 : !felt.type<"babybear"> {product_source = "compute"}
+                %26 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                %27 = array.read %array_1[%23, %24, %25, %26] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %28 = pod.read %27[@comp] : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+                %29 = struct.readm %28[@out] : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+                %30 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                %31 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                %32 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                %33 = array.read %array_4[%30, %31, %32] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "compute"}
+                %34 = pod.read %33[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+                %35 = cast.toindex %22 : !felt.type<"babybear"> {product_source = "compute"}
+                array.write %34[%35] = %29 : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                %36 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                %37 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                %38 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                %39 = array.read %array_4[%36, %37, %38] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "compute"}
+                pod.write %39[@in] = %34 : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+                %40 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                %41 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                %42 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                array.write %array_4[%40, %41, %42] = %39 : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "compute"}
+                %43 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                %44 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                %45 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                %46 = array.read %array_3[%43, %44, %45] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %47 = pod.read %46[@count] : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                %48 = arith.subi %47, %c1 {product_source = "compute"} : index
+                pod.write %46[@count] = %48 : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                %49 = arith.cmpi eq, %48, %c0 {product_source = "compute"} : index
+                scf.if %49 {
+                  %50 = pod.read %39[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+                  %51 = function.call @Sum_2::@Sum_2::@product(%50) : (!array.type<3 x !felt.type<"babybear">>) -> !struct.type<@Sum_2::@Sum_2<[]>> 
+                  %52 = function.call @Sum_2::@Sum_2::@compute(%50) : (!array.type<3 x !felt.type<"babybear">>) -> !struct.type<@Sum_2::@Sum_2<[]>>  {product_source = "compute"}
+                  pod.write %46[@comp] = %51 : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+                  %53 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                  %54 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+                  %55 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+                  array.write %array_3[%53, %54, %55] = %46 : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                } {product_source = "compute"}
+              } {product_source = "compute"}
+              %10 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+              %11 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+              %12 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+              %13 = array.read %array_3[%10, %11, %12] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              %14 = pod.read %13[@comp] : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+              %15 = struct.readm %14[@out] : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+              %16 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+              %17 = array.read %arg2[%16] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+              %18 = felt.add %15, %17 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+              %19 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+              %20 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "compute"}
+              %21 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "compute"}
+              array.write %nondet[%19, %20, %21] = %18 : <3,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@elemSum$inputs] = %array_2 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "compute"}
+        %array_5 = array.new  : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %7 = array.read %array_1[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %8 = pod.read %7[@comp] : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+                array.write %array_5[%arg3, %arg4, %arg5, %arg6] = %8 : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@elemSum] = %array_5 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>> {product_source = "compute"}
+        struct.writem %self[@mul$inputs] = %array_0 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "compute"}
+        %array_6 = array.new  : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %7 = array.read %array[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %8 = pod.read %7[@comp] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                array.write %array_6[%arg3, %arg4, %arg5, %arg6] = %8 : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@mul] = %array_6 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>> {product_source = "compute"}
+        struct.writem %self[@sum$inputs] = %array_4 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>> {product_source = "compute"}
+        %array_7 = array.new  : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %7 = array.read %array_3[%arg3, %arg4, %arg5] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              %8 = pod.read %7[@comp] : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+              array.write %array_7[%arg3, %arg4, %arg5] = %8 : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@sum] = %array_7 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !felt.type<"babybear">> {product_source = "constrain"}
+        %1 = struct.readm %self[@mul] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>> {product_source = "constrain"}
+        %2 = struct.readm %self[@mul$inputs] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "constrain"}
+        %3 = struct.readm %self[@elemSum] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>> {product_source = "constrain"}
+        %4 = struct.readm %self[@elemSum$inputs] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "constrain"}
+        %5 = struct.readm %self[@sum] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>> {product_source = "constrain"}
+        %6 = struct.readm %self[@sum$inputs] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>> {product_source = "constrain"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          %7 = cast.tofelt %arg3 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            %8 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "constrain"}
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              %9 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "constrain"}
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %10 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                scf.for %arg7 = %c0 to %c4 step %c1 {
+                  %11 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                  scf.for %arg8 = %c0 to %c4 step %c1 {
+                    %12 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                    %13 = felt.mul %7, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %14 = felt.add %13, %11 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %15 = cast.toindex %14 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %16 = felt.mul %8, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %17 = felt.add %16, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %18 = cast.toindex %17 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %19 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %20 = array.read %arg0[%15, %18, %19] : <10,10,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    %21 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %22 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %23 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %24 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %25 = array.read %2[%21, %22, %23, %24] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                    %26 = pod.read %25[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %27 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %28 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %29 = array.read %26[%27, %28] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    constrain.eq %29, %20 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %30 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %31 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %32 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %33 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %34 = array.read %arg1[%30, %31, %32, %33] : <4,4,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    %35 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %36 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %37 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %38 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %39 = array.read %2[%35, %36, %37, %38] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                    %40 = pod.read %39[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %41 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %42 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %43 = array.read %40[%41, %42] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    constrain.eq %43, %34 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                  } {product_source = "constrain"}
+                } {product_source = "constrain"}
+                scf.for %arg7 = %c0 to %c4 step %c1 {
+                  %11 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                  scf.for %arg8 = %c0 to %c4 step %c1 {
+                    %12 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                    %13 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %14 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %15 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %16 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %17 = array.read %1[%13, %14, %15, %16] : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "constrain"}
+                    %18 = struct.readm %17[@out] : <@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %19 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %20 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %21 = array.read %18[%19, %20] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    %22 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %23 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %24 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %25 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %26 = array.read %4[%22, %23, %24, %25] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                    %27 = pod.read %26[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %28 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %29 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %30 = array.read %27[%28, %29] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    constrain.eq %30, %21 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                  } {product_source = "constrain"}
+                } {product_source = "constrain"}
+              } {product_source = "constrain"}
+            } {product_source = "constrain"}
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %9 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "constrain"}
+              scf.for %arg6 = %c0 to %c3 step %c1 {
+                %22 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                %23 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                %24 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                %25 = cast.toindex %22 : !felt.type<"babybear"> {product_source = "constrain"}
+                %26 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                %27 = array.read %3[%23, %24, %25, %26] : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "constrain"}
+                %28 = struct.readm %27[@out] : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+                %29 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                %30 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                %31 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                %32 = array.read %6[%29, %30, %31] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                %33 = pod.read %32[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "constrain"}
+                %34 = cast.toindex %22 : !felt.type<"babybear"> {product_source = "constrain"}
+                %35 = array.read %33[%34] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                constrain.eq %35, %28 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              } {product_source = "constrain"}
+              %10 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+              %11 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+              %12 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %13 = array.read %5[%10, %11, %12] : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "constrain"}
+              %14 = struct.readm %13[@out] : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+              %15 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %16 = array.read %arg2[%15] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              %17 = felt.add %14, %16 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              %18 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+              %19 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+              %20 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %21 = array.read %0[%18, %19, %20] : <3,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              constrain.eq %21, %17 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %7 = array.read %3[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "constrain"}
+                %8 = array.read %4[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                %9 = pod.read %8[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                function.call @matElemSum_1::@matElemSum_1::@constrain(%7, %9) : (!struct.type<@matElemSum_1::@matElemSum_1<[]>>, !array.type<4,4 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
+              } {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %7 = array.read %1[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "constrain"}
+                %8 = array.read %2[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                %9 = pod.read %8[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                %10 = pod.read %8[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                function.call @matElemMul_0::@matElemMul_0::@constrain(%7, %9, %10) : (!struct.type<@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">>, !array.type<4,4 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
+              } {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %7 = array.read %5[%arg3, %arg4, %arg5] : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "constrain"}
+              %8 = array.read %6[%arg3, %arg4, %arg5] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "constrain"}
+              %9 = pod.read %8[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "constrain"}
+              function.call @Sum_2::@Sum_2::@constrain(%7, %9) : (!struct.type<@Sum_2::@Sum_2<[]>>, !array.type<3 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        function.return %self : !struct.type<@Conv2D_3::@Conv2D_3<[]>>
+      }
+      function.def @compute(%arg0: !array.type<10,10,3 x !felt.type<"babybear">>, %arg1: !array.type<4,4,3,2 x !felt.type<"babybear">>, %arg2: !array.type<2 x !felt.type<"babybear">>) -> !struct.type<@Conv2D_3::@Conv2D_3<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+        %c4 = arith.constant 4 : index
+        %felt_const_3 = felt.const  3 : <"babybear"> {product_source = "compute"}
+        %c16 = arith.constant {product_source = "compute"} 16 : index
+        %c32 = arith.constant {product_source = "compute"} 32 : index
+        %c1 = arith.constant {product_source = "compute"} 1 : index
+        %c0 = arith.constant {product_source = "compute"} 0 : index
+        %c2 = arith.constant {product_source = "compute"} 2 : index
+        %c3 = arith.constant {product_source = "compute"} 3 : index
+        %self = struct.new : <@Conv2D_3::@Conv2D_3<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<3,3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        %array = array.new  : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %0 = array.read %array[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                pod.write %0[@count] = %c32 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                array.write %array[%arg3, %arg4, %arg5, %arg6] = %0 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        %array_0 = array.new  : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>  {product_source = "compute"}
+        %array_1 = array.new  : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %0 = array.read %array_1[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                pod.write %0[@count] = %c16 : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                array.write %array_1[%arg3, %arg4, %arg5, %arg6] = %0 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        %array_2 = array.new  : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>  {product_source = "compute"}
+        %array_3 = array.new  : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %0 = array.read %array_3[%arg3, %arg4, %arg5] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              pod.write %0[@count] = %c3 : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+              array.write %array_3[%arg3, %arg4, %arg5] = %0 : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        %array_4 = array.new  : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          %0 = cast.tofelt %arg3 : index, !felt.type<"babybear"> {product_source = "compute"}
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            %1 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "compute"}
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              %2 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "compute"}
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %3 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "compute"}
+                scf.for %arg7 = %c0 to %c4 step %c1 {
+                  %4 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "compute"}
+                  scf.for %arg8 = %c0 to %c4 step %c1 {
+                    %5 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "compute"}
+                    %6 = felt.mul %0, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %7 = felt.add %6, %4 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %8 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "compute"}
+                    %9 = felt.mul %1, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %10 = felt.add %9, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+                    %11 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "compute"}
+                    %12 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %13 = array.read %arg0[%8, %11, %12] : <10,10,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %14 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %15 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %16 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %17 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %18 = array.read %array_0[%14, %15, %16, %17] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %19 = pod.read %18[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %20 = cast.toindex %4 : !felt.type<"babybear"> {product_source = "compute"}
+                    %21 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %19[%20, %21] = %13 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %22 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %23 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %24 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %25 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %26 = array.read %array_0[%22, %23, %24, %25] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    pod.write %26[@a] = %19 : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %27 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %28 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %29 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %30 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %array_0[%27, %28, %29, %30] = %26 : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %31 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %32 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %33 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %34 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %35 = array.read %array[%31, %32, %33, %34] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %36 = pod.read %35[@count] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %37 = arith.subi %36, %c1 {product_source = "compute"} : index
+                    pod.write %35[@count] = %37 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %38 = arith.cmpi eq, %37, %c0 {product_source = "compute"} : index
+                    scf.if %38 {
+                      %69 = pod.read %26[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %70 = pod.read %26[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %71 = function.call @matElemMul_0::@matElemMul_0::@compute(%69, %70) : (!array.type<4,4 x !felt.type<"babybear">>, !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemMul_0::@matElemMul_0<[]>>  {product_source = "compute"}
+                      pod.write %35[@comp] = %71 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                      %72 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                      %73 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                      %74 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                      %75 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                      array.write %array[%72, %73, %74, %75] = %35 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    } {product_source = "compute"}
+                    %39 = cast.toindex %4 : !felt.type<"babybear"> {product_source = "compute"}
+                    %40 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "compute"}
+                    %41 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %42 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %43 = array.read %arg1[%39, %40, %41, %42] : <4,4,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %44 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %45 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %46 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %47 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %48 = array.read %array_0[%44, %45, %46, %47] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %49 = pod.read %48[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %50 = cast.toindex %4 : !felt.type<"babybear"> {product_source = "compute"}
+                    %51 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %49[%50, %51] = %43 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %52 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %53 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %54 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %55 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %56 = array.read %array_0[%52, %53, %54, %55] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    pod.write %56[@b] = %49 : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %57 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %58 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %59 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %60 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %array_0[%57, %58, %59, %60] = %56 : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %61 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %62 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %63 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %64 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %65 = array.read %array[%61, %62, %63, %64] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %66 = pod.read %65[@count] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %67 = arith.subi %66, %c1 {product_source = "compute"} : index
+                    pod.write %65[@count] = %67 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %68 = arith.cmpi eq, %67, %c0 {product_source = "compute"} : index
+                    scf.if %68 {
+                      %69 = pod.read %56[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %70 = pod.read %56[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %71 = function.call @matElemMul_0::@matElemMul_0::@compute(%69, %70) : (!array.type<4,4 x !felt.type<"babybear">>, !array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemMul_0::@matElemMul_0<[]>>  {product_source = "compute"}
+                      pod.write %65[@comp] = %71 : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                      %72 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                      %73 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                      %74 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                      %75 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                      array.write %array[%72, %73, %74, %75] = %65 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    } {product_source = "compute"}
+                  } {product_source = "compute"}
+                } {product_source = "compute"}
+                scf.for %arg7 = %c0 to %c4 step %c1 {
+                  %4 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "compute"}
+                  scf.for %arg8 = %c0 to %c4 step %c1 {
+                    %5 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "compute"}
+                    %6 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %7 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %8 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %9 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %10 = array.read %array[%6, %7, %8, %9] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %11 = pod.read %10[@comp] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                    %12 = struct.readm %11[@out] : <@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %13 = cast.toindex %4 : !felt.type<"babybear"> {product_source = "compute"}
+                    %14 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "compute"}
+                    %15 = array.read %12[%13, %14] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %16 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %17 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %18 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %19 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %20 = array.read %array_2[%16, %17, %18, %19] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %21 = pod.read %20[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %22 = cast.toindex %4 : !felt.type<"babybear"> {product_source = "compute"}
+                    %23 = cast.toindex %5 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %21[%22, %23] = %15 : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                    %24 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %25 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %26 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %27 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %28 = array.read %array_2[%24, %25, %26, %27] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    pod.write %28[@a] = %21 : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                    %29 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %30 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %31 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %32 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    array.write %array_2[%29, %30, %31, %32] = %28 : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "compute"}
+                    %33 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                    %34 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                    %35 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                    %36 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                    %37 = array.read %array_1[%33, %34, %35, %36] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    %38 = pod.read %37[@count] : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %39 = arith.subi %38, %c1 {product_source = "compute"} : index
+                    pod.write %37[@count] = %39 : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                    %40 = arith.cmpi eq, %39, %c0 {product_source = "compute"} : index
+                    scf.if %40 {
+                      %41 = pod.read %28[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "compute"}
+                      %42 = function.call @matElemSum_1::@matElemSum_1::@compute(%41) : (!array.type<4,4 x !felt.type<"babybear">>) -> !struct.type<@matElemSum_1::@matElemSum_1<[]>>  {product_source = "compute"}
+                      pod.write %37[@comp] = %42 : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+                      %43 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                      %44 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                      %45 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                      %46 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+                      array.write %array_1[%43, %44, %45, %46] = %37 : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                    } {product_source = "compute"}
+                  } {product_source = "compute"}
+                } {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %2 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "compute"}
+              scf.for %arg6 = %c0 to %c3 step %c1 {
+                %15 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "compute"}
+                %16 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                %17 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                %18 = cast.toindex %15 : !felt.type<"babybear"> {product_source = "compute"}
+                %19 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                %20 = array.read %array_1[%16, %17, %18, %19] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %21 = pod.read %20[@comp] : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+                %22 = struct.readm %21[@out] : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+                %23 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                %24 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                %25 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                %26 = array.read %array_4[%23, %24, %25] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "compute"}
+                %27 = pod.read %26[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+                %28 = cast.toindex %15 : !felt.type<"babybear"> {product_source = "compute"}
+                array.write %27[%28] = %22 : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+                %29 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                %30 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                %31 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                %32 = array.read %array_4[%29, %30, %31] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "compute"}
+                pod.write %32[@in] = %27 : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+                %33 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                %34 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                %35 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                array.write %array_4[%33, %34, %35] = %32 : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "compute"}
+                %36 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                %37 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                %38 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                %39 = array.read %array_3[%36, %37, %38] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %40 = pod.read %39[@count] : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                %41 = arith.subi %40, %c1 {product_source = "compute"} : index
+                pod.write %39[@count] = %41 : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, index {product_source = "compute"}
+                %42 = arith.cmpi eq, %41, %c0 {product_source = "compute"} : index
+                scf.if %42 {
+                  %43 = pod.read %32[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "compute"}
+                  %44 = function.call @Sum_2::@Sum_2::@compute(%43) : (!array.type<3 x !felt.type<"babybear">>) -> !struct.type<@Sum_2::@Sum_2<[]>>  {product_source = "compute"}
+                  pod.write %39[@comp] = %44 : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+                  %45 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+                  %46 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+                  %47 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+                  array.write %array_3[%45, %46, %47] = %39 : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                } {product_source = "compute"}
+              } {product_source = "compute"}
+              %3 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+              %4 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+              %5 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+              %6 = array.read %array_3[%3, %4, %5] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              %7 = pod.read %6[@comp] : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+              %8 = struct.readm %7[@out] : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+              %9 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+              %10 = array.read %arg2[%9] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+              %11 = felt.add %8, %10 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+              %12 = cast.toindex %0 : !felt.type<"babybear"> {product_source = "compute"}
+              %13 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+              %14 = cast.toindex %2 : !felt.type<"babybear"> {product_source = "compute"}
+              array.write %nondet[%12, %13, %14] = %11 : <3,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@elemSum$inputs] = %array_2 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "compute"}
+        %array_5 = array.new  : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %0 = array.read %array_1[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %1 = pod.read %0[@comp] : <[@count: index, @comp: !struct.type<@matElemSum_1::@matElemSum_1<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+                array.write %array_5[%arg3, %arg4, %arg5, %arg6] = %1 : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@elemSum] = %array_5 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>> {product_source = "compute"}
+        struct.writem %self[@mul$inputs] = %array_0 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "compute"}
+        %array_6 = array.new  : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c3 step %c1 {
+              scf.for %arg6 = %c0 to %c2 step %c1 {
+                %0 = array.read %array[%arg3, %arg4, %arg5, %arg6] : <3,3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+                %1 = pod.read %0[@comp] : <[@count: index, @comp: !struct.type<@matElemMul_0::@matElemMul_0<[]>>, @params: !pod.type<[]>]>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+                array.write %array_6[%arg3, %arg4, %arg5, %arg6] = %1 : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "compute"}
+              } {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@mul] = %array_6 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>> {product_source = "compute"}
+        struct.writem %self[@sum$inputs] = %array_4 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>> {product_source = "compute"}
+        %array_7 = array.new  : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>  {product_source = "compute"}
+        scf.for %arg3 = %c0 to %c3 step %c1 {
+          scf.for %arg4 = %c0 to %c3 step %c1 {
+            scf.for %arg5 = %c0 to %c2 step %c1 {
+              %0 = array.read %array_3[%arg3, %arg4, %arg5] : <3,3,2 x !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>>, !pod.type<[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]> {product_source = "compute"}
+              %1 = pod.read %0[@comp] : <[@count: index, @comp: !struct.type<@Sum_2::@Sum_2<[]>>, @params: !pod.type<[]>]>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+              array.write %array_7[%arg3, %arg4, %arg5] = %1 : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "compute"}
+            } {product_source = "compute"}
+          } {product_source = "compute"}
+        } {product_source = "compute"}
+        struct.writem %self[@sum] = %array_7 : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>> {product_source = "compute"}
+        struct.writem %self[@out] = %nondet : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return {product_source = "compute"} %self : !struct.type<@Conv2D_3::@Conv2D_3<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@Conv2D_3::@Conv2D_3<[]>>, %arg1: !array.type<10,10,3 x !felt.type<"babybear">>, %arg2: !array.type<4,4,3,2 x !felt.type<"babybear">>, %arg3: !array.type<2 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+        %c4 = arith.constant 4 : index
+        %c1 = arith.constant {product_source = "constrain"} 1 : index
+        %c0 = arith.constant {product_source = "constrain"} 0 : index
+        %c2 = arith.constant {product_source = "constrain"} 2 : index
+        %c3 = arith.constant {product_source = "constrain"} 3 : index
+        %felt_const_3 = felt.const  3 : <"babybear"> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !felt.type<"babybear">> {product_source = "constrain"}
+        %1 = struct.readm %arg0[@mul] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>> {product_source = "constrain"}
+        %2 = struct.readm %arg0[@mul$inputs] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "constrain"}
+        %3 = struct.readm %arg0[@elemSum] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>> {product_source = "constrain"}
+        %4 = struct.readm %arg0[@elemSum$inputs] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>> {product_source = "constrain"}
+        %5 = struct.readm %arg0[@sum] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>> {product_source = "constrain"}
+        %6 = struct.readm %arg0[@sum$inputs] : <@Conv2D_3::@Conv2D_3<[]>>, !array.type<3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>> {product_source = "constrain"}
+        scf.for %arg4 = %c0 to %c3 step %c1 {
+          %7 = cast.tofelt %arg4 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          scf.for %arg5 = %c0 to %c3 step %c1 {
+            %8 = cast.tofelt %arg5 : index, !felt.type<"babybear"> {product_source = "constrain"}
+            scf.for %arg6 = %c0 to %c3 step %c1 {
+              %9 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "constrain"}
+              scf.for %arg7 = %c0 to %c2 step %c1 {
+                %10 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                scf.for %arg8 = %c0 to %c4 step %c1 {
+                  %11 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                  scf.for %arg9 = %c0 to %c4 step %c1 {
+                    %12 = cast.tofelt %arg9 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                    %13 = felt.mul %7, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %14 = felt.add %13, %11 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %15 = cast.toindex %14 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %16 = felt.mul %8, %felt_const_3 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %17 = felt.add %16, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %18 = cast.toindex %17 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %19 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %20 = array.read %arg1[%15, %18, %19] : <10,10,3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    %21 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %22 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %23 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %24 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %25 = array.read %2[%21, %22, %23, %24] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                    %26 = pod.read %25[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %27 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %28 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %29 = array.read %26[%27, %28] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    constrain.eq %29, %20 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                    %30 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %31 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %32 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %33 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %34 = array.read %arg2[%30, %31, %32, %33] : <4,4,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    %35 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %36 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %37 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %38 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %39 = array.read %2[%35, %36, %37, %38] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                    %40 = pod.read %39[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %41 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %42 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %43 = array.read %40[%41, %42] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    constrain.eq %43, %34 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                  } {product_source = "constrain"}
+                } {product_source = "constrain"}
+                scf.for %arg8 = %c0 to %c4 step %c1 {
+                  %11 = cast.tofelt %arg8 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                  scf.for %arg9 = %c0 to %c4 step %c1 {
+                    %12 = cast.tofelt %arg9 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                    %13 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %14 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %15 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %16 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %17 = array.read %1[%13, %14, %15, %16] : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "constrain"}
+                    %18 = struct.readm %17[@out] : <@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %19 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %20 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %21 = array.read %18[%19, %20] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    %22 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %23 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %24 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %25 = cast.toindex %10 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %26 = array.read %4[%22, %23, %24, %25] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                    %27 = pod.read %26[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                    %28 = cast.toindex %11 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %29 = cast.toindex %12 : !felt.type<"babybear"> {product_source = "constrain"}
+                    %30 = array.read %27[%28, %29] : <4,4 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                    constrain.eq %30, %21 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+                  } {product_source = "constrain"}
+                } {product_source = "constrain"}
+              } {product_source = "constrain"}
+            } {product_source = "constrain"}
+            scf.for %arg6 = %c0 to %c2 step %c1 {
+              %9 = cast.tofelt %arg6 : index, !felt.type<"babybear"> {product_source = "constrain"}
+              scf.for %arg7 = %c0 to %c3 step %c1 {
+                %22 = cast.tofelt %arg7 : index, !felt.type<"babybear"> {product_source = "constrain"}
+                %23 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                %24 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                %25 = cast.toindex %22 : !felt.type<"babybear"> {product_source = "constrain"}
+                %26 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                %27 = array.read %3[%23, %24, %25, %26] : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "constrain"}
+                %28 = struct.readm %27[@out] : <@matElemSum_1::@matElemSum_1<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+                %29 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+                %30 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+                %31 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+                %32 = array.read %6[%29, %30, %31] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                %33 = pod.read %32[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "constrain"}
+                %34 = cast.toindex %22 : !felt.type<"babybear"> {product_source = "constrain"}
+                %35 = array.read %33[%34] : <3 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+                constrain.eq %35, %28 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              } {product_source = "constrain"}
+              %10 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+              %11 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+              %12 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %13 = array.read %5[%10, %11, %12] : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "constrain"}
+              %14 = struct.readm %13[@out] : <@Sum_2::@Sum_2<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+              %15 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %16 = array.read %arg3[%15] : <2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              %17 = felt.add %14, %16 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+              %18 = cast.toindex %7 : !felt.type<"babybear"> {product_source = "constrain"}
+              %19 = cast.toindex %8 : !felt.type<"babybear"> {product_source = "constrain"}
+              %20 = cast.toindex %9 : !felt.type<"babybear"> {product_source = "constrain"}
+              %21 = array.read %0[%18, %19, %20] : <3,3,2 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+              constrain.eq %21, %17 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        scf.for %arg4 = %c0 to %c3 step %c1 {
+          scf.for %arg5 = %c0 to %c3 step %c1 {
+            scf.for %arg6 = %c0 to %c3 step %c1 {
+              scf.for %arg7 = %c0 to %c2 step %c1 {
+                %7 = array.read %3[%arg4, %arg5, %arg6, %arg7] : <3,3,3,2 x !struct.type<@matElemSum_1::@matElemSum_1<[]>>>, !struct.type<@matElemSum_1::@matElemSum_1<[]>> {product_source = "constrain"}
+                %8 = array.read %4[%arg4, %arg5, %arg6, %arg7] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                %9 = pod.read %8[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                function.call @matElemSum_1::@matElemSum_1::@constrain(%7, %9) : (!struct.type<@matElemSum_1::@matElemSum_1<[]>>, !array.type<4,4 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
+              } {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        scf.for %arg4 = %c0 to %c3 step %c1 {
+          scf.for %arg5 = %c0 to %c3 step %c1 {
+            scf.for %arg6 = %c0 to %c3 step %c1 {
+              scf.for %arg7 = %c0 to %c2 step %c1 {
+                %7 = array.read %1[%arg4, %arg5, %arg6, %arg7] : <3,3,3,2 x !struct.type<@matElemMul_0::@matElemMul_0<[]>>>, !struct.type<@matElemMul_0::@matElemMul_0<[]>> {product_source = "constrain"}
+                %8 = array.read %2[%arg4, %arg5, %arg6, %arg7] : <3,3,3,2 x !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>>, !pod.type<[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]> {product_source = "constrain"}
+                %9 = pod.read %8[@a] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                %10 = pod.read %8[@b] : <[@a: !array.type<4,4 x !felt.type<"babybear">>, @b: !array.type<4,4 x !felt.type<"babybear">>]>, !array.type<4,4 x !felt.type<"babybear">> {product_source = "constrain"}
+                function.call @matElemMul_0::@matElemMul_0::@constrain(%7, %9, %10) : (!struct.type<@matElemMul_0::@matElemMul_0<[]>>, !array.type<4,4 x !felt.type<"babybear">>, !array.type<4,4 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
+              } {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        scf.for %arg4 = %c0 to %c3 step %c1 {
+          scf.for %arg5 = %c0 to %c3 step %c1 {
+            scf.for %arg6 = %c0 to %c2 step %c1 {
+              %7 = array.read %5[%arg4, %arg5, %arg6] : <3,3,2 x !struct.type<@Sum_2::@Sum_2<[]>>>, !struct.type<@Sum_2::@Sum_2<[]>> {product_source = "constrain"}
+              %8 = array.read %6[%arg4, %arg5, %arg6] : <3,3,2 x !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]>>, !pod.type<[@in: !array.type<3 x !felt.type<"babybear">>]> {product_source = "constrain"}
+              %9 = pod.read %8[@in] : <[@in: !array.type<3 x !felt.type<"babybear">>]>, !array.type<3 x !felt.type<"babybear">> {product_source = "constrain"}
+              function.call @Sum_2::@Sum_2::@constrain(%7, %9) : (!struct.type<@Sum_2::@Sum_2<[]>>, !array.type<3 x !felt.type<"babybear">>) -> ()  {product_source = "constrain"}
+            } {product_source = "constrain"}
+          } {product_source = "constrain"}
+        } {product_source = "constrain"}
+        function.return {product_source = "constrain"}
+      }
+    }
+  }
+}
+

@@ -1,0 +1,99 @@
+module attributes {llzk.lang, llzk.main = !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>>} {
+  poly.template @EscalarProduct_0 {
+    struct.def @EscalarProduct_0 {
+      struct.member @out : !felt.type<"babybear"> {llzk.pub, signal}
+      struct.member @aux : !array.type<16 x !felt.type<"babybear">>
+      function.def @product(%arg0: !array.type<16 x !felt.type<"babybear">>, %arg1: !array.type<16 x !felt.type<"babybear">>) -> !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>> attributes {function.allow_constraint, function.allow_non_native_field_ops, function.allow_witness, llzk.derived} {
+        %c1 = arith.constant 1 : index
+        %c16 = arith.constant 16 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@EscalarProduct_0::@EscalarProduct_0<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = struct.readm %self[@out] : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %1 = struct.readm %self[@aux] : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "constrain"}
+        %2:2 = scf.for %arg2 = %c0 to %c16 step %c1 iter_args(%arg3 = %felt_const_0, %arg4 = %felt_const_0) -> (!felt.type<"babybear">, !felt.type<"babybear">) {
+          %3 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %5 = array.read %arg0[%4] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %6 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %7 = array.read %arg1[%6] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %8 = felt.mul %5, %7 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %9 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%9] = %8 : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %10 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "compute"}
+          %11 = array.read %nondet[%10] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %12 = felt.add %arg3, %11 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %13 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %14 = cast.toindex %13 : !felt.type<"babybear"> {product_source = "constrain"}
+          %15 = array.read %arg0[%14] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %16 = cast.toindex %13 : !felt.type<"babybear"> {product_source = "constrain"}
+          %17 = array.read %arg1[%16] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %18 = felt.mul %15, %17 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %19 = cast.toindex %13 : !felt.type<"babybear"> {product_source = "constrain"}
+          %20 = array.read %1[%19] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %20, %18 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %21 = cast.toindex %13 : !felt.type<"babybear"> {product_source = "constrain"}
+          %22 = array.read %1[%21] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %23 = felt.add %arg4, %22 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          scf.yield %12, %23 : !felt.type<"babybear">, !felt.type<"babybear">
+        } {product_source = "fused"}
+        struct.writem %self[@out] = %2#0 : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@aux] = %nondet : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        constrain.eq %0, %2#1 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return %self : !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>>
+      }
+      function.def @compute(%arg0: !array.type<16 x !felt.type<"babybear">>, %arg1: !array.type<16 x !felt.type<"babybear">>) -> !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>> attributes {function.allow_non_native_field_ops, function.allow_witness, product_source = "compute"} {
+        %c1 = arith.constant 1 : index
+        %c16 = arith.constant 16 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "compute"}
+        %self = struct.new : <@EscalarProduct_0::@EscalarProduct_0<[]>> {product_source = "compute"}
+        %nondet = llzk.nondet : !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        %0 = scf.for %arg2 = %c0 to %c16 step %c1 iter_args(%arg3 = %felt_const_0) -> (!felt.type<"babybear">) {
+          %1 = cast.tofelt %arg2 : index, !felt.type<"babybear"> {product_source = "compute"}
+          %2 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+          %3 = array.read %arg0[%2] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %4 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+          %5 = array.read %arg1[%4] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %6 = felt.mul %3, %5 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          %7 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+          array.write %nondet[%7] = %6 : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %8 = cast.toindex %1 : !felt.type<"babybear"> {product_source = "compute"}
+          %9 = array.read %nondet[%8] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "compute"}
+          %10 = felt.add %arg3, %9 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "compute"}
+          scf.yield {product_source = "compute"} %10 : !felt.type<"babybear">
+        } {product_source = "compute"}
+        struct.writem %self[@out] = %0 : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !felt.type<"babybear"> {product_source = "compute"}
+        struct.writem %self[@aux] = %nondet : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "compute"}
+        function.return {product_source = "compute"} %self : !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>>
+      }
+      function.def @constrain(%arg0: !struct.type<@EscalarProduct_0::@EscalarProduct_0<[]>>, %arg1: !array.type<16 x !felt.type<"babybear">>, %arg2: !array.type<16 x !felt.type<"babybear">>) attributes {function.allow_constraint, function.allow_non_native_field_ops, product_source = "constrain"} {
+        %c1 = arith.constant 1 : index
+        %c16 = arith.constant 16 : index
+        %c0 = arith.constant 0 : index
+        %felt_const_0 = felt.const  0 : <"babybear"> {product_source = "constrain"}
+        %0 = struct.readm %arg0[@out] : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !felt.type<"babybear"> {product_source = "constrain"}
+        %1 = struct.readm %arg0[@aux] : <@EscalarProduct_0::@EscalarProduct_0<[]>>, !array.type<16 x !felt.type<"babybear">> {product_source = "constrain"}
+        %2 = scf.for %arg3 = %c0 to %c16 step %c1 iter_args(%arg4 = %felt_const_0) -> (!felt.type<"babybear">) {
+          %3 = cast.tofelt %arg3 : index, !felt.type<"babybear"> {product_source = "constrain"}
+          %4 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "constrain"}
+          %5 = array.read %arg1[%4] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %6 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "constrain"}
+          %7 = array.read %arg2[%6] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %8 = felt.mul %5, %7 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %9 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "constrain"}
+          %10 = array.read %1[%9] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          constrain.eq %10, %8 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          %11 = cast.toindex %3 : !felt.type<"babybear"> {product_source = "constrain"}
+          %12 = array.read %1[%11] : <16 x !felt.type<"babybear">>, !felt.type<"babybear"> {product_source = "constrain"}
+          %13 = felt.add %arg4, %12 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+          scf.yield {product_source = "constrain"} %13 : !felt.type<"babybear">
+        } {product_source = "constrain"}
+        constrain.eq %0, %2 : !felt.type<"babybear">, !felt.type<"babybear"> {product_source = "constrain"}
+        function.return {product_source = "constrain"}
+      }
+    }
+  }
+}
+

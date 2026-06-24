@@ -9,6 +9,8 @@
 #include <llzk/Analysis/LightweightSignalEquivalenceAnalysis.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
+#include <llzk/Transforms/LLZKTransformationPasses.h>
+#include <mlir/Pass/PassManager.h>
 
 using namespace mlir;
 using namespace llzk;
@@ -37,7 +39,14 @@ llvm::LogicalResult ensureProductFunc(ModuleOp module,
            << "failed to align @compute/@constrain into @product";
   }
 
-  return aligner.alignCalls(productFunc);
+  if (llvm::failed(aligner.alignCalls(productFunc))) {
+    return llvm::failure();
+  }
+
+  // Now, try fusing loops
+  PassManager pm{module->getContext()};
+  pm.addPass(llzk::createFuseProductLoopsPass());
+  return pm.run(module);
 }
 
 } // namespace lleq
