@@ -1,6 +1,6 @@
 # LLEQ
 
-LLEQ is an equivalence verifier for zero-knowledge circuits in LLZK IR. LLEQ consumes **LLZK IR**, not high-level circuit languages directly. If your circuit is written in another language, first lower it to LLZK using an appropriate frontend, then run LLEQ on the resulting `.llzk` file. For example:
+LLEQ is an equivalence verifier for zero-knowledge circuits in LLZK IR, based on [Zequal](https://veridise.com/wp-content/uploads/2025/08/zequal.pdf). LLEQ consumes **LLZK IR**, not high-level circuit languages directly. If your circuit is written in another language, first lower it to LLZK using an appropriate frontend, then run LLEQ on the resulting `.llzk` file. For example:
 
 - [project-llzk/circom](https://github.com/project-llzk/circom), a Circom frontend with LLZK support
 - [project-llzk/haloumi](https://github.com/project-llzk/haloumi), a Halo2/PLONKish frontend
