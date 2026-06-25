@@ -131,7 +131,7 @@ lleq wp --struct DecomposeProduct_1 --field babybear examples/circom-demo/Decomp
 
 ## Examples
 
-See [examples/README.md](Examples)
+See [Examples](examples/README.md)
 
 ## Capabilities and Limitations
 
