@@ -126,7 +126,7 @@ check the verification condition and, when it fails, obtain a counterexample.
 For example:
 
 ```bash
-lleq wp --struct DecomposeProduct_1 --field babybear examples/circom-demo/DecomposeProduct.llzk | z3 -in
+lleq wp --struct DecomposeProduct_1 --field babybear examples/circom-examples/DecomposeProduct.llzk | z3 -in
 ```
 
 ## Examples
