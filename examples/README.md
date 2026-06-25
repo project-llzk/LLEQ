@@ -1,30 +1,30 @@
-# Circom Demo Examples
+# Examples
 
-This directory holds Circom benchmarks lowered to LLZK and then normalized for
-LLEQ demos.
+This directory collects example circuits and benchmark artifacts used for LLEQ
+development, demos, and evaluation.
 
-## Regenerating The Example Set
+## `circom-examples`
 
-Recompile the Circom benchmarks with the concrete backend in
-`/Users/raghav/Veridise/circom-benchmarks`, then import them here:
+The [`circom-examples`](./circom-examples) subdirectory contains LLZK IR derived
+from Circom benchmarks maintained in the
+[`project-llzk/circom-benchmarks`](https://github.com/project-llzk/circom-benchmarks)
+repository.
 
-```bash
-python3 scripts/import_circom_demo_examples.py
-```
-
-The import script scans `~/Veridise/circom-benchmarks/llzk-outputs`, extracts
-each benchmark's `llzk.main` root struct, and runs:
+Each imported benchmark is lowered to LLZK and then normalized with the
+following pass pipeline before being checked into this repository:
 
 ```text
 --llzk-while-to-for
---llzk-compute-constrain-to-product=root-struct=<MainStruct>
+--llzk-compute-constrain-to-product=root-struct=<RootStruct>
 --llzk-fuse-product-loops
 --canonicalize
 ```
 
-Successful outputs are copied into this directory as flat `.llzk` files. The
-script also writes `import_manifest.csv` with preprocessing successes and
-failures.
+Here, `<RootStruct>` is the benchmark's `llzk.main` root struct. The resulting
+normalized `.llzk` files are stored flat in [`circom-examples`](./circom-examples).
+
+The subdirectory also includes `verification_results.csv`, which records LLEQ
+verification outcomes for the imported set.
 
 ## Collecting Verification Data
 
