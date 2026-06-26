@@ -8,7 +8,10 @@
 #include <concepts>
 #include <cvc5/cvc5.h>
 #include <functional>
+#include <optional>
 #include <llvm/ADT/DynamicAPInt.h>
+#include <llvm/ADT/ArrayRef.h>
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/STLForwardCompat.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/Support/raw_ostream.h>
@@ -19,6 +22,8 @@
 #include <mlir/IR/Value.h>
 
 namespace lleq {
+
+using ArrayShape = llvm::SmallVector<int64_t, 4>;
 
 static inline std::optional<llzk::component::MemberWriteOp>
 getArrayDestination(mlir::Value array) {
@@ -114,13 +119,40 @@ struct TermBuilder {
   }
 
   cvc5::Term arrayRead(FormulaTerm auto array, FormulaTerm auto index) {
-    return _array_read_impl(_get_term(array), _get_term(index));
+    cvc5::Term indexTerm = _get_term(index);
+    return _array_read_impl(_get_term(array), {indexTerm});
+  }
+
+  cvc5::Term arrayRead(FormulaTerm auto array,
+                       llvm::ArrayRef<mlir::Value> indices) {
+    llvm::SmallVector<cvc5::Term> indexTerms =
+        llvm::map_to_vector(indices,
+                            [this](mlir::Value index) { return _get_term(index); });
+    return _array_read_impl(_get_term(array), indexTerms);
+  }
+
+  cvc5::Term arrayRead(FormulaTerm auto array,
+                       llvm::ArrayRef<cvc5::Term> indices) {
+    return _array_read_impl(_get_term(array), indices);
   }
 
   cvc5::Term arrayWrite(FormulaTerm auto array, FormulaTerm auto index,
                         FormulaTerm auto elem) {
-    return _array_write_impl(_get_term(array), _get_term(index),
-                             _get_term(elem));
+    cvc5::Term indexTerm = _get_term(index);
+    return _array_write_impl(_get_term(array), {indexTerm}, _get_term(elem));
+  }
+
+  cvc5::Term arrayWrite(FormulaTerm auto array, llvm::ArrayRef<mlir::Value> indices,
+                        FormulaTerm auto elem) {
+    llvm::SmallVector<cvc5::Term> indexTerms =
+        llvm::map_to_vector(indices,
+                            [this](mlir::Value index) { return _get_term(index); });
+    return _array_write_impl(_get_term(array), indexTerms, _get_term(elem));
+  }
+
+  cvc5::Term arrayWrite(FormulaTerm auto array, llvm::ArrayRef<cvc5::Term> indices,
+                        FormulaTerm auto elem) {
+    return _array_write_impl(_get_term(array), indices, _get_term(elem));
   }
 
   TermBuilder(cvc5::TermManager &mgr, llzk::Field field)
@@ -150,11 +182,13 @@ private:
                                       std::optional<llvm::DynamicAPInt>);
   cvc5::Term _assert_equal_impl(cvc5::Term, cvc5::Term);
   cvc5::Term _assert_equal_impl(cvc5::Term, mlir::Value);
-  cvc5::Term _array_read_impl(cvc5::Term, cvc5::Term);
-  cvc5::Term _array_write_impl(cvc5::Term, cvc5::Term, cvc5::Term);
+  cvc5::Term _array_read_impl(cvc5::Term, llvm::ArrayRef<cvc5::Term>);
+  cvc5::Term _array_write_impl(cvc5::Term, llvm::ArrayRef<cvc5::Term>,
+                               cvc5::Term);
 
-  cvc5::Term _array_quantified_term(std::function<cvc5::Term(cvc5::Term)>,
-                                    std::optional<int64_t>);
+  cvc5::Term
+  _array_quantified_term(std::function<cvc5::Term(llvm::ArrayRef<cvc5::Term>)>,
+                         llvm::ArrayRef<int64_t>);
 
   cvc5::Term _get_term(FormulaTerm auto t) {
     using T = decltype(t);
@@ -176,11 +210,16 @@ private:
 
 struct Range {
   cvc5::Term lb, ub, step;
+  static Range fromValues(mlir::Value lb, mlir::Value ub, mlir::Value step,
+                          TermBuilder &builder) {
+    return Range{builder.getExpression(lb), builder.getExpression(ub),
+                 builder.getExpression(step)};
+  }
 };
 
 struct Annotation {
   bool isArray;
-  std::optional<Range> arraySlice;
+  std::optional<llvm::SmallVector<Range>> arraySlice;
 };
 
 // A term of the shape (A1 /\ ... /\ An) -> (B1 /\ ... /\ Bm)
@@ -189,8 +228,8 @@ struct ImplicationTerm {
   llvm::SmallVector<cvc5::Term> consequents;
 
   // Optional annotations on each consequent term. The annotation is present if
-  // the term is expressing equality between two signals, and the `arraySlice`
-  // field is present if the signals are arrays.
+  // the term is expressing equality between two signals, and the
+  // `arraySlice` field carries one bound range per array dimension.
   llvm::SmallVector<std::optional<Annotation>> annotations;
 
   static ImplicationTerm of(cvc5::Term term) {
