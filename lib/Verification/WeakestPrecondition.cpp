@@ -150,11 +150,10 @@ bool checkUnsatWithZ3(StringRef query) {
 
 Block *nestedLoopBody(scf::ForOp loop, SmallVector<LoopCounterInfo> &loopInfo,
                       TermBuilder &builder) {
-  loopInfo.push_back(
-      LoopCounterInfo{builder.getExpression(loop.getInductionVar()),
-                      Range{builder.getExpression(loop.getLowerBound()),
-                            builder.getExpression(loop.getUpperBound()),
-                            builder.getExpression(loop.getStep())}});
+  loopInfo.push_back(LoopCounterInfo{
+      builder.getExpression(loop.getInductionVar()),
+      Range::fromValues(loop.getLowerBound(), loop.getUpperBound(),
+                        loop.getStep(), builder)});
   if (auto first = dyn_cast<scf::ForOp>(loop.getBody()->front())) {
     return nestedLoopBody(first, loopInfo, builder);
   }
@@ -340,15 +339,13 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
   SmallVector<LoopCounterInfo> loopInfo;
   auto *body = nestedLoopBody(loop, loopInfo, builder);
 
-  // Maps a witness *array* that's written in the loop to the index at which its
-  // written
-  DenseMap<component::MemberWriteOp, Value> witnessWrites;
+  // Maps a witness array written in the loop to the full write index tuple.
+  DenseMap<component::MemberWriteOp, SmallVector<Value>> witnessWrites;
   body->walk([&witnessWrites](array::WriteArrayOp write) {
-    llzk::ensure(write.getIndices().size() == 1,
-                 "multidimensional arrays not yet supported");
     auto dest = getArrayDestination(write.getArrRef());
     if (dest.has_value()) {
-      witnessWrites.insert({*dest, write.getIndices().front()});
+      witnessWrites[*dest] = SmallVector<Value>(write.getIndices().begin(),
+                                                write.getIndices().end());
     }
   });
 
@@ -365,20 +362,24 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
   // auto [lb, ub, step] = range;
 
   SmallVector<cvc5::Term> predicates;
-  SmallVector<cvc5::Term> indices;
-  SmallVector<int64_t> arraySizes;
-  for (auto [write, index] : witnessWrites) {
+  SmallVector<SmallVector<cvc5::Term>> indices;
+  SmallVector<ArrayShape> arrayShapes;
+  for (auto [write, writeIndices] : witnessWrites) {
     auto memberDef = write.getMemberDefOp(tables)->get();
     auto arr_w_i =
-        builder.arrayRead(builder.getConstant(memberDef, true), index);
+        builder.arrayRead(builder.getConstant(memberDef, true), writeIndices);
     auto arr_c_i =
-        builder.arrayRead(builder.getConstant(memberDef, false), index);
+        builder.arrayRead(builder.getConstant(memberDef, false), writeIndices);
     predicates.push_back(builder.assertEqual(arr_w_i, arr_c_i));
-    indices.push_back(builder.getExpression(index));
+    indices.push_back(llvm::map_to_vector(writeIndices, [this](Value index) {
+      return builder.getExpression(index);
+    }));
 
-    // We've already asserted that the array is not multidimensional
-    arraySizes.push_back(
-        dyn_cast<array::ArrayType>(memberDef.getType()).getShape().front());
+    auto arrType = dyn_cast<array::ArrayType>(memberDef.getType());
+    llzk::ensure(static_cast<bool>(arrType),
+                 "expected witness write destination to be an array");
+    arrayShapes.push_back(
+        ArrayShape(arrType.getShape().begin(), arrType.getShape().end()));
   }
 
   // Filter out which predicates are inductive
@@ -393,8 +394,8 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
       mgr);
 
   SmallVector<cvc5::Term> strengthenings;
-  for (auto [size, predicate, index] :
-       llvm::zip(arraySizes, predicates, indices)) {
+  for (auto [shape, predicate, indexTuple] :
+       llvm::zip(arrayShapes, predicates, indices)) {
     // We can strengthen the invariant to say the array is equal outside the
     // slice visited by the for loop as well (note: this isn't quite right if,
     // e.g., the loop isn't a basic "step 1, write to arr[i]", but its pretty
@@ -405,20 +406,24 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     // say something like: forall x..., (x \not\in R) /\ (f(x...) in array
     // bounds) -> predicate
 
-    auto missesSlice = [this, &loopBounds, &index, &loopCounters,
-                        &size](ArrayRef<cvc5::Term> xs) {
+    auto missesSlice = [this, &loopBounds, &indexTuple, &loopCounters,
+                        &shape](ArrayRef<cvc5::Term> xs) {
       SmallVector<cvc5::Term> xNotInRange;
       for (auto [x, range] : llvm::zip(xs, loopBounds)) {
         xNotInRange.push_back(valueInRange(x, range, mgr).notTerm());
       }
-      auto arrayAccessIndex =
-          index.substitute({loopCounters.begin(), loopCounters.end()}, xs);
-      Range arrayBounds{mgr.mkInteger(0), mgr.mkInteger(size),
-                        mgr.mkInteger(1)};
+      SmallVector<cvc5::Term> arrayBounds;
+      for (auto [index, extent] : llvm::zip(indexTuple, shape)) {
+        auto arrayAccessIndex =
+            index.substitute({loopCounters.begin(), loopCounters.end()}, xs);
+        arrayBounds.push_back(valueInRange(
+            arrayAccessIndex,
+            Range{mgr.mkInteger(0), mgr.mkInteger(extent), mgr.mkInteger(1)},
+            mgr));
+      }
 
-      return mgr.mkTerm(cvc5::Kind::AND,
-                        {disjunctAll(xNotInRange, mgr),
-                         valueInRange(arrayAccessIndex, arrayBounds, mgr)});
+      return mgr.mkTerm(cvc5::Kind::AND, {disjunctAll(xNotInRange, mgr),
+                                          conjunctAll(arrayBounds, mgr)});
     };
     strengthenings.push_back(
         quantifyPredicate(predicate, loopCounters, missesSlice, mgr));
@@ -434,7 +439,7 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
   auto strengthenedPrecondition =
       conjunctAll({bodyPrecondition, strengthened}, mgr);
 
-  for (auto [size, predicate] : llvm::zip(arraySizes, predicates)) {
+  for (auto predicate : predicates) {
     auto postcondition = ConjunctionTerm::of(quantifyPredicate(
         predicate, loopCounters,
         [this, &loopCounters, &loopBounds](auto xs) {
@@ -551,11 +556,12 @@ WeakestPreconditionAnalysis::getExpression(Operation *op) {
                                    isWitnessOp(read));
       })
       .Case<ReadArrayOp>([this](ReadArrayOp read) {
-        llzk::ensure(read.getIndices().size() == 1,
-                     "multidimensional arrays are not supported");
-        return builder.arrayRead(
-            builder.getExpression(read.getArrRef()),
-            builder.getExpression(read.getIndices().front()));
+        SmallVector<cvc5::Term> indices =
+            llvm::map_to_vector(read.getIndices(), [this](Value index) {
+              return builder.getExpression(index);
+            });
+        return builder.arrayRead(builder.getExpression(read.getArrRef()),
+                                 indices);
       })
       .Case<FeltConstantOp>([this](FeltConstantOp constOp) {
         SmallString<64> str;
@@ -637,19 +643,18 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
             writeOp.getVal()));
       })
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
-        llzk::ensure(writeOp.getIndices().size() == 1,
-                     "multidimensional arrays not supported");
         auto arr = writeOp.getArrRef();
-        auto index = writeOp.getIndices().front();
+        SmallVector<Value> indices(writeOp.getIndices().begin(),
+                                   writeOp.getIndices().end());
         auto value = writeOp.getRvalue();
         if (valueIsSignalRead(arr, tables) || valueIsSignalWrite(arr, tables)) {
           // TODO: Make this behavior configurable
           postcondition.addAntecedent(
-              builder.assertEqual(builder.arrayRead(arr, index), value));
+              builder.assertEqual(builder.arrayRead(arr, indices), value));
           return;
         }
         postcondition.substitute(builder.getConstant(arr),
-                                 builder.arrayWrite(arr, index, value));
+                                 builder.arrayWrite(arr, indices, value));
       })
       .Case<constrain::EmitEqualityOp>(
           [this, &postcondition](EmitEqualityOp eqOp) {
@@ -740,14 +745,12 @@ ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
     auto witnessSym = builder.getConstant(memberDef, true);
     auto constraintSym = builder.getConstant(memberDef, false);
     if (auto arrType = dyn_cast<llzk::array::ArrayType>(memberDef.getType())) {
-      llzk::ensure(arrType.getShape().size() == 1,
-                   "multidimensional arrays not yet supported");
-
-      auto size = arrType.getShape().front();
-      annotations.push_back(
-          Annotation{true,
-                     {{builder.getInteger(0), builder.getInteger(size),
-                       builder.getInteger(1)}}});
+      SmallVector<Range> slices;
+      for (int64_t extent : arrType.getShape()) {
+        slices.push_back({builder.getInteger(0), builder.getInteger(extent),
+                          builder.getInteger(1)});
+      }
+      annotations.push_back(Annotation{true, std::move(slices)});
     } else {
       annotations.push_back(Annotation{false, std::nullopt});
     }
