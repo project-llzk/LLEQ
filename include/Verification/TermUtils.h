@@ -8,11 +8,10 @@
 #include <concepts>
 #include <cvc5/cvc5.h>
 #include <functional>
-#include <optional>
-#include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/ArrayRef.h>
-#include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLForwardCompat.h>
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
@@ -20,6 +19,7 @@
 #include <llzk/Util/Field.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/IR/Value.h>
+#include <optional>
 
 namespace lleq {
 
@@ -125,9 +125,8 @@ struct TermBuilder {
 
   cvc5::Term arrayRead(FormulaTerm auto array,
                        llvm::ArrayRef<mlir::Value> indices) {
-    llvm::SmallVector<cvc5::Term> indexTerms =
-        llvm::map_to_vector(indices,
-                            [this](mlir::Value index) { return _get_term(index); });
+    llvm::SmallVector<cvc5::Term> indexTerms = llvm::map_to_vector(
+        indices, [this](mlir::Value index) { return _get_term(index); });
     return _array_read_impl(_get_term(array), indexTerms);
   }
 
@@ -142,15 +141,16 @@ struct TermBuilder {
     return _array_write_impl(_get_term(array), {indexTerm}, _get_term(elem));
   }
 
-  cvc5::Term arrayWrite(FormulaTerm auto array, llvm::ArrayRef<mlir::Value> indices,
+  cvc5::Term arrayWrite(FormulaTerm auto array,
+                        llvm::ArrayRef<mlir::Value> indices,
                         FormulaTerm auto elem) {
-    llvm::SmallVector<cvc5::Term> indexTerms =
-        llvm::map_to_vector(indices,
-                            [this](mlir::Value index) { return _get_term(index); });
+    llvm::SmallVector<cvc5::Term> indexTerms = llvm::map_to_vector(
+        indices, [this](mlir::Value index) { return _get_term(index); });
     return _array_write_impl(_get_term(array), indexTerms, _get_term(elem));
   }
 
-  cvc5::Term arrayWrite(FormulaTerm auto array, llvm::ArrayRef<cvc5::Term> indices,
+  cvc5::Term arrayWrite(FormulaTerm auto array,
+                        llvm::ArrayRef<cvc5::Term> indices,
                         FormulaTerm auto elem) {
     return _array_write_impl(_get_term(array), indices, _get_term(elem));
   }
@@ -186,9 +186,9 @@ private:
   cvc5::Term _array_write_impl(cvc5::Term, llvm::ArrayRef<cvc5::Term>,
                                cvc5::Term);
 
-  cvc5::Term
-  _array_quantified_term(std::function<cvc5::Term(llvm::ArrayRef<cvc5::Term>)>,
-                         llvm::ArrayRef<int64_t>);
+  cvc5::Term _array_quantified_term(
+      std::function<cvc5::Term(llvm::ArrayRef<cvc5::Term>)>,
+      llvm::ArrayRef<int64_t>);
 
   cvc5::Term _get_term(FormulaTerm auto t) {
     using T = decltype(t);

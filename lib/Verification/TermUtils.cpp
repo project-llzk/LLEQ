@@ -474,9 +474,9 @@ cvc5::Term TermBuilder::_array_quantified_term(
         mgr.mkTerm(cvc5::Kind::IMPLIES, {conjunctAll(bounds, mgr), forallBody});
   }
 
-  return mgr.mkTerm(cvc5::Kind::FORALL,
-                    {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, indices),
-                     forallBody});
+  return mgr.mkTerm(
+      cvc5::Kind::FORALL,
+      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, indices), forallBody});
 }
 
 cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {

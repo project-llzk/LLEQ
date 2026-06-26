@@ -344,8 +344,8 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
   body->walk([&witnessWrites](array::WriteArrayOp write) {
     auto dest = getArrayDestination(write.getArrRef());
     if (dest.has_value()) {
-      witnessWrites[*dest] =
-          SmallVector<Value>(write.getIndices().begin(), write.getIndices().end());
+      witnessWrites[*dest] = SmallVector<Value>(write.getIndices().begin(),
+                                                write.getIndices().end());
     }
   });
 
@@ -416,16 +416,14 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
       for (auto [index, extent] : llvm::zip(indexTuple, shape)) {
         auto arrayAccessIndex =
             index.substitute({loopCounters.begin(), loopCounters.end()}, xs);
-        arrayBounds.push_back(
-            valueInRange(arrayAccessIndex,
-                         Range{mgr.mkInteger(0), mgr.mkInteger(extent),
-                               mgr.mkInteger(1)},
-                         mgr));
+        arrayBounds.push_back(valueInRange(
+            arrayAccessIndex,
+            Range{mgr.mkInteger(0), mgr.mkInteger(extent), mgr.mkInteger(1)},
+            mgr));
       }
 
-      return mgr.mkTerm(cvc5::Kind::AND,
-                        {disjunctAll(xNotInRange, mgr),
-                         conjunctAll(arrayBounds, mgr)});
+      return mgr.mkTerm(cvc5::Kind::AND, {disjunctAll(xNotInRange, mgr),
+                                          conjunctAll(arrayBounds, mgr)});
     };
     strengthenings.push_back(
         quantifyPredicate(predicate, loopCounters, missesSlice, mgr));
@@ -558,9 +556,10 @@ WeakestPreconditionAnalysis::getExpression(Operation *op) {
                                    isWitnessOp(read));
       })
       .Case<ReadArrayOp>([this](ReadArrayOp read) {
-        SmallVector<cvc5::Term> indices = llvm::map_to_vector(
-            read.getIndices(),
-            [this](Value index) { return builder.getExpression(index); });
+        SmallVector<cvc5::Term> indices =
+            llvm::map_to_vector(read.getIndices(), [this](Value index) {
+              return builder.getExpression(index);
+            });
         return builder.arrayRead(builder.getExpression(read.getArrRef()),
                                  indices);
       })
