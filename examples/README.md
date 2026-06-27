@@ -38,7 +38,7 @@ For each imported benchmark, the script runs:
 
 ```text
 lleq verify --flatten --struct <RootStruct>
-lleq wp --struct <RootStruct> | cvc5 --produce-models
+lleq wp --struct <RootStruct> | z3 -in
 ```
 
 Each mode uses a 120-second timeout and reports one of:
@@ -50,4 +50,4 @@ Each mode uses a 120-second timeout and reports one of:
 - `error`
 
 `verify` is classified as `partial` when any signal remains marked with `*`.
-`wp` is classified as `partial` when cvc5 returns `unknown`.
+`wp` is classified as `partial` when z3 returns `unknown`.
