@@ -24,6 +24,7 @@
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/LLZK/IR/Ops.h>
+#include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/TypeHelper.h>
@@ -240,6 +241,10 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
   // Otherwise, switch on the type of the operation
   auto expression =
       llvm::TypeSwitch<Operation *, cvc5::Term>(op)
+          .Case<polymorphic::ConstReadOp>(
+              [this](polymorphic::ConstReadOp constRead) {
+                return getConstant(constRead.getConstName());
+              })
           .Case<boolean::CmpOp>([this, op](boolean::CmpOp cmp) {
             static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
                 predicateToKind = {
@@ -385,6 +390,16 @@ cvc5::Term TermBuilder::getConstant(StringRef memberName, Type type,
                              (memberName + (isWitness ? "_w" : "_c")).str());
   memberMap.insert({memberName, newTerm});
   termTypes.insert({newTerm, type});
+  return newTerm;
+}
+
+cvc5::Term TermBuilder::getConstant(StringRef symbolName) {
+  llvm::dbgs() << "Building constant for @" << symbolName << "\n";
+  if (auto it = polyMembers.find(symbolName); it != polyMembers.end()) {
+    return it->second;
+  }
+  auto newTerm = mgr.mkConst(mgr.getIntegerSort(), std::string{symbolName});
+  polyMembers.insert({symbolName, newTerm});
   return newTerm;
 }
 

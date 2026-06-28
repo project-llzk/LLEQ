@@ -84,6 +84,9 @@ struct TermBuilder {
   // Return a constant term of the appropriate sort for an SSA value
   cvc5::Term getConstant(mlir::Value value);
 
+  // Return a constant term for a polymorphic variable (assume integer-sort)
+  cvc5::Term getConstant(llvm::StringRef symbolName);
+
   // Return a constant of the appropriate sort for a struct member
   cvc5::Term getConstant(llzk::component::MemberDefOp memberDef,
                          bool isWitness);
@@ -166,7 +169,7 @@ private:
 
   llvm::DenseMap<mlir::Value, cvc5::Term> constants;
   llvm::DenseMap<mlir::Value, cvc5::Term> expressions;
-  llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers;
+  llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers, polyMembers;
 
   std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
 
