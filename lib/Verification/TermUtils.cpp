@@ -267,7 +267,7 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
-            if (read.getVal().getType() ==
+            if (read.getComponent().getType() ==
                 read->getParentOfType<component::StructDefOp>().getType()) {
               // Not a subcomponent read, so just return the member constant
               return getConstant(read.getMemberName(), read.getType(),
