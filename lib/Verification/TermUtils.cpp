@@ -267,9 +267,14 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
-            read.getType();
-            return getConstant(read.getMemberName(), read.getType(),
-                               isWitnessOp(read));
+            if (read.getVal().getType() ==
+                read->getParentOfType<component::StructDefOp>().getType()) {
+              // Not a subcomponent read, so just return the member constant
+              return getConstant(read.getMemberName(), read.getType(),
+                                 isWitnessOp(read));
+            }
+            SymbolTableCollection tables;
+            return subcmpMembers.at(read.getMemberDefOp(tables)->get());
           })
           .Case<ReadArrayOp>([this](ReadArrayOp read) {
             SmallVector<Value> indices(read.getIndices().begin(),
