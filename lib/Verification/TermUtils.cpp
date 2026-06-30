@@ -24,6 +24,7 @@
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/LLZK/IR/Ops.h>
+#include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/TypeHelper.h>
@@ -101,12 +102,10 @@ TermBuilder::TermSet TermBuilder::getExtraDecls(cvc5::Term term) {
   return decls;
 }
 
-// Returns the array length for an ArrayType, or nullopt
-static inline std::optional<int64_t> sizeOfType(Type type) {
+// Returns the full shape for an ArrayType, or nullopt for non-array types.
+static inline std::optional<ArrayShape> shapeOfType(Type type) {
   if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
-    auto shape = arrType.getShape();
-    llzk::ensure(shape.size() == 1, "multidimensional arrays not supported");
-    return shape.front();
+    return ArrayShape(arrType.getShape().begin(), arrType.getShape().end());
   }
   return {};
 }
@@ -116,19 +115,25 @@ TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
   TermSet bounds;
   for (auto var : decls) {
     if (var.getSort().isArray()) {
-      if (var.getSort().getArrayElementSort().isUninterpretedSort()) {
+      cvc5::Sort elementSort = var.getSort();
+      while (elementSort.isArray()) {
+        elementSort = elementSort.getArrayElementSort();
+      }
+      if (elementSort.isUninterpretedSort()) {
         // Don't need bounds for subcomponent arrays
         continue;
       }
-      std::optional<size_t> size;
+      ArrayShape shape;
       if (auto it = termTypes.find(var); it != termTypes.end()) {
-        size = sizeOfType(it->second);
+        if (auto varShape = shapeOfType(it->second)) {
+          shape = *varShape;
+        }
       }
       auto bound = _array_quantified_term(
-          [this, &var, &prime](cvc5::Term index) {
-            return _is_mod(_array_read_impl(var, index), prime);
+          [this, &var, &prime](ArrayRef<cvc5::Term> indices) {
+            return _is_mod(_array_read_impl(var, indices), prime);
           },
-          size);
+          shape);
       bounds.insert(bound);
     } else if (!var.getSort().isUninterpretedSort()) {
       // Don't need bounds for subcomponents
@@ -182,8 +187,14 @@ cvc5::Sort TermBuilder::_sort_of_type(Type type) {
     return mgr.getBooleanSort();
   }
   if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
-    return mgr.mkArraySort(mgr.getIntegerSort(),
-                           _sort_of_type(arrType.getElementType()));
+    cvc5::Sort sort = _sort_of_type(arrType.getElementType());
+    // LLZK stores all extents on one ArrayType, but SMT arrays are rank-1, so
+    // multidimensional arrays must be materialized as nested array sorts.
+    for (int64_t extent : llvm::reverse(arrType.getShape())) {
+      (void)extent;
+      sort = mgr.mkArraySort(mgr.getIntegerSort(), sort);
+    }
+    return sort;
   }
   return mgr.getIntegerSort();
 }
@@ -230,6 +241,10 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
   // Otherwise, switch on the type of the operation
   auto expression =
       llvm::TypeSwitch<Operation *, cvc5::Term>(op)
+          .Case<polymorphic::ConstReadOp>(
+              [this](polymorphic::ConstReadOp constRead) {
+                return getConstant(constRead.getConstName());
+              })
           .Case<boolean::CmpOp>([this, op](boolean::CmpOp cmp) {
             static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
                 predicateToKind = {
@@ -257,9 +272,9 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                                isWitnessOp(read));
           })
           .Case<ReadArrayOp>([this](ReadArrayOp read) {
-            llzk::ensure(read.getIndices().size() == 1,
-                         "multidimensional arrays are not supported");
-            return arrayRead(read.getArrRef(), read.getIndices().front());
+            SmallVector<Value> indices(read.getIndices().begin(),
+                                       read.getIndices().end());
+            return arrayRead(read.getArrRef(), indices);
           })
           .Case<FeltConstantOp>([this](FeltConstantOp constOp) {
             SmallString<64> str;
@@ -378,6 +393,16 @@ cvc5::Term TermBuilder::getConstant(StringRef memberName, Type type,
   return newTerm;
 }
 
+cvc5::Term TermBuilder::getConstant(StringRef symbolName) {
+  llvm::dbgs() << "Building constant for @" << symbolName << "\n";
+  if (auto it = polyMembers.find(symbolName); it != polyMembers.end()) {
+    return it->second;
+  }
+  auto newTerm = mgr.mkConst(mgr.getIntegerSort(), std::string{symbolName});
+  polyMembers.insert({symbolName, newTerm});
+  return newTerm;
+}
+
 cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
   std::string str;
   llvm::raw_string_ostream os{str};
@@ -420,51 +445,65 @@ cvc5::Term TermBuilder::_reduce_mod_impl(cvc5::Term val,
   return mgr.mkTerm(cvc5::Kind::INTS_MODULUS, {val, getInteger(mod)});
 }
 
-// Returns the array length if either term is an array of known length, nullopt
-// if neither, and asserts failure if the lengths differ
-static inline std::optional<int64_t> getArraySize(
+// Returns the array shape if either term is an array of known shape, nullopt
+// if neither, and asserts failure if the shapes differ.
+static inline std::optional<ArrayShape> getArrayShape(
     cvc5::Term a, cvc5::Term b,
     std::unordered_map<cvc5::Term, Type, std::hash<cvc5::Term>> termTypes) {
-  std::optional<int64_t> arraySize;
+  std::optional<ArrayShape> arrayShape;
   if (auto ait = termTypes.find(a); ait != termTypes.end()) {
-    arraySize = sizeOfType(ait->second);
+    arrayShape = shapeOfType(ait->second);
   }
   if (auto bit = termTypes.find(b); bit != termTypes.end()) {
-    auto size = sizeOfType(bit->second);
-    llzk::ensure(!arraySize.has_value() || arraySize == size,
-                 "incompatible array sizes");
-    return size;
+    auto shape = shapeOfType(bit->second);
+    llzk::ensure(!arrayShape.has_value() || arrayShape == shape,
+                 "incompatible array shapes");
+    return shape;
   }
-  return arraySize;
+  return arrayShape;
 }
 
 cvc5::Term TermBuilder::_array_quantified_term(
-    std::function<cvc5::Term(cvc5::Term)> builder,
-    std::optional<int64_t> size) {
+    std::function<cvc5::Term(ArrayRef<cvc5::Term>)> builder,
+    ArrayRef<int64_t> shape) {
 
-  auto index = mgr.mkVar(mgr.getIntegerSort(), "i");
-  auto forallBody = builder(index);
-  if (size.has_value()) {
+  if (shape.empty()) {
+    return builder({});
+  }
+
+  std::vector<cvc5::Term> indices;
+  indices.reserve(shape.size());
+  for (auto [dim, extent] : llvm::enumerate(shape)) {
+    (void)extent;
+    indices.push_back(
+        mgr.mkVar(mgr.getIntegerSort(), "i" + std::to_string(dim)));
+  }
+
+  auto forallBody = builder(indices);
+  SmallVector<cvc5::Term> bounds;
+  for (auto [index, extent] : llvm::zip(indices, shape)) {
+    bounds.push_back(_is_mod(index, llzk::toDynamicAPInt(extent)));
+  }
+  if (!bounds.empty()) {
     forallBody =
-        mgr.mkTerm(cvc5::Kind::IMPLIES,
-                   {_is_mod(index, llzk::toDynamicAPInt(*size)), forallBody});
+        mgr.mkTerm(cvc5::Kind::IMPLIES, {conjunctAll(bounds, mgr), forallBody});
   }
 
   return mgr.mkTerm(
       cvc5::Kind::FORALL,
-      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, {index}), forallBody});
+      {mgr.mkTerm(cvc5::Kind::VARIABLE_LIST, indices), forallBody});
 }
 
 cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
   Value arrVal;
   if (a.getSort().isArray() && b.getSort().isArray()) {
-    auto size = getArraySize(a, b, termTypes);
+    auto shape = getArrayShape(a, b, termTypes);
     return _array_quantified_term(
-        [this, &a, &b](cvc5::Term index) {
-          return _assert_equal_impl(_array_read_impl(a, index),
-                                    _array_read_impl(b, index));
+        [this, &a, &b](ArrayRef<cvc5::Term> indices) {
+          return _assert_equal_impl(_array_read_impl(a, indices),
+                                    _array_read_impl(b, indices));
         },
-        size);
+        shape.value_or(ArrayShape{}));
   }
 
   if (a.getSort().isUninterpretedSort() && b.getSort().isUninterpretedSort()) {
@@ -475,13 +514,31 @@ cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
                                         _reduce_mod_impl(b, field.prime())});
 }
 
-cvc5::Term TermBuilder::_array_read_impl(cvc5::Term arr, cvc5::Term index) {
-  return mgr.mkTerm(cvc5::Kind::SELECT, {arr, index});
+cvc5::Term TermBuilder::_array_read_impl(cvc5::Term arr,
+                                         ArrayRef<cvc5::Term> indices) {
+  llzk::ensure(!indices.empty(), "array read requires at least one index");
+
+  cvc5::Term result = arr;
+  for (cvc5::Term index : indices) {
+    result = mgr.mkTerm(cvc5::Kind::SELECT, {result, index});
+  }
+  return result;
 }
 
-cvc5::Term TermBuilder::_array_write_impl(cvc5::Term arr, cvc5::Term index,
+cvc5::Term TermBuilder::_array_write_impl(cvc5::Term arr,
+                                          ArrayRef<cvc5::Term> indices,
                                           cvc5::Term elem) {
-  return mgr.mkTerm(cvc5::Kind::STORE, {arr, index, elem});
+  llzk::ensure(!indices.empty(), "array write requires at least one index");
+
+  if (indices.size() == 1) {
+    return mgr.mkTerm(cvc5::Kind::STORE, {arr, indices.front(), elem});
+  }
+
+  // Rebuild the path from the innermost updated slice back to the outer array.
+  auto nestedArray = _array_read_impl(arr, indices.drop_back());
+  auto updatedNested =
+      _array_write_impl(nestedArray, indices.take_back(1), elem);
+  return _array_write_impl(arr, indices.drop_back(), updatedNested);
 }
 
 cvc5::Term ImplicationTerm::buildTerm(cvc5::TermManager &mgr) {

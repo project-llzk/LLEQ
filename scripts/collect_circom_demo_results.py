@@ -73,11 +73,11 @@ def run_wp(
     llzk_file: pathlib.Path,
     root_struct: str,
     lleq_bin: str,
-    cvc5_bin: str,
+    z3_bin: str,
     timeout: float,
 ) -> tuple[str, str, str, str, str, str]:
     lleq_args = [lleq_bin, "wp", "--struct", root_struct, str(llzk_file)]
-    cvc5_args = [cvc5_bin, "--produce-models"]
+    z3_args = [z3_bin, "-in"]
     start = time.perf_counter()
 
     try:
@@ -87,8 +87,8 @@ def run_wp(
             stderr=subprocess.PIPE,
             text=True,
         )
-        cvc5_proc = subprocess.Popen(
-            cvc5_args,
+        z3_proc = subprocess.Popen(
+            z3_args,
             stdin=lleq_proc.stdout,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -96,31 +96,31 @@ def run_wp(
         )
         assert lleq_proc.stdout is not None
         lleq_proc.stdout.close()
-        cvc5_stdout, cvc5_stderr = cvc5_proc.communicate(timeout=timeout)
+        z3_stdout, z3_stderr = z3_proc.communicate(timeout=timeout)
         lleq_stdout, lleq_stderr = lleq_proc.communicate(timeout=1)
     except subprocess.TimeoutExpired:
         elapsed = time.perf_counter() - start
         lleq_proc.kill()
-        cvc5_proc.kill()
+        z3_proc.kill()
         lleq_proc.communicate()
-        cvc5_proc.communicate()
+        z3_proc.communicate()
         return (benchmark, root_struct, "wp", "timeout", f"{elapsed:.6f}", "timeout")
 
     elapsed = time.perf_counter() - start
     if lleq_proc.returncode != 0:
         message = (lleq_stderr or lleq_stdout).strip()[:500]
         return (benchmark, root_struct, "wp", "error", f"{elapsed:.6f}", message)
-    if cvc5_proc.returncode != 0:
-        message = (cvc5_stderr or cvc5_stdout).strip()[:500]
-        return (benchmark, root_struct, "wp", "error", f"{elapsed:.6f}", message)
-    if UNSAT_RE.search(cvc5_stdout):
+    if UNSAT_RE.search(z3_stdout):
         return (benchmark, root_struct, "wp", "verified", f"{elapsed:.6f}", "unsat")
-    if SAT_RE.search(cvc5_stdout):
+    if SAT_RE.search(z3_stdout):
         return (benchmark, root_struct, "wp", "counterexample", f"{elapsed:.6f}", "sat")
-    if UNKNOWN_RE.search(cvc5_stdout):
+    if UNKNOWN_RE.search(z3_stdout):
         return (benchmark, root_struct, "wp", "partial", f"{elapsed:.6f}", "unknown")
+    if z3_proc.returncode != 0:
+        message = (z3_stderr or z3_stdout).strip()[:500]
+        return (benchmark, root_struct, "wp", "error", f"{elapsed:.6f}", message)
 
-    message = (cvc5_stdout or cvc5_stderr).strip()[:500]
+    message = (z3_stdout or z3_stderr).strip()[:500]
     return (benchmark, root_struct, "wp", "error", f"{elapsed:.6f}", message)
 
 
@@ -130,21 +130,21 @@ def run_task(
     root_struct: str,
     mode: str,
     lleq_bin: str,
-    cvc5_bin: str,
+    z3_bin: str,
     timeout: float,
 ) -> tuple[str, str, str, str, str, str]:
     if mode == "verify":
         return run_verify(benchmark, llzk_file, root_struct, lleq_bin, timeout)
-    return run_wp(benchmark, llzk_file, root_struct, lleq_bin, cvc5_bin, timeout)
+    return run_wp(benchmark, llzk_file, root_struct, lleq_bin, z3_bin, timeout)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Collect LLEQ verification data for examples/circom-demo."
+        description="Collect LLEQ verification data for examples/circom-examples."
     )
     parser.add_argument(
         "--benchmark-dir",
-        default="examples/circom-demo",
+        default="examples/circom-examples",
         help="Directory containing optimized LLZK demo examples.",
     )
     parser.add_argument(
@@ -153,9 +153,9 @@ def main() -> None:
         help="Path to the lleq binary.",
     )
     parser.add_argument(
-        "--cvc5-bin",
-        default="/nix/store/hxfws6z4z0c3d8l87pr4lfz672vxp32d-cvc5-1.3.1/bin/cvc5",
-        help="Path to the cvc5 binary.",
+        "--z3-bin",
+        default="z3",
+        help="Path to the z3 binary.",
     )
     parser.add_argument(
         "--timeout",
@@ -171,7 +171,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--output",
-        default="examples/circom-demo/verification_results.csv",
+        default="examples/circom-examples/verification_results.csv",
         help="CSV path for collected results.",
     )
     args = parser.parse_args()
@@ -181,10 +181,10 @@ def main() -> None:
     tasks: list[tuple[str, pathlib.Path, str, str, str, str, float]] = []
     for benchmark, llzk_file, root_struct in benchmarks:
         tasks.append(
-            (benchmark, llzk_file, root_struct, "verify", args.lleq_bin, args.cvc5_bin, args.timeout)
+            (benchmark, llzk_file, root_struct, "verify", args.lleq_bin, args.z3_bin, args.timeout)
         )
         tasks.append(
-            (benchmark, llzk_file, root_struct, "wp", args.lleq_bin, args.cvc5_bin, args.timeout)
+            (benchmark, llzk_file, root_struct, "wp", args.lleq_bin, args.z3_bin, args.timeout)
         )
 
     with multiprocessing.Pool(args.nthreads) as pool:
