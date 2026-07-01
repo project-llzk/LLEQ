@@ -5,11 +5,10 @@
 
 #include "Verification/DeductiveVerifier.h"
 #include "Verification/SMTLIBEquivalenceEmitter.h"
+#include "Verification/VerificationUtils.h"
 
-#include <fstream>
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
-#include <llvm/Support/ErrorOr.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/Process.h>
@@ -96,49 +95,31 @@ std::string resolveSolverPath() {
 
 FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
                                                   StringRef var) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  // TODO: std::tmpnam is deprecated, because between generating the filename
-  // and opening it via `ExecuteAndWait`, another process may claim the same
-  // name and create a race condition. Modern variants that atomically open the
-  // file don't work here because `ExecuteAndWait` expects a filename and not a
-  // handle; we should implement a workaround at some point
-  auto tempStdin = std::tmpnam(nullptr);
-  auto tempStdout = std::tmpnam(nullptr);
-#pragma clang diagnostic pop
-
-  // Write the query to a temp file
-  std::ofstream os{tempStdin};
-  os << query.data();
-  os.close();
-
   auto solverPath = resolveSolverPath();
   // Set a one second timeout for each check-sat query for now
-  SmallVector<StringRef> args{"cvc5", "--produce-models", "--tlimit-per",
+  SmallVector<StringRef> args{solverPath, "--produce-models", "--tlimit-per",
                               "1000"};
-
-  std::string error;
-  auto code = llvm::sys::ExecuteAndWait(
-      solverPath, args,
-      /*Env=*/std::nullopt,
-      /*Redirects=*/
-      {std::string{tempStdin}, std::string{tempStdout}, ""}, 0, 0, &error);
-  if (code) {
-    llvm::report_fatal_error(error.c_str());
+  auto output = invokeSolverOnQuery(solverPath, args, query,
+                                    /*passQueryFileAsArg=*/false);
+  if (failed(output)) {
     return failure();
   }
 
-  std::ifstream is{tempStdout};
-  std::string result;
-  is >> result;
+  StringRef stdoutRef{*output};
+  stdoutRef = stdoutRef.ltrim();
+  auto lineEnd = stdoutRef.find_first_of("\r\n");
+  StringRef result =
+      lineEnd == StringRef::npos ? stdoutRef : stdoutRef.take_front(lineEnd);
+  StringRef remainder =
+      lineEnd == StringRef::npos ? StringRef{} : stdoutRef.drop_front(lineEnd);
+  remainder = remainder.ltrim();
 
   if (result == "unsat") {
     return success(MemberEquivalenceResult{});
   } else if (result == "sat") {
-    char model[256];
-    // Skip the newline after the unsat/sat result
-    is.getline(model, 256);
-    is.getline(model, 256);
+    auto modelEnd = remainder.find_first_of("\r\n");
+    StringRef model =
+        modelEnd == StringRef::npos ? remainder : remainder.take_front(modelEnd);
     return _parse_model(model, var);
   }
   return failure();
