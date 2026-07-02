@@ -1,8 +1,10 @@
 import argparse
 import csv
 import multiprocessing
+import os
 import pathlib
 import re
+import signal
 import subprocess
 import time
 
@@ -56,7 +58,14 @@ def run_verify(
         proc = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
         elapsed = time.perf_counter() - start
-        return (benchmark, root_struct, "verify", "timeout", f"{elapsed:.6f}", "timeout")
+        return (
+            benchmark,
+            root_struct,
+            "verify",
+            "timeout",
+            f"{elapsed:.6f}",
+            "timeout",
+        )
 
     elapsed = time.perf_counter() - start
     if proc.returncode != 0:
@@ -79,6 +88,8 @@ def run_wp(
     lleq_args = [lleq_bin, "wp", "--struct", root_struct, str(llzk_file)]
     z3_args = [z3_bin, "-in"]
     start = time.perf_counter()
+    lleq_proc: subprocess.Popen[str] | None = None
+    z3_proc: subprocess.Popen[str] | None = None
 
     try:
         lleq_proc = subprocess.Popen(
@@ -86,6 +97,7 @@ def run_wp(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            start_new_session=True,
         )
         z3_proc = subprocess.Popen(
             z3_args,
@@ -93,6 +105,7 @@ def run_wp(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            start_new_session=True,
         )
         assert lleq_proc.stdout is not None
         lleq_proc.stdout.close()
@@ -100,10 +113,35 @@ def run_wp(
         lleq_stdout, lleq_stderr = lleq_proc.communicate(timeout=1)
     except subprocess.TimeoutExpired:
         elapsed = time.perf_counter() - start
-        lleq_proc.kill()
-        z3_proc.kill()
-        lleq_proc.communicate()
-        z3_proc.communicate()
+        for proc in (z3_proc, lleq_proc):
+            if proc is None:
+                continue
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            except PermissionError:
+                # On Darwin, process-group delivery can fail with EPERM if the
+                # direct child has already exited or the group is otherwise no
+                # longer signalable. Fall back to killing the direct child.
+                if proc.poll() is None:
+                    try:
+                        proc.kill()
+                    except ProcessLookupError:
+                        pass
+
+        for proc in (z3_proc, lleq_proc):
+            if proc is None:
+                continue
+            for pipe in (proc.stdin, proc.stdout, proc.stderr):
+                if pipe is None or pipe.closed:
+                    continue
+                pipe.close()
+            try:
+                proc.wait(timeout=1)
+            except subprocess.TimeoutExpired:
+                pass
+
         return (benchmark, root_struct, "wp", "timeout", f"{elapsed:.6f}", "timeout")
 
     elapsed = time.perf_counter() - start
@@ -136,6 +174,12 @@ def run_task(
     if mode == "verify":
         return run_verify(benchmark, llzk_file, root_struct, lleq_bin, timeout)
     return run_wp(benchmark, llzk_file, root_struct, lleq_bin, z3_bin, timeout)
+
+
+def run_task_unpack(
+    args: tuple[str, pathlib.Path, str, str, str, str, float],
+) -> tuple[str, str, str, str, str, str]:
+    return run_task(*args)
 
 
 def main() -> None:
@@ -180,15 +224,64 @@ def main() -> None:
     benchmarks = get_benchmarks(benchmark_dir)
     tasks: list[tuple[str, pathlib.Path, str, str, str, str, float]] = []
     for benchmark, llzk_file, root_struct in benchmarks:
+        # tasks.append(
+        #     (
+        #         benchmark,
+        #         llzk_file,
+        #         root_struct,
+        #         "verify",
+        #         args.lleq_bin,
+        #         args.z3_bin,
+        #         args.timeout,
+        #     )
+        # )
         tasks.append(
-            (benchmark, llzk_file, root_struct, "verify", args.lleq_bin, args.z3_bin, args.timeout)
-        )
-        tasks.append(
-            (benchmark, llzk_file, root_struct, "wp", args.lleq_bin, args.z3_bin, args.timeout)
+            (
+                benchmark,
+                llzk_file,
+                root_struct,
+                "wp",
+                args.lleq_bin,
+                args.z3_bin,
+                args.timeout,
+            )
         )
 
-    with multiprocessing.Pool(args.nthreads) as pool:
-        results = pool.starmap(run_task, tasks)
+    results: list[tuple[str, str, str, str, str, str]] = []
+    if args.nthreads == 1:
+        for i, (
+            benchmark,
+            llzk_file,
+            root_struct,
+            mode,
+            lleq_bin,
+            z3_bin,
+            timeout,
+        ) in enumerate(tasks):
+            print(f"Running {benchmark} ({mode}, {i + 1}/{len(tasks)})")
+            result = run_task(
+                benchmark, llzk_file, root_struct, mode, lleq_bin, z3_bin, timeout
+            )
+            results.append(result)
+            print(f"Exit condition: {result[3]}, time: {result[4]}")
+    else:
+        total = len(tasks)
+        print(f"Launching {total} verification tasks.")
+        next_milestone = 1
+        finished = set()
+        all_benchmarks = set(next(zip(*benchmarks)))
+        print(all_benchmarks)
+        with multiprocessing.Pool(args.nthreads) as pool:
+            for i, result in enumerate(
+                pool.imap_unordered(run_task_unpack, tasks), start=1
+            ):
+                results.append(result)
+                finished.add(result[0])
+                pct = i * 100 // total
+                if pct >= next_milestone:
+                    print(f"Progress: {i}/{total} ({pct}%) complete")
+                    print(f"Remaining: {all_benchmarks - finished}")
+                    next_milestone += 1
 
     results.sort()
     output_path = pathlib.Path(args.output).resolve()

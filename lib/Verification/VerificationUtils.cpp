@@ -192,16 +192,19 @@ RunningSolverJob spawnSolverJob(const SolverInvocationSpec &spec,
                       ? ::open("/dev/null", O_RDONLY)
                       : ::open(job.files.stdinPath.c_str(), O_RDONLY);
     int stdoutFd = ::open(job.files.stdoutPath.c_str(), O_WRONLY | O_TRUNC);
-    if (stdinFd < 0 || stdoutFd < 0) {
+    int stderrFd = ::open("/dev/null", O_WRONLY);
+    if (stdinFd < 0 || stdoutFd < 0 || stderrFd < 0) {
       _exit(127);
     }
     if (::dup2(stdinFd, STDIN_FILENO) < 0 ||
-        ::dup2(stdoutFd, STDOUT_FILENO) < 0) {
+        ::dup2(stdoutFd, STDOUT_FILENO) < 0 ||
+        ::dup2(stderrFd, STDERR_FILENO) < 0) {
       _exit(127);
     }
 
     ::close(stdinFd);
     ::close(stdoutFd);
+    ::close(stderrFd);
 
     std::vector<char *> execArgv;
     execArgv.reserve(job.ownedArgs.size() + 1);
@@ -230,7 +233,27 @@ SolverRunResult collectFinishedJob(RunningSolverJob &job) {
 
 void killJob(RunningSolverJob &job) {
   if (!job.finished && job.pid > 0) {
-    if (::kill(-job.pid, SIGKILL) < 0 && errno != ESRCH) {
+    if (::kill(-job.pid, SIGKILL) < 0) {
+      if (errno == ESRCH) {
+        return;
+      }
+
+      if (::kill(job.pid, SIGKILL) == 0 || errno == ESRCH) {
+        return;
+      }
+
+      int status = 0;
+      auto waited = ::waitpid(job.pid, &status, WNOHANG);
+      if (waited == job.pid || (waited < 0 && errno == ECHILD)) {
+        // The solver already exited before cleanup reached it. On Darwin,
+        // kill(-pgid, ...) may report EPERM in this state even though no
+        // solver processes remain to be killed. If group delivery is refused
+        // while the solver still exists, fall back to signaling the direct
+        // solver child so cleanup can still reap it.
+        job.finished = true;
+        return;
+      }
+
       llvm::report_fatal_error("failed to kill solver process group");
     }
   }
