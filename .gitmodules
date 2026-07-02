@@ -1,0 +1,3 @@
+[submodule "examples/circom-benchmarks"]
+	path = circom-benchmarks
+	url = git@github.com:project-llzk/circom-benchmarks
