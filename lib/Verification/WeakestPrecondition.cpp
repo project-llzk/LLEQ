@@ -55,6 +55,8 @@ struct LoopCounterInfo {
 
 namespace {
 
+// If `loop` is a perfectly nested loop, returns the innermost loop body and
+// populates `loopInfo` with the bounds of each nest.
 Block *nestedLoopBody(scf::ForOp loop, SmallVector<LoopCounterInfo> &loopInfo,
                       TermBuilder &builder) {
   loopInfo.push_back(LoopCounterInfo{

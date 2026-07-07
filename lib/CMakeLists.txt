@@ -14,7 +14,6 @@ set(Transforms_SRC
     Transforms/LLEQIfToIfElse.cpp)
 
 set(Verification_SRC
-    Verification/LoopInvariantGeneration.cpp
     Verification/VerificationUtils.cpp
     Verification/SMTLIBEquivalenceEmitter.cpp
     Verification/DeductiveVerifier.cpp
