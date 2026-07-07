@@ -67,7 +67,7 @@ template <class T>
 concept FormulaTerm =
     std::convertible_to<T, cvc5::Term> || std::convertible_to<T, mlir::Value>;
 
-// A helper class for building common term shapes from MLIR SSA values
+/// A helper class for building common term shapes from MLIR SSA values
 struct TermBuilder {
   using TermSet = std::unordered_set<cvc5::Term, std::hash<cvc5::Term>>;
 
@@ -225,7 +225,7 @@ struct Annotation {
   std::optional<llvm::SmallVector<Range>> arraySlice;
 };
 
-// A term of the shape (A1 /\ ... /\ An) -> (B1 /\ ... /\ Bm)
+/// A term of the shape (A1 /\ ... /\ An) -> (B1 /\ ... /\ Bm)
 struct ImplicationTerm {
   llvm::SmallVector<cvc5::Term> antecedents;
   llvm::SmallVector<cvc5::Term> consequents;
@@ -248,7 +248,7 @@ struct ImplicationTerm {
   cvc5::Term buildTerm(cvc5::TermManager &mgr);
 };
 
-// A term of the shape (A1 -> ... An) /\ ...
+/// A term of the shape (A1 -> ... An) /\ ...
 struct ConjunctionTerm {
   llvm::SmallVector<ImplicationTerm> conjuncts;
 
