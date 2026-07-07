@@ -5,13 +5,7 @@ development, demos, and evaluation.
 
 ## `circom-examples`
 
-The [`circom-examples`](./circom-examples) subdirectory contains LLZK IR derived
-from Circom benchmarks maintained in the
-[`project-llzk/circom-benchmarks`](https://github.com/project-llzk/circom-benchmarks)
-repository, which is consumed as a git submodule instead of checking all source
-LLZK files directly into this repository.
-
-To regenerate the imported benchmarks locally, run:
+To import and generate benchmarks from [`project-llzk/circom-benchmarks`](https://github.com/project-llzk/circom-benchmarks), run:
 
 ```bash
 python3 scripts/import_circom_demo_examples.py --circom-frontend <circom> --llzk <llzk-opt>
@@ -56,3 +50,5 @@ Each run uses a 120-second timeout and reports one of:
 - `error`
 
 `wp` is classified as `partial` when z3 returns `unknown`.
+
+Results are saved in `examples/verification_results.csv`.
