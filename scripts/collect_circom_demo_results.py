@@ -1,3 +1,8 @@
+"""
+ Copyright 2026 Project LLZK.
+ SPDX-License-Identifier: Apache-2.0
+"""
+
 import argparse
 import csv
 import multiprocessing
@@ -224,17 +229,6 @@ def main() -> None:
     benchmarks = get_benchmarks(benchmark_dir)
     tasks: list[tuple[str, pathlib.Path, str, str, str, str, float]] = []
     for benchmark, llzk_file, root_struct in benchmarks:
-        # tasks.append(
-        #     (
-        #         benchmark,
-        #         llzk_file,
-        #         root_struct,
-        #         "verify",
-        #         args.lleq_bin,
-        #         args.z3_bin,
-        #         args.timeout,
-        #     )
-        # )
         tasks.append(
             (
                 benchmark,
