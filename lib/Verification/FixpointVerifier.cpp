@@ -70,21 +70,27 @@ void FixpointVerifier::report(raw_ostream &os) {
                        [&isSignal](auto elem) { return isSignal(elem.first); });
 
   if (!equivalentSignals.empty()) {
+    llvm::outs() << "Proven equivalent:\n";
     for (auto member : equivalentSignals) {
-      llvm::outs() << "+ @" << structDef.getSymName() << "::" << member << "\n";
+      llvm::outs().indent(4)
+          << "@" << structDef.getSymName() << "::" << member << '\n';
     }
   }
   if (!inequivalentSignals.empty()) {
+    llvm::outs() << "Proven inequivalent:\n";
     for (auto [member, counterexample] : inequivalentSignals) {
       auto [w, c] = counterexample;
-      llvm::outs() << "- @" << structDef.getSymName() << "::" << member << "\n";
-      llvm::outs() << "\twitness: " << w << "\n";
-      llvm::outs() << "\tconstraint: " << c << "\n";
+      llvm::outs().indent(4)
+          << "@" << structDef.getSymName() << "::" << member << '\n';
+      llvm::outs().indent(8) << "witness: " << w << '\n';
+      llvm::outs().indent(8) << "\tconstraint: " << c << '\n';
     }
   }
   if (!unknownSignals.empty()) {
+    llvm::outs() << "Unknown:\n";
     for (auto member : unknownSignals) {
-      llvm::outs() << "* @" << structDef.getSymName() << "::" << member << "\n";
+      llvm::outs().indent(4)
+          << "@" << structDef.getSymName() << "::" << member << '\n';
     }
   }
 }
