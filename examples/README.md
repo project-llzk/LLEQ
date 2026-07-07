@@ -8,7 +8,14 @@ development, demos, and evaluation.
 The [`circom-examples`](./circom-examples) subdirectory contains LLZK IR derived
 from Circom benchmarks maintained in the
 [`project-llzk/circom-benchmarks`](https://github.com/project-llzk/circom-benchmarks)
-repository.
+repository, which is consumed as a git submodule instead of checking all source
+LLZK files directly into this repository.
+
+To regenerate the imported benchmarks locally, run:
+
+```bash
+python3 scripts/import_circom_demo_examples.py --circom-frontend <circom> --llzk <llzk-opt>
+```
 
 Each imported benchmark is lowered to LLZK and then normalized with the
 following pass pipeline before being checked into this repository:
@@ -31,17 +38,16 @@ verification outcomes for the imported set.
 Run:
 
 ```bash
-python3 scripts/collect_circom_demo_results.py
+python3 scripts/collect_circom_demo_results.py --lleq-bin <lleq> --z3-bin <z3>
 ```
 
-For each imported benchmark, the script runs:
+For each imported benchmark, the script currently runs:
 
 ```text
-lleq verify --flatten --struct <RootStruct>
 lleq wp --struct <RootStruct> | z3 -in
 ```
 
-Each mode uses a 120-second timeout and reports one of:
+Each run uses a 120-second timeout and reports one of:
 
 - `verified`
 - `counterexample`
@@ -49,5 +55,4 @@ Each mode uses a 120-second timeout and reports one of:
 - `timeout`
 - `error`
 
-`verify` is classified as `partial` when any signal remains marked with `*`.
 `wp` is classified as `partial` when z3 returns `unknown`.
