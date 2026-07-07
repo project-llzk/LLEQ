@@ -49,6 +49,8 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: * @A::arr2_2
-// CHECK-DAG: + @A::arr1_1
-// CHECK-DAG: + @A::arr1_0
+// CHECK: Proven equivalent:
+// CHECK-DAG:     @A::arr1_1
+// CHECK-DAG:     @A::arr1_0
+// CHECK: Unknown:
+// CHECK-DAG:     @A::arr2_2

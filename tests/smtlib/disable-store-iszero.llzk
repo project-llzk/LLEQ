@@ -51,7 +51,9 @@ module attributes {llzk.lang} {
 }
 
 
-// CHECK: + @IsZero::out
-// CHECK: - @IsZero::inv
-// CHECK-NEXT: witness: 0
-// CHECK-NEXT: constraint: 1
+// CHECK: Proven equivalent:
+// CHECK-NEXT:     @IsZero::out
+// CHECK: Proven inequivalent:
+// CHECK-NEXT:     @IsZero::inv
+// CHECK-NEXT:         witness: 0
+// CHECK-NEXT:         {{.*}}constraint: 1

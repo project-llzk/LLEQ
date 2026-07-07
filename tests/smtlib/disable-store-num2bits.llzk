@@ -220,20 +220,20 @@ module attributes {llzk.lang, llzk.main = !struct.type<@Num2BitsTemplate::@Num2B
     }
 }
 
-// CHECK-LABEL: The following members were proven equivalent:
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out0
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out1
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out2
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out3
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out4
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out5
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out6
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out7
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out8
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out9
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out10
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out11
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out12
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out13
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out14
-// CHECK-NEXT: + @Num2BitsTemplate::@Num2Bits::out15
+// CHECK-LABEL: Proven equivalent:
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out0
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out1
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out2
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out3
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out4
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out5
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out6
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out7
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out8
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out9
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out10
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out11
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out12
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out13
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out14
+// CHECK-NEXT:     @Num2BitsTemplate::@Num2Bits::out15
