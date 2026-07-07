@@ -118,8 +118,9 @@ FailureOr<MemberEquivalenceResult> _invoke_solver(StringRef query,
     return success(MemberEquivalenceResult{});
   } else if (result == "sat") {
     auto modelEnd = remainder.find_first_of("\r\n");
-    StringRef model =
-        modelEnd == StringRef::npos ? remainder : remainder.take_front(modelEnd);
+    StringRef model = modelEnd == StringRef::npos
+                          ? remainder
+                          : remainder.take_front(modelEnd);
     return _parse_model(model, var);
   }
   return failure();

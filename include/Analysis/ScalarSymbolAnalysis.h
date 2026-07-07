@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Veridise Inc.
+ * Copyright 2026 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 

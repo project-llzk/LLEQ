@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Veridise Inc.
+ * Copyright 2026 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -70,7 +70,6 @@ public:
                               llzk::Field field)
       : structDef{structDef}, field{field}, builder{mgr, field} {
     initSubcomponents();
-    // initExpressions();
   }
 
   ImplicationTerm getPostcondition();

@@ -5,10 +5,10 @@
 
 #include "Verification/VerificationUtils.h"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <fstream>
 #include <optional>
-#include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
