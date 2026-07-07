@@ -255,8 +255,9 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           // If the value immediately comes from a constraint `struct.readm`
           if (auto read =
                   llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
-            // No sense constraining a member of a subcomponent
             if (isSubcmpRead(read)) {
+              // The store doesn't refer to subcomponent members so we bail
+              // instead of generating an entry
               return {};
             }
             return {{{Signal::Source::Constraint, read.getMemberName()}, {}}};
@@ -298,9 +299,9 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         }
         auto subcmp = (call.calleeIsCompute() ? call.getResult(0)
                                               : call.getArgOperands().front());
-        llvm::dbgs() << "In call: " << call << "\n\t";
-        llvm::dbgs() << "Subcomponent symbol is: "
-                     << getOrCreate<ScalarLattice>(subcmp);
+        llvm::dbgs() << "In call: " << call << '\n';
+        llvm::dbgs().indent(4)
+            << "Subcomponent symbol is: " << getOrCreate<ScalarLattice>(subcmp);
       });
   LLVM_DEBUG({
     after->print(llvm::dbgs());

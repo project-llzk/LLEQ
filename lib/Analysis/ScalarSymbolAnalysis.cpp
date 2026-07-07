@@ -54,8 +54,6 @@ void ScalarSymbolAnalysis::visitExternalCall(
   llvm::raw_string_ostream ss{name};
   ss << subcmp.getType();
 
-  // Symbol x = args.front()->getValue();
-
   Symbol subcmpSym = pool.get().func_call(
       name, llvm::map_to_vector(args, [this](const Lattice *lat) -> Symbol {
         return lat->getValue();
