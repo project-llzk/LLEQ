@@ -1,9 +1,6 @@
 # LLEQ
 
-LLEQ is an equivalence verifier for zero-knowledge circuits in LLZK IR, based on [Zequal](https://veridise.com/wp-content/uploads/2025/08/zequal.pdf). LLEQ consumes **LLZK IR**, not high-level circuit languages directly. If your circuit is written in another language, first lower it to LLZK using an appropriate frontend, then run LLEQ on the resulting `.llzk` file. For example:
-
-- [project-llzk/circom](https://github.com/project-llzk/circom), a Circom frontend with LLZK support
-- [project-llzk/haloumi](https://github.com/project-llzk/haloumi), a Halo2/PLONKish frontend
+LLEQ is an equivalence verifier for zero-knowledge circuits in LLZK IR, based on [Zequal](https://veridise.com/wp-content/uploads/2025/08/zequal.pdf). LLEQ consumes **LLZK IR**, not high-level circuit languages directly. If your circuit is written in another language, first lower it to LLZK using an appropriate frontend (see [Frontends](https://github.com/project-llzk/.github/blob/main/profile/README.md)), then run LLEQ on the resulting `.llzk` file
 
 ## Quick Links
 
@@ -14,11 +11,17 @@ LLEQ is an equivalence verifier for zero-knowledge circuits in LLZK IR, based on
 
 ## Build
 
-The recommended way to build LLEQ is with Nix, but manual CMake builds are also supported.
+LLEQ can be built with Nix, or manually with CMake.
 
-### Dependencies
+### Nix (Recommended)
 
-LLEQ depends on:
+This repository is configured with a Nix flakes environment. The flake was built using Nix version 2.31; older/newer versions may or may not.
+Once you have a Nix installation (See [Installation](https://nix.dev/manual/nix/2.31/installation/index.html)), you can run `nix build .#lleq` from the repository root, or `nix develop` to enter a developer shell. Inside the dev shell, the built `lleq` binary is added to `PATH` for
+convenience.
+
+### Manual
+
+For a manual build, you will need the following:
 
 - LLVM
 - MLIR
@@ -28,35 +31,17 @@ LLEQ depends on:
 - `z3`
 - Python 3
 
-For manual builds, you must already have LLZK built and installed in a way that
-CMake can discover with `find_package(LLZK)`. See:
-
-- [project-llzk/llzk-lib](https://github.com/project-llzk/llzk-lib)
+Both LLZK and MLIR must be built and installed in a way that CMake can discover with `find_package(LLZK)` (See [project-llzk/llzk-lib](https://github.com/project-llzk/llzk-lib/blob/main/doc/doxygen/01_setup.md#manual-build-setup) for instructions on how to build LLVM/MLIR/LLZK).
 
 At runtime, LLEQ expects both `cvc5` and `z3` to be available on `PATH`. Solver
-discovery can also be overridden with:
+discovery can also be overridden by setting the following environment variables:
 
-- `LLEQ_CVC5=/path/to/cvc5`
-- `LLEQ_Z3=/path/to/z3`
-
-### Build with Nix
-
-Build the default package:
-
-```bash
-nix build .#lleq
+```
+LLEQ_CVC5=/path/to/cvc5
+LLEQ_Z3=/path/to/z3
 ```
 
-Enter a development shell:
-
-```bash
-nix develop
-```
-
-Inside the dev shell, the built `lleq` binary is added to `PATH` for
-convenience.
-
-### Build with CMake
+#### Build with CMake
 
 Configure:
 
@@ -64,15 +49,15 @@ Configure:
 cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
 ```
 
+If LLVM, MLIR, or LLZK are installed in nonstandard locations, point CMake at
+their package configuration directories with `-DLLVM_DIR=...`,
+`-DMLIR_DIR=...`, and `-DLLZK_DIR=...`.
+
 Build:
 
 ```bash
 cmake --build build
 ```
-
-If LLVM, MLIR, or LLZK are installed in nonstandard locations, point CMake at
-their package configuration directories with variables such as `LLVM_DIR`,
-`MLIR_DIR`, and `LLZK_DIR`.
 
 ### Run the Test Suite
 
