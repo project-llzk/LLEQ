@@ -229,7 +229,6 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
   // Maps a witness array written in the loop to the full write index tuple.
   SmallVector<std::pair<component::MemberWriteOp, SmallVector<Value>>>
       witnessWrites;
-  // DenseMap<component::MemberWriteOp, SmallVector<Value>> witnessWrites;
   body->walk([&witnessWrites](array::WriteArrayOp write) {
     auto dest = getArrayDestination(write.getArrRef());
     if (dest.has_value()) {
@@ -312,12 +311,6 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     };
     strengthenings.push_back(
         quantifyPredicate(predicate, loopCounters, missesSlice, mgr));
-
-    // TODO: do something smarter here
-    // strengthenings.push_back(
-    //     quantifyPredicate(predicate, i, builder.getInteger(0), lb, step));
-    // strengthenings.push_back(
-    //     quantifyPredicate(predicate, i, ub, builder.getInteger(size), step));
   }
 
   auto strengthened = conjunctAll(strengthenings, mgr);
@@ -396,8 +389,6 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     // since we've added everything that was missing
     return conjunctAll(strengthenings, mgr);
   }
-
-  // TODO: add strengthenings
 }
 
 void WeakestPreconditionAnalysis::addEquivalentMember(
@@ -405,7 +396,7 @@ void WeakestPreconditionAnalysis::addEquivalentMember(
   builder.addEquivalentMember(memberDef);
 }
 
-static inline bool valueIsSignalRead(Value val, SymbolTableCollection &tables) {
+static inline bool valueIsMemberRead(Value val, SymbolTableCollection &tables) {
   if (isa<BlockArgument>(val)) {
     return false;
   }
@@ -415,12 +406,11 @@ static inline bool valueIsSignalRead(Value val, SymbolTableCollection &tables) {
       return false;
     }
     return true;
-    // return memberDef->get().getSignal();
   }
   return false;
 }
 
-static inline bool valueIsSignalWrite(Value val,
+static inline bool valueIsMemberWrite(Value val,
                                       SymbolTableCollection &tables) {
   for (auto use : val.getUsers()) {
     if (auto memberWrite = dyn_cast<MemberWriteOp>(use)) {
@@ -429,7 +419,6 @@ static inline bool valueIsSignalWrite(Value val,
         return false;
       }
       return true;
-      // return memberDef->get().getSignal();
     }
   }
   return false;
@@ -452,8 +441,8 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         SmallVector<Value> indices(writeOp.getIndices().begin(),
                                    writeOp.getIndices().end());
         auto value = writeOp.getRvalue();
-        if (valueIsSignalRead(arr, tables) || valueIsSignalWrite(arr, tables)) {
-          // TODO: Make this behavior configurable
+        // TODO: Make this behavior configurable (issue #56)
+        if (valueIsMemberRead(arr, tables) || valueIsMemberWrite(arr, tables)) {
           postcondition.addAntecedent(
               builder.assertEqual(builder.arrayRead(arr, indices), value));
           return;
@@ -514,7 +503,6 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
 
 void WeakestPreconditionAnalysis::calculateWP(Block *block,
                                               ConjunctionTerm &postcondition) {
-  // TODO: also return yielded values
   for (auto &op : llvm::iterator_range(block->rbegin(), block->rend())) {
     if (&op == block->getTerminator()) {
       continue;

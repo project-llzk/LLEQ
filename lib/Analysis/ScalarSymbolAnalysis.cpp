@@ -38,15 +38,13 @@ void ScalarSymbolAnalysis::visitExternalCall(
   });
 
   auto call = dyn_cast<llzk::function::CallOp>(_call.getOperation());
-  if (!call ||
-      !(call.calleeIsCompute() || call.calleeIsConstrain() ||
-        call.getCallee().getLeafReference() == llzk::FUNC_NAME_PRODUCT)) {
+  if (!call || !(call.calleeIsCompute() || call.calleeIsConstrain() ||
+                 call.calleeIsProduct())) {
     return Base::visitExternalCall(_call, arguments, results);
   }
 
   const auto &[subcmp, args] =
-      (call.calleeIsCompute() ||
-       call.getCallee().getLeafReference() == llzk::FUNC_NAME_PRODUCT)
+      (call.calleeIsCompute() || call.calleeIsProduct())
           ? std::tuple{call.getResult(0), arguments}
           : std::tuple{call.getArgOperands().front(), arguments.drop_front()};
 

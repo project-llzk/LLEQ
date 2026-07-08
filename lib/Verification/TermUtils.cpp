@@ -43,7 +43,7 @@ using felt::FeltConstantOp;
 
 namespace lleq {
 
-void TermBuilder::populateSubcomponent(llzk::component::StructDefOp subcmp) {
+void TermBuilder::populateSubcomponent(component::StructDefOp subcmp) {
   std::string subcmpName = subcmp.getSymName().str();
   // Materialize a sort: `struct.def @B` => `(decl-sort B)`
   cvc5::Sort sort = mgr.mkUninterpretedSort(subcmpName);
@@ -104,7 +104,7 @@ TermBuilder::TermSet TermBuilder::getExtraDecls(cvc5::Term term) {
 
 // Returns the full shape for an ArrayType, or nullopt for non-array types.
 static inline std::optional<ArrayShape> shapeOfType(Type type) {
-  if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
+  if (auto arrType = dyn_cast<array::ArrayType>(type)) {
     return ArrayShape(arrType.getShape().begin(), arrType.getShape().end());
   }
   return {};
@@ -158,7 +158,7 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
   for (const auto &[subcmp, sort] : subcmpSorts) {
     os << "(declare-sort " << sort.toString() << " 0)\n";
     auto it = subcmpInits.find(subcmp);
-    llzk::ensure(it != subcmpInits.end(), "unknown subcomponent type");
+    ensure(it != subcmpInits.end(), "unknown subcomponent type");
     auto initFunc = it->second;
     auto argTypes = initFunc.getSort().getFunctionDomainSorts();
     os << "(declare-fun " << initFunc.toString() << " (";
@@ -176,17 +176,16 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
 }
 
 cvc5::Sort TermBuilder::_sort_of_type(Type type) {
-  // TODO: subcomponent
-  if (auto structType = dyn_cast<llzk::component::StructType>(type)) {
+  if (auto structType = dyn_cast<component::StructType>(type)) {
     auto it = subcmpSorts.find(structType);
-    llzk::ensure(it != subcmpSorts.end(), "unknown subcomponent type");
+    ensure(it != subcmpSorts.end(), "unknown subcomponent type");
     return it->second;
   }
   if (type.isSignlessInteger() &&
       dyn_cast<IntegerType>(type).getIntOrFloatBitWidth() == 1) {
     return mgr.getBooleanSort();
   }
-  if (auto arrType = dyn_cast<llzk::array::ArrayType>(type)) {
+  if (auto arrType = dyn_cast<array::ArrayType>(type)) {
     cvc5::Sort sort = _sort_of_type(arrType.getElementType());
     // LLZK stores all extents on one ArrayType, but SMT arrays are rank-1, so
     // multidimensional arrays must be materialized as nested array sorts.
@@ -214,17 +213,18 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
 
   // If its a basic arithmetic operation we can build it directly
   static llvm::DenseMap<StringRef, cvc5::Kind> opToTermKind = {
-      {"felt.add", cvc5::Kind::ADD},
-      {"felt.sub", cvc5::Kind::SUB},
-      {"felt.mul", cvc5::Kind::MULT},
-      {"felt.smod", cvc5::Kind::INTS_MODULUS},
-      {"felt.umod", cvc5::Kind::INTS_MODULUS},
-      {"felt.sintdiv", cvc5::Kind::INTS_DIVISION},
-      {"felt.uintdiv", cvc5::Kind::INTS_DIVISION},
-      {"felt.div", cvc5::Kind::INTS_DIVISION},
-      {"felt.neg", cvc5::Kind::NEG},
-      {"arith.addi", cvc5::Kind::ADD},
-      {"arith.subi", cvc5::Kind::SUB}};
+      {felt::AddFeltOp::getOperationName(), cvc5::Kind::ADD},
+      {felt::SubFeltOp::getOperationName(), cvc5::Kind::SUB},
+      {felt::MulFeltOp::getOperationName(), cvc5::Kind::MULT},
+      {felt::SignedModFeltOp::getOperationName(), cvc5::Kind::INTS_MODULUS},
+      {felt::UnsignedModFeltOp::getOperationName(), cvc5::Kind::INTS_MODULUS},
+      {felt::SignedIntDivFeltOp::getOperationName(), cvc5::Kind::INTS_DIVISION},
+      {felt::UnsignedIntDivFeltOp::getOperationName(),
+       cvc5::Kind::INTS_DIVISION},
+      {felt::DivFeltOp::getOperationName(), cvc5::Kind::INTS_DIVISION},
+      {felt::NegFeltOp::getOperationName(), cvc5::Kind::NEG},
+      {arith::AddIOp::getOperationName(), cvc5::Kind::ADD},
+      {arith::SubIOp::getOperationName(), cvc5::Kind::SUB}};
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
@@ -301,7 +301,7 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
             }
             return getConstant(createArr.getResult());
           })
-          .Case<llzk::NonDetOp>([this](llzk::NonDetOp nondet) {
+          .Case<NonDetOp>([this](NonDetOp nondet) {
             if (isa<array::ArrayType>(nondet.getType())) {
               // If its using llzk.nondet to initialize an array, just copy the
               // array logic
@@ -332,14 +332,14 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
           .Case<scf::ForOp>([this](auto) -> cvc5::Term {
             llvm::report_fatal_error("loop-yielded values not yet supported");
           })
-          .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
+          .Case<function::CallOp>([this](function::CallOp call) {
             // For now just deal with calls to @compute and error out on other
             // function calls
             SymbolTableCollection tables;
-            llzk::ensure(call.calleeIsCompute(),
-                         "arbitrary function calls not supported yet");
+            ensure(call.calleeIsCompute(),
+                   "arbitrary function calls not supported yet");
             auto target = call.getCalleeTarget(tables);
-            llzk::ensure(succeeded(target), "failed to resolve callee target");
+            ensure(succeeded(target), "failed to resolve callee target");
             SmallVector<Value> args = call.getArgOperands();
             return initSubcmp(
                 target->get()->getParentOfType<component::StructDefOp>(), args);
@@ -359,9 +359,6 @@ cvc5::Term TermBuilder::getConstant(Value value) {
   }
 
   std::optional<std::string> name;
-  // if (auto blockArg = dyn_cast<BlockArgument>(value)) {
-  //   name.emplace("arg" + std::to_string(blockArg.getArgNumber()));
-  // }
 
   auto newConst = mgr.mkConst(_sort_of_type(value.getType()), name);
   constants.insert({value, newConst});
@@ -399,7 +396,6 @@ cvc5::Term TermBuilder::getConstant(StringRef memberName, Type type,
 }
 
 cvc5::Term TermBuilder::getConstant(StringRef symbolName) {
-  llvm::dbgs() << "Building constant for @" << symbolName << "\n";
   if (auto it = polyMembers.find(symbolName); it != polyMembers.end()) {
     return it->second;
   }
@@ -415,11 +411,11 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
   return mgr.mkInteger(str);
 }
 
-cvc5::Term TermBuilder::initSubcmp(llzk::component::StructDefOp subcmp,
+cvc5::Term TermBuilder::initSubcmp(component::StructDefOp subcmp,
                                    llvm::ArrayRef<Value> args) {
   auto it = subcmpInits.find(subcmp.getType());
-  llzk::ensure(it != subcmpInits.end(),
-               "unknown subcomponent: " + subcmp.getSymName().str());
+  ensure(it != subcmpInits.end(),
+         "unknown subcomponent: " + subcmp.getSymName().str());
 
   std::vector<cvc5::Term> termArgs{it->second};
   termArgs.reserve(args.size() + 1);
@@ -431,17 +427,16 @@ cvc5::Term TermBuilder::initSubcmp(llzk::component::StructDefOp subcmp,
 }
 
 cvc5::Term TermBuilder::readSubcmpMember(mlir::Value subcmp,
-                                         llzk::component::MemberDefOp member) {
+                                         component::MemberDefOp member) {
   auto it = subcmpMembers.find(member);
-  llzk::ensure(it != subcmpMembers.end(),
-               "unknown subcomponent member: " + member.getSymName().str());
+  ensure(it != subcmpMembers.end(),
+         "unknown subcomponent member: " + member.getSymName().str());
 
   return mgr.mkTerm(cvc5::Kind::APPLY_UF, {it->second, getConstant(subcmp)});
 }
 
 cvc5::Term TermBuilder::_is_mod(cvc5::Term val, llvm::DynamicAPInt mod) {
-  llzk::ensure(val.getSort().isInteger(),
-               "cannot bound non-integral sort modulo");
+  ensure(val.getSort().isInteger(), "cannot bound non-integral sort modulo");
   return mgr.mkTerm(cvc5::Kind::LEQ, {getInteger(0), val, getInteger(mod - 1)});
 }
 
@@ -461,8 +456,8 @@ static inline std::optional<ArrayShape> getArrayShape(
   }
   if (auto bit = termTypes.find(b); bit != termTypes.end()) {
     auto shape = shapeOfType(bit->second);
-    llzk::ensure(!arrayShape.has_value() || arrayShape == shape,
-                 "incompatible array shapes");
+    ensure(!arrayShape.has_value() || arrayShape == shape,
+           "incompatible array shapes");
     return shape;
   }
   return arrayShape;
@@ -487,7 +482,7 @@ cvc5::Term TermBuilder::_array_quantified_term(
   auto forallBody = builder(indices);
   SmallVector<cvc5::Term> bounds;
   for (auto [index, extent] : llvm::zip(indices, shape)) {
-    bounds.push_back(_is_mod(index, llzk::toDynamicAPInt(extent)));
+    bounds.push_back(_is_mod(index, toDynamicAPInt(extent)));
   }
   if (!bounds.empty()) {
     forallBody =
@@ -521,7 +516,7 @@ cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
 
 cvc5::Term TermBuilder::_array_read_impl(cvc5::Term arr,
                                          ArrayRef<cvc5::Term> indices) {
-  llzk::ensure(!indices.empty(), "array read requires at least one index");
+  ensure(!indices.empty(), "array read requires at least one index");
 
   cvc5::Term result = arr;
   for (cvc5::Term index : indices) {
@@ -533,7 +528,7 @@ cvc5::Term TermBuilder::_array_read_impl(cvc5::Term arr,
 cvc5::Term TermBuilder::_array_write_impl(cvc5::Term arr,
                                           ArrayRef<cvc5::Term> indices,
                                           cvc5::Term elem) {
-  llzk::ensure(!indices.empty(), "array write requires at least one index");
+  ensure(!indices.empty(), "array write requires at least one index");
 
   if (indices.size() == 1) {
     return mgr.mkTerm(cvc5::Kind::STORE, {arr, indices.front(), elem});
@@ -573,7 +568,7 @@ void ConjunctionTerm::substitute(cvc5::Term oldTerm, cvc5::Term newTerm) {
 }
 
 cvc5::Term ConjunctionTerm::buildTerm(cvc5::TermManager &mgr) {
-  llzk::ensure(!conjuncts.empty(), "cannot build term from empty conjunction");
+  ensure(!conjuncts.empty(), "cannot build term from empty conjunction");
 
   if (conjuncts.size() == 1) {
     return conjuncts.front().buildTerm(mgr);
