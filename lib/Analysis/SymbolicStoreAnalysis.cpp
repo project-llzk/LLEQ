@@ -299,9 +299,11 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
         }
         auto subcmp = (call.calleeIsCompute() ? call.getResult(0)
                                               : call.getArgOperands().front());
-        llvm::dbgs() << "In call: " << call << '\n';
-        llvm::dbgs().indent(4)
-            << "Subcomponent symbol is: " << getOrCreate<ScalarLattice>(subcmp);
+        LLVM_DEBUG({
+          llvm::dbgs() << "In call: " << call << '\n';
+          llvm::dbgs().indent(4) << "Subcomponent symbol is: "
+                                 << getOrCreate<ScalarLattice>(subcmp);
+        });
       });
   LLVM_DEBUG({
     after->print(llvm::dbgs());

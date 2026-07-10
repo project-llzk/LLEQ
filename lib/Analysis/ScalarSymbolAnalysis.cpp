@@ -38,13 +38,14 @@ void ScalarSymbolAnalysis::visitExternalCall(
   });
 
   auto call = dyn_cast<llzk::function::CallOp>(_call.getOperation());
-  if (!call || !(call.calleeIsCompute() || call.calleeIsConstrain() ||
-                 call.calleeIsProduct())) {
+  if (!call ||
+      !(call.calleeIsStructCompute() || call.calleeIsStructConstrain() ||
+        call.calleeIsStructProduct())) {
     return Base::visitExternalCall(_call, arguments, results);
   }
 
   const auto &[subcmp, args] =
-      (call.calleeIsCompute() || call.calleeIsProduct())
+      (call.calleeIsStructCompute() || call.calleeIsStructProduct())
           ? std::tuple{call.getResult(0), arguments}
           : std::tuple{call.getArgOperands().front(), arguments.drop_front()};
 
