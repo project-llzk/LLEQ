@@ -51,6 +51,8 @@ llvm_config.with_environment('PATH', config.lleq_tools_dir, append_path=True)
 llvm_config.with_environment('PATH', config.llvm_tools_dir, append_path=True)
 if config.cvc5_executable:
     llvm_config.with_environment('LLEQ_CVC5', config.cvc5_executable)
+if config.z3_executable:
+    llvm_config.with_environment('LLEQ_Z3', config.z3_executable)
 
 tool_dirs = [config.lleq_tools_dir, config.llvm_tools_dir]
 tools = [

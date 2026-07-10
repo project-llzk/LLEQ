@@ -28,4 +28,4 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK: sums_0_w: felt.add(%arg0, ?0)
+// CHECK: sums_w[0]: felt.add(%arg0, ?0)

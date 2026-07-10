@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Veridise Inc.
+ * Copyright 2025 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -9,7 +9,7 @@
 
 namespace lleq::cli {
 // extern llvm::cl::OptionCategory lleqCat;
-enum class SubCmd { Verify, DumpSmt, DumpStore };
+enum class SubCmd { Verify, DumpSmt, DumpStore, WeakestPrecondition };
 
 // The mode in which to run LLEQ (verify, dump-smt, or dump-store)
 [[nodiscard]] SubCmd subCmd();
@@ -22,6 +22,10 @@ enum class SubCmd { Verify, DumpSmt, DumpStore };
 
 // Whether to enable symbolic store construction
 [[nodiscard]] bool enableStore();
+
+// Whether to enable the llzk-flatten and array-to-scalar passes before running
+// verification
+[[nodiscard]] bool flattenStruct();
 
 // The input file
 [[nodiscard]] std::string &inputFile();

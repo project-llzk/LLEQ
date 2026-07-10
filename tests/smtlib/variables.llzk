@@ -30,5 +30,5 @@ module attributes {llzk.lang} {
 // CHECK-DAG: (declare-fun x_c () Int)
 // CHECK-DAG: (declare-fun x_w () Int)
 // CHECK-DAG: (declare-fun y_w () Int)
-// CHECK: (assert (= (mod x_w 2013265921) (mod (* arg0 (+ arg0 arg1)) 2013265921)))
-// CHECK-DAG: (assert (= (mod y_w 2013265921) (mod (* x_c x_c) 2013265921)))
+// CHECK: (assert (= (mod (- x_w (* arg0 (+ arg0 arg1))) 2013265921) 0))
+// CHECK-DAG: (assert (= (mod (- y_w (* x_c x_c)) 2013265921) 0))

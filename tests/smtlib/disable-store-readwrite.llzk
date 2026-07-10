@@ -1,9 +1,9 @@
-// RUN: lleq dump-store --struct A %s | FileCheck --enable-var-scope %s
+// RUN: lleq verify --struct A --field babybear --flatten %s | FileCheck --enable-var-scope %s
 
 module attributes {llzk.lang} {
     struct.def @A {
-        struct.member @arr1 : !array.type<2 x !felt.type>
-        struct.member @arr2 : !array.type<1 x !felt.type>
+        struct.member @arr1 : !array.type<2 x !felt.type> {signal}
+        struct.member @arr2 : !array.type<1 x !felt.type> {signal}
         function.def @compute(%a: !felt.type, %b: !felt.type, %c: !felt.type) -> !struct.type<@A> {
             %c0 = arith.constant 0 : index
             %c1 = arith.constant 1 : index
@@ -11,7 +11,7 @@ module attributes {llzk.lang} {
             %self = struct.new : <@A>
             %arr1 = array.new : !array.type<2 x !felt.type>
             %arr2 = array.new : !array.type<1 x !felt.type>
-            
+
             %0 = felt.add %a, %b
             %1 = felt.sub %a, %b
             array.write %arr1[%c0] = %0 : !array.type<2 x !felt.type>, !felt.type
@@ -49,9 +49,8 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: arr1_w[0]: felt.add(%arg0, %arg1)
-// CHECK-DAG: arr1_w[1]: felt.sub(%arg0, %arg1)
-// CHECK-DAG: arr2_w[0]: felt.mul(felt.add(%arg0, %arg1), %arg2)
-// CHECK-DAG: arr1_c[0]: felt.add(%arg0, %arg1)
-// CHECK-DAG: arr1_c[1]: felt.sub(%arg0, %arg1)
-// CHECK-DAG: arr2_c[0]: felt.mul(felt.add(%arg0, %arg1), %arg2)
+// CHECK: Proven equivalent:
+// CHECK-DAG:     @A::arr1_1
+// CHECK-DAG:     @A::arr1_0
+// CHECK: Unknown:
+// CHECK-DAG:     @A::arr2_2

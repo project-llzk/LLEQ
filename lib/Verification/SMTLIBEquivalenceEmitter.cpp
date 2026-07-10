@@ -1,15 +1,17 @@
 /**
- * Copyright 2026 Veridise Inc.
+ * Copyright 2026 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #include "Verification/SMTLIBEquivalenceEmitter.h"
+#include "Verification/VerificationUtils.h"
 
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Analysis/LightweightSignalEquivalenceAnalysis.h>
 #include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
+#include <llzk/Dialect/Cast/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <llzk/Transforms/LLZKComputeConstrainToProductPass.h>
 #include <llzk/Transforms/LLZKTransformationPasses.h>
@@ -102,8 +104,9 @@ private:
               })
               .Case<smt::AssertOp>(
                   [this](auto assertOp) { return processAssert(assertOp); })
-              .Case<UnrealizedConversionCastOp>(
-                  [this](auto castOp) { return processUnrealizedCast(castOp); })
+              .Case<UnrealizedConversionCastOp, cast::FeltToIndexOp,
+                    cast::IntToFeltOp>(
+                  [this](auto castOp) { return processSeeThrough(castOp); })
               .Case<arith::ConstantOp>([this](arith::ConstantOp constOp) {
                 values[constOp.getResult()] = printArithConstant(constOp);
                 return success();
@@ -153,18 +156,19 @@ private:
     return success();
   }
 
-  LogicalResult processUnrealizedCast(UnrealizedConversionCastOp op) {
+  // "see-through" ops like casts
+  LogicalResult processSeeThrough(Operation *op) {
     if (op->getNumOperands() != 1 || op->getNumResults() != 1) {
-      return op.emitError()
+      return op->emitError()
              << "only one-to-one unrealized casts are supported in SMTLIB "
                 "emission";
     }
 
-    FailureOr<std::string> input = lookup(op.getOperand(0));
+    FailureOr<std::string> input = lookup(op->getOperand(0));
     if (failed(input)) {
-      return op.emitError() << "missing expression for conversion input";
+      return op->emitError() << "missing expression for conversion input";
     }
-    values[op.getResult(0)] = *input;
+    values[op->getResult(0)] = *input;
     return success();
   }
 
@@ -272,32 +276,6 @@ private:
   unsigned nextTempId = 0;
 };
 
-LogicalResult ensureProductFunc(ModuleOp module,
-                                component::StructDefOp structDef) {
-  if (structDef.getProductFuncOp()) {
-    return success();
-  }
-
-  auto computeFunc = structDef.getComputeFuncOp();
-  auto constrainFunc = structDef.getConstrainFuncOp();
-  if (!computeFunc || !constrainFunc) {
-    return structDef.emitError()
-           << "expected the selected struct to define either @product or both "
-              "@compute and @constrain";
-  }
-
-  SymbolTableCollection tables;
-  LightweightSignalEquivalenceAnalysis equivalence(module);
-  ProductAligner aligner(tables, equivalence);
-  auto productFunc = aligner.alignFuncs(structDef, computeFunc, constrainFunc);
-  if (!productFunc) {
-    return structDef.emitError()
-           << "failed to align @compute/@constrain into @product";
-  }
-
-  return aligner.alignCalls(productFunc);
-}
-
 FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
                                    llvm::StringRef fieldName) {
   auto *ctx = structDef.getContext();
@@ -311,12 +289,13 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
 
   IRRewriter rewriter{ctx};
   IRMapping mapping;
-  auto cloned = cast<ModuleOp>(rewriter.clone(**module, mapping));
-  auto clonedStruct = cast<component::StructDefOp>(mapping.lookup(structDef));
+  auto cloned = dyn_cast<ModuleOp>(rewriter.clone(**module, mapping));
+  auto clonedStruct =
+      dyn_cast<component::StructDefOp>(mapping.lookup(structDef));
   llzk::ensure(clonedStruct,
                "selected struct disappeared while cloning module");
 
-  if (failed(ensureProductFunc(cloned, clonedStruct))) {
+  if (failed(lleq::ensureProductFunc(cloned, clonedStruct))) {
     return failure();
   }
 

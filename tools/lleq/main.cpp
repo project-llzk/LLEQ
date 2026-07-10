@@ -1,14 +1,16 @@
 /**
- * Copyright 2025 Veridise Inc.
+ * Copyright 2025 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #include "Analysis/SymbolicStore.h"
-#include "Verification/DeductiveVerifier.h"
 #include "Verification/FixpointVerifier.h"
 #include "Verification/SymbolicVerifier.h"
+#include "Verification/VerificationUtils.h"
+#include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
+
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
@@ -49,6 +51,35 @@
 #define BUG_REPORT_URL "https://github.com/Veridise/LLEQ/issues"
 
 using namespace lleq;
+using namespace mlir;
+
+// Copied this from LLZK
+FailureOr<llzk::FieldRef> resolveSelectedField(ModuleOp mod,
+                                               StringRef fieldName) {
+  llzk::FieldSet fields;
+  if (!fieldName.empty()) {
+    auto fieldLookupResult = llzk::Field::tryGetField(fieldName);
+    if (failed(fieldLookupResult)) {
+      mod.emitError() << "unknown field \"" << fieldName << "\"";
+      return failure();
+    }
+    fields.insert(fieldLookupResult.value());
+  }
+
+  (void)collectFields(mod, fields);
+
+  if (fields.empty()) {
+    mod.emitError() << "no prime field specified; could not deduce";
+    return failure();
+  }
+
+  if (fields.size() > 1) {
+    mod.emitError() << "multiple fields unsupported";
+    return failure();
+  }
+
+  return *(fields.begin());
+}
 
 static inline void dumpStore(llzk::component::StructDefOp structDef) {
   llvm::outs() << "-- " << structDef.getSymName() << " --\n";
@@ -117,9 +148,11 @@ int main(int argc, char **argv) {
                        mlir::PassManager::Nesting::Implicit);
   pm.enableVerifier(false);
   pm.addPass(mlir::createCanonicalizerPass());
-  pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
-  pm.addPass(mlir::createCanonicalizerPass());
-  pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
+  if (cli::flattenStruct()) {
+    pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
+    pm.addPass(mlir::createCanonicalizerPass());
+    pm.addPass(std::move(llzk::array::createArrayToScalarPass()));
+  }
 
   llzk::ensure(llvm::succeeded(pm.run(*mod)),
                "failed to prepare module for verification");
@@ -146,24 +179,38 @@ int main(int argc, char **argv) {
   case cli::SubCmd::DumpStore:
     dumpStore(structDef);
     return EXIT_SUCCESS;
-  case cli::SubCmd::Verify:
-  case cli::SubCmd::DumpSmt: {
-
-    llzk::FieldSet fields;
-    if (!cli::fieldName().empty()) {
-      fields.insert(llzk::Field::getField(cli::fieldName()));
+  case cli::SubCmd::WeakestPrecondition: {
+    auto field = resolveSelectedField(*mod, cli::fieldName());
+    if (failed(field)) {
+      // already emits an error
+      return EXIT_FAILURE;
     }
 
-    // Can safely ignore failure for now, it will be handled if fields.empty()
-    (void)llzk::collectFields(*mod, fields);
+    WeakestPreconditionAnalysis analysis{structDef, *field};
+    SymbolicVerifier symbolicStore{structDef};
+    if (failed(symbolicStore.buildStore())) {
+      llvm::errs() << "Failed to build symbolic store\n";
+      return EXIT_FAILURE;
+    }
 
-    llzk::ensure(
-        !fields.empty(),
-        "failed to infer prime field from module, --field must be specified");
-    llzk::ensure(fields.size() == 1, "multiple fields unsupported");
-    auto field = *fields.begin();
+    for (auto memberDef : structDef.getMemberDefs()) {
+      if (symbolicStore.areEquivalent(memberDef.getSymName())) {
+        analysis.addEquivalentMember(memberDef);
+      }
+    }
 
-    FixpointVerifier verifier{structDef, field};
+    analysis.emit(llvm::outs());
+
+    return EXIT_SUCCESS;
+  }
+  case cli::SubCmd::Verify:
+  case cli::SubCmd::DumpSmt: {
+    auto field = resolveSelectedField(*mod, cli::fieldName());
+    if (failed(field)) {
+      // already emits an error
+      return EXIT_FAILURE;
+    }
+    FixpointVerifier verifier{structDef, *field};
     llzk::ensure(succeeded(verifier.init(cli::enableStore())),
                  "failed to generate SMT encoding");
 

@@ -18,21 +18,25 @@ llvm::cl::SubCommand dumpStoreCmd(
     "dump-store",
     "Print the symbolic store constructed for the selected struct");
 
+llvm::cl::SubCommand wpCmd("wp", "Compute and dump weakest precondition");
+
 // --struct ...
 static llvm::cl::opt<std::string> structOpt(
     "struct", llvm::cl::desc("The struct to use for verification/debugging"),
     llvm::cl::sub(llvm::cl::SubCommand::getAll()), llvm::cl::Required);
 
+// --flatten
+static llvm::cl::opt<bool>
+    flattenOpt("flatten",
+               llvm::cl::desc("Flatten loops/arrays before verification?"),
+               llvm::cl::sub(llvm::cl::SubCommand::getAll()));
+
 // --field ...
-static llvm::cl::opt<std::string> smtVerifyFieldNameOpt(
+static llvm::cl::opt<std::string> fieldNameOpt(
     "field",
     llvm::cl::desc("The prime field to use for SMT lowering, if not specified "
                    "in the LLZK file"),
-    llvm::cl::sub(verifyCmd));
-static llvm::cl::opt<std::string> smtDumpFieldNameOpt(
-    "field",
-    llvm::cl::desc("The prime field to use for SMT lowering, if not specified"),
-    llvm::cl::sub(dumpSmtCmd));
+    llvm::cl::sub(llvm::cl::SubCommand::getAll()));
 
 // [--enable-store]
 static llvm::cl::opt<bool>
@@ -55,17 +59,18 @@ SubCmd subCmd() {
   if (dumpSmtCmd) {
     return SubCmd::DumpSmt;
   }
+  if (wpCmd) {
+    return SubCmd::WeakestPrecondition;
+  }
   return SubCmd::DumpStore;
 }
 
 std::string &smtStruct() { return structOpt; }
-std::string &fieldName() {
-  return verifyCmd ? smtVerifyFieldNameOpt : smtDumpFieldNameOpt;
-}
+std::string &fieldName() { return fieldNameOpt; }
 bool enableStore() {
   return verifyCmd ? verifyEnableStoreOpt : dumpEnableStoreOpt;
 }
-
+bool flattenStruct() { return flattenOpt; }
 std::string &inputFile() { return inputFileOpt; }
 
 } // namespace lleq::cli

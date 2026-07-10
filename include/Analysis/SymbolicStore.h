@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Veridise Inc.
+ * Copyright 2025 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -19,6 +19,7 @@
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Analysis/DataFlow/ConstantPropagationAnalysis.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
+#include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Block.h>
 #include <mlir/IR/Operation.h>
 #include <mlir/IR/Value.h>
@@ -31,7 +32,7 @@ namespace lleq {
 /// prove equivalence between pairs of witness/constraint signals.
 class SymbolicStore {
   std::unique_ptr<SymbolPool> pool = std::make_unique<SymbolPool>();
-  mlir::DataFlowSolver solver;
+  mlir::DataFlowSolver solver{mlir::DataFlowConfig{}.setInterprocedural(false)};
 
   llzk::component::StructDefOp component;
   SignalStore *signalStore;

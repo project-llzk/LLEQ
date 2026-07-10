@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Veridise Inc.
+ * Copyright 2026 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -10,11 +10,13 @@
 #include <llvm/ADT/SlowDynamicAPInt.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Util/Constants.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
@@ -24,6 +26,41 @@
 #define DEBUG_TYPE "scalar-symbol-analysis"
 
 namespace lleq {
+
+void ScalarSymbolAnalysis::visitExternalCall(
+    mlir::CallOpInterface _call, llvm::ArrayRef<const Lattice *> arguments,
+    llvm::ArrayRef<Lattice *> results) {
+  LLVM_DEBUG({
+    llvm::dbgs() << "Operation: " << _call << "\n";
+    for (auto operand : arguments) {
+      llvm::dbgs() << "* operand: " << operand->getValue() << "\n";
+    }
+  });
+
+  auto call = dyn_cast<llzk::function::CallOp>(_call.getOperation());
+  if (!call ||
+      !(call.calleeIsStructCompute() || call.calleeIsStructConstrain() ||
+        call.calleeIsStructProduct())) {
+    return Base::visitExternalCall(_call, arguments, results);
+  }
+
+  const auto &[subcmp, args] =
+      (call.calleeIsStructCompute() || call.calleeIsStructProduct())
+          ? std::tuple{call.getResult(0), arguments}
+          : std::tuple{call.getArgOperands().front(), arguments.drop_front()};
+
+  std::string name;
+  llvm::raw_string_ostream ss{name};
+  ss << subcmp.getType();
+
+  Symbol subcmpSym = pool.get().func_call(
+      name, llvm::map_to_vector(args, [this](const Lattice *lat) -> Symbol {
+        return lat->getValue();
+      }));
+
+  auto lat = getOrCreate<ScalarLattice>(subcmp);
+  propagateIfChanged(lat, lat->join(subcmpSym));
+}
 
 mlir::LogicalResult
 ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
@@ -76,8 +113,17 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                     call.getCallee().getLeafReference(), args)};
               })
           .Case<llzk::component::MemberReadOp>(
-              [this](llzk::component::MemberReadOp readOp)
+              [this, operands](llzk::component::MemberReadOp readOp)
                   -> llvm::SmallVector<Symbol> {
+                // If this is a subcomponent read, it won't be populated later
+                // so just fill it with a symbol representing the subcomponent
+                // member
+                if (isSubcmpRead(readOp)) {
+                  return {pool.get().func_call(
+                      ("read-@" + readOp.getMemberName()).str(),
+                      {operands[0]->getValue()})};
+                }
+
                 // We don't have any store information yet, so just set it to
                 // uninitialized. When this op is picked up by
                 // SymbolicStoreAnalysis it will read from the store and
@@ -96,7 +142,7 @@ ScalarSymbolAnalysis::visitOperation(mlir::Operation *op,
                   }
                   return {pool.get().index(readArr.getArrRef(), indices)};
                 }
-                // Otherwise, do the same thing as FieldReadOp
+                // Otherwise, do the same thing as MemberReadOp
                 return {pool.get().uninitialized()};
               })
           .Case<mlir::scf::YieldOp>([this, operands](mlir::scf::YieldOp yield)

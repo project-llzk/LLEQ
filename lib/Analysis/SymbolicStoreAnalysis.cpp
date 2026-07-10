@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Veridise Inc.
+ * Copyright 2026 Project LLZK
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -12,8 +12,10 @@
 #include <llvm/Support/Debug.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
+#include <llzk/Util/TypeHelper.h>
 #include <mlir/Analysis/DataFlow/SparseAnalysis.h>
 #include <mlir/Analysis/DataFlowFramework.h>
 #include <mlir/IR/Value.h>
@@ -253,6 +255,11 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           // If the value immediately comes from a constraint `struct.readm`
           if (auto read =
                   llvm::dyn_cast_or_null<MemberReadOp>(val.getDefiningOp())) {
+            if (isSubcmpRead(read)) {
+              // The store doesn't refer to subcomponent members so we bail
+              // instead of generating an entry
+              return {};
+            }
             return {{{Signal::Source::Constraint, read.getMemberName()}, {}}};
           }
           if (auto arrRead =
@@ -280,15 +287,23 @@ mlir::LogicalResult SymbolicStoreAnalysis::visitOperation(
           propagateIfChanged(lat, lat->join(rightSym));
         } else if (llvm::succeeded(rightLoc)) {
           auto leftSym = getBoundSymbol(eq.getLhs());
-          // llvm::dbgs() << "Bound symbol is: " << leftSym << "\n";
-          // llvm::dbgs() << "Writing to loc: " << *rightLoc << "\n";
-          // llvm::dbgs() << "Before writing, store is: \n";
-          // after->print(llvm::dbgs());
           result |= after->write(*rightLoc, leftSym);
           // Update the ScalarSymbolAnalysis with the value for rightLoc
           auto lat = getOrCreate<ScalarLattice>(eq.getRhs());
           propagateIfChanged(lat, lat->join(leftSym));
         }
+      })
+      .Case<llzk::function::CallOp>([this](llzk::function::CallOp call) {
+        if (!(call.calleeIsCompute() || call.calleeIsConstrain())) {
+          return;
+        }
+        auto subcmp = (call.calleeIsCompute() ? call.getResult(0)
+                                              : call.getArgOperands().front());
+        LLVM_DEBUG({
+          llvm::dbgs() << "In call: " << call << '\n';
+          llvm::dbgs().indent(4) << "Subcomponent symbol is: "
+                                 << getOrCreate<ScalarLattice>(subcmp);
+        });
       });
   LLVM_DEBUG({
     after->print(llvm::dbgs());

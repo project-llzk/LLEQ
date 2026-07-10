@@ -1,5 +1,6 @@
 // REQUIRES: smt-equiv
 // RUN: lleq verify --struct ReadWriteUnrolled --field babybear %s | FileCheck %s
+// Optimized SMT encoding caused a regression in proving arr2_0 without the symbolic store
 
 module attributes {llzk.lang} {
     struct.def @ReadWriteUnrolled {
@@ -37,6 +38,7 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: + @ReadWriteUnrolled::arr1_0
-// CHECK-DAG: + @ReadWriteUnrolled::arr1_1
-// CHECK-DAG: + @ReadWriteUnrolled::arr2_0
+// CHECK: Proven equivalent:
+// CHECK-DAG:     @ReadWriteUnrolled::arr1_0
+// CHECK-DAG:     @ReadWriteUnrolled::arr1_1
+// CHECK-DAG:     @ReadWriteUnrolled::arr2_0

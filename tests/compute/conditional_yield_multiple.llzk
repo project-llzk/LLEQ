@@ -30,4 +30,4 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK: sums_0_w: felt.sub(felt.add(%arg0, ?0), felt.add(?0, %arg1))
+// CHECK: sums_w[0]: felt.sub(felt.add(%arg0, ?0), felt.add(?0, %arg1))

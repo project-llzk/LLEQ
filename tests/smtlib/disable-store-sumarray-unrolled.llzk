@@ -31,5 +31,6 @@ module attributes {llzk.lang} {
     }
 }
 
-// CHECK-DAG: + @SumArr2::sum0
-// CHECK-DAG: + @SumArr2::sum1
+// CHECK: Proven equivalent:
+// CHECK-DAG:     @SumArr2::sum0
+// CHECK-DAG:     @SumArr2::sum1
