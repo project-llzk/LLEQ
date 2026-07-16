@@ -13,6 +13,7 @@
 #include <llzk/Dialect/Array/IR/Ops.h>
 #include <llzk/Dialect/LLZK/IR/AttributeHelper.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
+#include <llzk/Dialect/Verif/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
 #include <llzk/Util/Field.h>
 #include <llzk/Util/TypeHelper.h>
@@ -76,6 +77,7 @@ public:
   void populateVerificationConditions();
   cvc5::Term generateVerificationConditions();
 
+  void applyStructContract(llzk::verif::ContractOp contract);
   void addEquivalentMember(llzk::component::MemberDefOp memberDef);
 
   void emit(llvm::raw_ostream &os);

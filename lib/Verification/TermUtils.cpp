@@ -112,7 +112,7 @@ static inline std::optional<ArrayShape> shapeOfType(Type type) {
 
 TermBuilder::TermSet TermBuilder::getDeclBounds(TermSet decls,
                                                 llvm::DynamicAPInt prime) {
-  TermSet bounds;
+  TermSet bounds = auxiliaryBounds;
   for (auto var : decls) {
     if (var.getSort().isArray()) {
       cvc5::Sort elementSort = var.getSort();
@@ -221,7 +221,6 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
       {felt::SignedIntDivFeltOp::getOperationName(), cvc5::Kind::INTS_DIVISION},
       {felt::UnsignedIntDivFeltOp::getOperationName(),
        cvc5::Kind::INTS_DIVISION},
-      {felt::DivFeltOp::getOperationName(), cvc5::Kind::INTS_DIVISION},
       {felt::NegFeltOp::getOperationName(), cvc5::Kind::NEG},
       {arith::AddIOp::getOperationName(), cvc5::Kind::ADD},
       {arith::SubIOp::getOperationName(), cvc5::Kind::SUB}};
@@ -241,6 +240,26 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
   // Otherwise, switch on the type of the operation
   auto expression =
       llvm::TypeSwitch<Operation *, cvc5::Term>(op)
+          .Case<felt::DivFeltOp>(
+              // Make sure we perform division in the field, not truncating
+              // integer division
+              [this](felt::DivFeltOp divOp) {
+                // Build a new constant for the division result and constrain it
+                auto result = getConstant(divOp.getResult());
+                // assert result * denominator == numerator if denominator is
+                // nonzero
+                auto denominator = getExpression(divOp.getRhs());
+                auto nonzeroBound = assertEqual(
+                    mgr.mkTerm(cvc5::Kind::MULT, {result, denominator}),
+                    getExpression(divOp.getLhs()));
+                auto zeroBound = assertEqual(result, getInteger(0));
+
+                auxiliaryBounds.insert(mgr.mkTerm(
+                    cvc5::Kind::ITE, {assertEqual(denominator, getInteger(0)),
+                                      zeroBound, nonzeroBound}));
+
+                return result;
+              })
           .Case<polymorphic::ConstReadOp>(
               [this](polymorphic::ConstReadOp constRead) {
                 return getConstant(constRead.getConstName());
@@ -283,7 +302,7 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
           })
           .Case<FeltConstantOp>([this](FeltConstantOp constOp) {
             SmallString<64> str;
-            constOp.getValue().getValue().toStringUnsigned(str);
+            constOp.getValue().getValue().toStringSigned(str);
             return mgr.mkInteger(std::string{str});
           })
           .Case<arith::ConstantIntOp, arith::ConstantIndexOp>(
@@ -359,6 +378,19 @@ cvc5::Term TermBuilder::getConstant(Value value) {
   }
 
   std::optional<std::string> name;
+  if (auto blockArg = dyn_cast<BlockArgument>(value)) {
+    if (auto funcDef = dyn_cast<function::FuncDefOp>(
+            blockArg.getParentBlock()->getParentOp())) {
+      auto argName = funcDef.getArgNameAttr(blockArg.getArgNumber());
+      if (argName.has_value()) {
+        name.emplace(argName->getValue());
+      } else {
+        name.emplace((funcDef.getSymName() + "_" +
+                      std::to_string(blockArg.getArgNumber()))
+                         .str());
+      }
+    }
+  }
 
   auto newConst = mgr.mkConst(_sort_of_type(value.getType()), name);
   constants.insert({value, newConst});

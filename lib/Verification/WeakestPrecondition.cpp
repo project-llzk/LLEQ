@@ -7,8 +7,10 @@
 #include <mlir/IR/BuiltinTypeInterfaces.h>
 #define DEBUG_TYPE "weakest-precondition"
 
+#include "Verification/SolverUtils.h"
+#include "Verification/Utils.h"
+
 #include "Verification/TermUtils.h"
-#include "Verification/VerificationUtils.h"
 #include "Verification/WeakestPrecondition.h"
 
 #include <llvm/ADT/STLExtras.h>
@@ -574,9 +576,7 @@ ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
 }
 
 void WeakestPreconditionAnalysis::populateVerificationConditions() {
-  llzk::ensure(succeeded(ensureProductFunc(
-                   structDef->getParentOfType<ModuleOp>(), structDef)),
-               "failed to align product func");
+  ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
   auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
@@ -588,9 +588,8 @@ void WeakestPreconditionAnalysis::populateVerificationConditions() {
 }
 
 cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
-  llzk::ensure(succeeded(ensureProductFunc(
-                   structDef->getParentOfType<ModuleOp>(), structDef)),
-               "failed to align product func");
+  ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
+
   auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
@@ -620,6 +619,7 @@ void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
   os << "; Verification condition\n";
   os << "(assert " << verificationConditions.notTerm().toString() << ")\n";
   os << "(check-sat)\n";
+  os << "(get-model)\n";
 }
 
 } // namespace lleq
