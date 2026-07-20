@@ -24,10 +24,14 @@ set(Verification_SRC
     Verification/StructContracts.cpp
     Verification/Utils.cpp)
 
+set(Util_SRC
+  Util/ProjectBlock.cpp)
+
 target_sources(LLEQ PRIVATE
     ${Analysis_SRC}
     ${Transforms_SRC}
     ${Verification_SRC}
+    ${Util_SRC}
     )
 
 get_target_property(
