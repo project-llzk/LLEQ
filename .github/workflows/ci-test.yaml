@@ -19,10 +19,10 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           persistent-credentials: false
-      - uses: cachix/install-nix-action@d1ca217b388ee87b2507a9a93bf01368bde7cec2 # v37.1.0
+      - uses: cachix/install-nix-action@v31.11.0
         with:
           install_url: https://releases.nixos.org/nix/nix-2.23.3/install
           github_access_token: "${{secrets.GITHUB_TOKEN}}"
@@ -31,10 +31,9 @@ jobs:
           git config --global 'url.https://api@github.com/'.insteadOf 'https://github.com/'
           git config --global 'url.https://ssh@github.com/'.insteadOf 'ssh://github.com/'
           git config --global 'url.https://git@github.com/'.insteadOf 'git@github.com/'
-      - uses: cachix/cachix-action@0fc020193b5a1fa3ac4575aa3a7d3aa6a35435ad # v16
+      - uses: cachix/cachix-action@v17
         with:
-          name: veridise-private
+          name: veridise-public
           authToken: "${{secrets.CACHIX_AUTH_TOKEN}}"
-      - run: cachix use veridise-public
       - name: "Build with ${{matrix.compiler.name}}"
         run: "nix --print-build-logs build '${{matrix.compiler.derivation}}'"
