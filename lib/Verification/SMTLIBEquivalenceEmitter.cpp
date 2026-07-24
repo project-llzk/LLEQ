@@ -294,7 +294,7 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
       dyn_cast<component::StructDefOp>(mapping.lookup(structDef));
   llzk::ensure(clonedStruct,
                "selected struct disappeared while cloning module");
-  lleq::ensureProductFunc(cloned, clonedStruct);
+  lleq::util::ensureProductFunc(cloned, clonedStruct);
 
   auto smtPass = llzk::smt::createSMTLoweringPass();
   std::string options = ("field=" + fieldName).str();

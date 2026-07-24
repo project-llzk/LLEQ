@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Project LLZK.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "Verification/StructContracts.h"
 #include "Util/ProjectBlock.h"
 #include "Verification/Utils.h"
@@ -44,7 +49,7 @@ void applyContractToStruct(verif::ContractOp contract) {
 
   // Make sure we have a @product function
   auto structDef = target->get();
-  ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
+  util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
   // Lower preconditions to bool.assert
   auto productFunc = structDef.getProductFuncOp();

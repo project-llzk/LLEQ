@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Project LLZK.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "Verification/Utils.h"
 
 #include <llzk/Analysis/LightweightSignalEquivalenceAnalysis.h>
@@ -9,7 +14,7 @@
 using namespace mlir;
 using namespace llzk;
 
-namespace lleq {
+namespace lleq::util {
 void ensureProductFunc(ModuleOp module, component::StructDefOp structDef) {
   if (structDef.getProductFuncOp()) {
     return;
@@ -42,4 +47,4 @@ void ensureProductFunc(ModuleOp module, component::StructDefOp structDef) {
   pm.addPass(llzk::createFuseProductLoopsPass());
   ensure(succeeded(pm.run(module)), "failed to align loops");
 }
-} // namespace lleq
+} // namespace lleq::util

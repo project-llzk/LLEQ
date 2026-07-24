@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Project LLZK.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #pragma once
 
 #include <llzk/Dialect/Struct/IR/Ops.h>

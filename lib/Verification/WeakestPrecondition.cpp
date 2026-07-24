@@ -576,7 +576,7 @@ ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
 }
 
 void WeakestPreconditionAnalysis::populateVerificationConditions() {
-  ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
+  util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
   auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
@@ -588,7 +588,7 @@ void WeakestPreconditionAnalysis::populateVerificationConditions() {
 }
 
 cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
-  ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
+  util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
   auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
