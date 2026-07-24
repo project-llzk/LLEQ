@@ -87,23 +87,4 @@ void applyContractToStruct(verif::ContractOp contract) {
   }
 }
 
-void projectContracts(llzk::verif::ContractOp contract) {
-  SmallVector<Operation *> requireComputes, requireConstrains;
-  auto &contractBody = contract.getFunctionBody().front();
-  for (auto &op : contractBody) {
-    if (isa<verif::RequireComputeOp>(&op)) {
-      requireComputes.push_back(&op);
-    }
-    if (isa<verif::RequireConstrainOp>(&op)) {
-      requireConstrains.push_back(&op);
-    }
-  }
-
-  util::BlockProjector projector;
-  projector.addSeed(requireComputes, 0);
-  projector.addSeed(requireConstrains, 1);
-  projector.run();
-  projector.dumpProjections();
-}
-
 } // namespace lleq

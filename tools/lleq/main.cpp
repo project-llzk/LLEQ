@@ -160,7 +160,6 @@ int main(int argc, char **argv) {
 
   // Apply all contracts?
   mod->walk([](llzk::verif::ContractOp contract) {
-    projectContracts(contract);
     applyContractToStruct(contract);
   });
 

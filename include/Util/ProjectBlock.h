@@ -12,7 +12,14 @@
 
 namespace lleq::util {
 
+/// Separate a basic block into sequences of ops ("projections") required to
+/// compute one of several specified result operations ("seeds").
+///
+/// This class traverses the use/def chains backwards starting at each seed and
+/// tracks which projection each op should belong in, while avoiding recomputing
+/// upwards-closed sets for already-visited operations.
 class BlockProjector {
+  // Used as a tag to identify projections
   using Projection = int;
 
   // For each operation in the worklist, which projections its being considered
@@ -23,7 +30,9 @@ class BlockProjector {
   llvm::DenseMap<Projection, llvm::DenseSet<mlir::Operation *>> projections;
 
 public:
+  // "seed" a projection with the given set of ops
   void addSeed(llvm::ArrayRef<mlir::Operation *> seed, Projection current);
+  // Perform traversals until fixpoint, populating `projections`
   void run();
 
   void dumpProjections() {

@@ -13,9 +13,11 @@
 
 namespace lleq {
 
+/// Lower require/ensure clauses in the `contract` to assertions in its
+/// target
 void applyContractToStruct(llzk::verif::ContractOp contract);
-void applyAllContracts(mlir::ModuleOp module);
 
-void projectContracts(llzk::verif::ContractOp contract);
+/// Apply all contracts found in `module` to their targets
+void applyAllContracts(mlir::ModuleOp module);
 
 } // namespace lleq
