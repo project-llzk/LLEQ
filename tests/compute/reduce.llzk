@@ -2,7 +2,7 @@
 
 module attributes {llzk.lang} {
     poly.template @ReduceTemplate {
-        poly.param @N
+        poly.param @N : index
 
         struct.def @Reduce {
             struct.member @sum : !felt.type
