@@ -4,7 +4,7 @@
  */
 
 #include "Verification/SMTLIBEquivalenceEmitter.h"
-#include "Verification/VerificationUtils.h"
+#include "Verification/Utils.h"
 
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>
@@ -294,10 +294,7 @@ FailureOr<func::FuncOp> lowerToSMT(component::StructDefOp structDef,
       dyn_cast<component::StructDefOp>(mapping.lookup(structDef));
   llzk::ensure(clonedStruct,
                "selected struct disappeared while cloning module");
-
-  if (failed(lleq::ensureProductFunc(cloned, clonedStruct))) {
-    return failure();
-  }
+  lleq::util::ensureProductFunc(cloned, clonedStruct);
 
   auto smtPass = llzk::smt::createSMTLoweringPass();
   std::string options = ("field=" + fieldName).str();

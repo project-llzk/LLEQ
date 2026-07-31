@@ -5,7 +5,7 @@
 
 #include "Verification/DeductiveVerifier.h"
 #include "Verification/SMTLIBEquivalenceEmitter.h"
-#include "Verification/VerificationUtils.h"
+#include "Verification/SolverUtils.h"
 
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/ErrorHandling.h>

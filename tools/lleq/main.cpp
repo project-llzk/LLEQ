@@ -5,8 +5,8 @@
 
 #include "Analysis/SymbolicStore.h"
 #include "Verification/FixpointVerifier.h"
+#include "Verification/StructContracts.h"
 #include "Verification/SymbolicVerifier.h"
-#include "Verification/VerificationUtils.h"
 #include "Verification/WeakestPrecondition.h"
 #include "lleq/CliOptions.h"
 #include <cstdlib>
@@ -31,6 +31,7 @@
 #include <llzk/Util/Field.h>
 #include <llzk/Util/SymbolHelper.h>
 #include <llzk/Util/SymbolLookup.h>
+#include <llzk/Util/TypeHelper.h>
 #include <mlir/Analysis/DataFlow/DeadCodeAnalysis.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/IR/AsmState.h>
@@ -156,6 +157,11 @@ int main(int argc, char **argv) {
 
   llzk::ensure(llvm::succeeded(pm.run(*mod)),
                "failed to prepare module for verification");
+
+  // Apply all contracts?
+  mod->walk([](llzk::verif::ContractOp contract) {
+    applyContractToStruct(contract);
+  });
 
   // TODO: split on :: and parse out FQN to use LLZK symbol lookup
   llzk::component::StructDefOp structDef;

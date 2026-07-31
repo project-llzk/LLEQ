@@ -39,10 +39,6 @@ struct SolverRunResult {
   std::string solverName;
 };
 
-/// Run product alignment on the module if no @product function is found
-llvm::LogicalResult ensureProductFunc(mlir::ModuleOp module,
-                                      llzk::component::StructDefOp structDef);
-
 /// Build an SMTLIB2-style query based on the given SMT term, together with
 /// appropriate declarations. Assumes that `query` is be a term constructed via
 /// the provided TermBuilder `builder`

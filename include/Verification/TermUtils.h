@@ -170,6 +170,7 @@ private:
   llvm::DenseMap<mlir::Value, cvc5::Term> constants;
   llvm::DenseMap<mlir::Value, cvc5::Term> expressions;
   llvm::StringMap<cvc5::Term> witnessMembers, constraintMembers, polyMembers;
+  TermSet auxiliaryBounds;
 
   std::unordered_map<cvc5::Term, mlir::Type, std::hash<cvc5::Term>> termTypes;
 
