@@ -47,7 +47,7 @@ void applyContractToStruct(verif::ContractOp contract) {
   }
   auto structDef = target->get();
 
-  // Bail if the contract is inside a template different from the struct its
+  // Bail if the contract is inside a template different from the struct it's
   // targeting
   if (auto templateOp = contract->getParentOfType<polymorphic::TemplateOp>()) {
     if (templateOp != structDef->getParentOfType<polymorphic::TemplateOp>()) {
