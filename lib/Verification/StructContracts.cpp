@@ -8,6 +8,7 @@
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llzk/Dialect/Bool/IR/Ops.h>
+#include <llzk/Dialect/Polymorphic/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Dialect/Verif/IR/Ops.h>
 #include <mlir/IR/Attributes.h>
@@ -35,7 +36,6 @@ getAllocation(function::FuncDefOp func) {
 }
 
 void applyContractToStruct(verif::ContractOp contract) {
-  // TODO: bail out if contract is inside template
   if (!contract.hasStructTarget()) {
     return;
   }
@@ -45,9 +45,17 @@ void applyContractToStruct(verif::ContractOp contract) {
   if (failed(target)) {
     return;
   }
+  auto structDef = target->get();
+
+  // Bail if the contract is inside a template different from the struct its
+  // targeting
+  if (auto templateOp = contract->getParentOfType<polymorphic::TemplateOp>()) {
+    if (templateOp != structDef->getParentOfType<polymorphic::TemplateOp>()) {
+      return;
+    }
+  }
 
   // Make sure we have a @product function
-  auto structDef = target->get();
   util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
   // Lower preconditions to bool.assert
