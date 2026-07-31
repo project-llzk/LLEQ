@@ -4,7 +4,6 @@
  */
 
 #include "Verification/StructContracts.h"
-#include "Util/ProjectBlock.h"
 #include "Verification/Utils.h"
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
