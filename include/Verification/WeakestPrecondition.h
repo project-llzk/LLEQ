@@ -49,18 +49,10 @@ class WeakestPreconditionAnalysis {
   mlir::DenseMap<mlir::Value, cvc5::Term> valueExpressions;
 
   void initSubcomponents() {
-    for (auto memberDef : structDef.getMemberDefs()) {
-
-      if (auto structType = _subcomponent_type(memberDef.getType());
-          llvm::succeeded(structType)) {
-        auto definition = structType->getDefinition(
-            tables, structDef->getParentOfType<mlir::ModuleOp>());
-        llzk::ensure(mlir::succeeded(definition),
-                     "could not find struct definition for " +
-                         memberDef.getSymName());
-        builder.populateSubcomponent(definition->get());
-      }
-    }
+    auto module = structDef->getParentOfType<mlir::ModuleOp>();
+    module->walk([this](llzk::component::StructDefOp subcmpDef) {
+      builder.populateSubcomponent(subcmpDef);
+    });
   }
 
   llvm::FailureOr<cvc5::Term>
