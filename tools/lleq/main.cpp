@@ -25,6 +25,7 @@
 #include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
+#include <llzk/Dialect/Pod/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/ErrorHelper.h>
@@ -148,6 +149,7 @@ int main(int argc, char **argv) {
                        mlir::PassManager::getAnyOpAnchorName(),
                        mlir::PassManager::Nesting::Implicit);
   pm.enableVerifier(false);
+  pm.addPass(llzk::pod::createPodToScalarPass());
   pm.addPass(mlir::createCanonicalizerPass());
   if (cli::flattenStruct()) {
     pm.addPass(std::move(llzk::polymorphic::createFlatteningPass()));
