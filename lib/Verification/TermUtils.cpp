@@ -50,7 +50,7 @@ void TermBuilder::populateSubcomponent(component::StructDefOp subcmp) {
   subcmpSorts.insert({subcmp.getType(), sort});
   // `@B::@product(...) -> <@B>` => `(decl-fun create-B (...) B)`
   std::vector<cvc5::Sort> argumentSorts;
-  for (auto type : subcmp.getComputeFuncOp().getFunctionType().getInputs()) {
+  for (auto type : subcmp.getProductFuncOp().getFunctionType().getInputs()) {
     argumentSorts.push_back(_sort_of_type(type));
   }
   if (argumentSorts.empty()) {
@@ -160,7 +160,10 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
     auto it = subcmpInits.find(subcmp);
     ensure(it != subcmpInits.end(), "unknown subcomponent type");
     auto initFunc = it->second;
-    auto argTypes = initFunc.getSort().getFunctionDomainSorts();
+    std::vector<cvc5::Sort> argTypes;
+    if (auto initSort = initFunc.getSort(); initSort.isFunction()) {
+      argTypes = initSort.getFunctionDomainSorts();
+    }
     os << "(declare-fun " << initFunc.toString() << " (";
     llvm::interleave(
         argTypes, os, [&os](cvc5::Sort sort) { os << sort.toString(); }, " ");
@@ -197,6 +200,44 @@ cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   }
   return mgr.getIntegerSort();
 }
+
+template <class PredicateT>
+static llvm::DenseMap<PredicateT, cvc5::Kind> predicateToKind;
+
+template <>
+llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
+    predicateToKind<boolean::FeltCmpPredicate> = {
+        {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
+        {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
+        {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
+        {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
+        {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
+
+template <>
+llvm::DenseMap<arith::CmpIPredicate, cvc5::Kind>
+    predicateToKind<arith::CmpIPredicate> = {
+        {arith::CmpIPredicate::eq, cvc5::Kind::EQUAL},
+        {arith::CmpIPredicate::slt, cvc5::Kind::LT},
+        {arith::CmpIPredicate::sle, cvc5::Kind::LEQ},
+        {arith::CmpIPredicate::sgt, cvc5::Kind::GT},
+        {arith::CmpIPredicate::sge, cvc5::Kind::GEQ},
+        {arith::CmpIPredicate::ult, cvc5::Kind::LT},
+        {arith::CmpIPredicate::ule, cvc5::Kind::LEQ},
+        {arith::CmpIPredicate::ugt, cvc5::Kind::GT},
+        {arith::CmpIPredicate::uge, cvc5::Kind::GEQ}};
+
+template <class PredicateT> PredicateT eqPred;
+template <class PredicateT> PredicateT neqPred;
+
+template <>
+auto eqPred<boolean::FeltCmpPredicate> = boolean::FeltCmpPredicate::EQ;
+
+template <>
+auto neqPred<boolean::FeltCmpPredicate> = boolean::FeltCmpPredicate::NE;
+
+template <> auto eqPred<arith::CmpIPredicate> = arith::CmpIPredicate::eq;
+
+template <> auto neqPred<arith::CmpIPredicate> = arith::CmpIPredicate::ne;
 
 cvc5::Term TermBuilder::getExpression(mlir::Value value) {
   // If we've already cached a value, just look it up
@@ -264,36 +305,45 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
               [this](polymorphic::ConstReadOp constRead) {
                 return getConstant(constRead.getConstName());
               })
-          .Case<boolean::CmpOp>([this, op](boolean::CmpOp cmp) {
-            static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
-                predicateToKind = {
-                    {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
-                    {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
-                    {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
-                    {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
-                    {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
+          .Case<boolean::CmpOp, arith::CmpIOp>([this, op](auto cmp) {
+            // static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
+            //     predicateToKind = {
+            //         {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
+            //         {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
+            //         {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
+            //         {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
+            //         {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
             SmallVector<cvc5::Term> operandTerms{
                 llvm::map_to_vector(op->getOperands(), [this](Value value) {
                   return getExpression(value);
                 })};
-            if (cmp.getPredicate() == boolean::FeltCmpPredicate::NE) {
+
+            using PredT = decltype(cmp.getPredicate());
+
+            if (cmp.getPredicate() == neqPred<PredT>) {
               return mgr
-                  .mkTerm(predicateToKind.at(boolean::FeltCmpPredicate::EQ),
+                  .mkTerm(predicateToKind<PredT>.at(eqPred<PredT>),
                           {operandTerms.begin(), operandTerms.end()})
                   .notTerm();
             }
-            return mgr.mkTerm(predicateToKind.at(cmp.getPredicate()),
+            return mgr.mkTerm(predicateToKind<PredT>.at(cmp.getPredicate()),
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
+            llvm::dbgs() << "Processing member read: " << read << "\n";
             if (read.getComponent().getType() ==
                 read->getParentOfType<component::StructDefOp>().getType()) {
+              llvm::dbgs() << "[one of my own members]\n";
               // Not a subcomponent read, so just return the member constant
               return getConstant(read.getMemberName(), read.getType(),
                                  isWitnessOp(read));
             }
+            llvm::dbgs() << "[reading from a subcmp]\n";
             SymbolTableCollection tables;
-            return subcmpMembers.at(read.getMemberDefOp(tables)->get());
+            auto memberDef = read.getMemberDefOp(tables)->get();
+            llvm::dbgs() << "Member def: " << memberDef << '\n';
+            return readSubcmpMember(read.getComponent(), memberDef);
+            // return subcmpMembers.at(memberDef);
           })
           .Case<ReadArrayOp>([this](ReadArrayOp read) {
             SmallVector<Value> indices(read.getIndices().begin(),
@@ -464,6 +514,9 @@ cvc5::Term TermBuilder::readSubcmpMember(mlir::Value subcmp,
   ensure(it != subcmpMembers.end(),
          "unknown subcomponent member: " + member.getSymName().str());
 
+  llvm::dbgs() << it->second.toString() << ": "
+               << it->second.getSort().toString() << "\n";
+
   return mgr.mkTerm(cvc5::Kind::APPLY_UF, {it->second, getConstant(subcmp)});
 }
 
@@ -549,6 +602,7 @@ cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
 cvc5::Term TermBuilder::_array_read_impl(cvc5::Term arr,
                                          ArrayRef<cvc5::Term> indices) {
   ensure(!indices.empty(), "array read requires at least one index");
+  ensure(arr.getSort().isArray(), "cannot index into a non-array sort");
 
   cvc5::Term result = arr;
   for (cvc5::Term index : indices) {
