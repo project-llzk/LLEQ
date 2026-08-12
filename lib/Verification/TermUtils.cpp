@@ -330,18 +330,14 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
-            llvm::dbgs() << "Processing member read: " << read << "\n";
             if (read.getComponent().getType() ==
                 read->getParentOfType<component::StructDefOp>().getType()) {
-              llvm::dbgs() << "[one of my own members]\n";
               // Not a subcomponent read, so just return the member constant
               return getConstant(read.getMemberName(), read.getType(),
                                  isWitnessOp(read));
             }
-            llvm::dbgs() << "[reading from a subcmp]\n";
             SymbolTableCollection tables;
             auto memberDef = read.getMemberDefOp(tables)->get();
-            llvm::dbgs() << "Member def: " << memberDef << '\n';
             return readSubcmpMember(read.getComponent(), memberDef);
             // return subcmpMembers.at(memberDef);
           })
