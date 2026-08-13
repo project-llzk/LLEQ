@@ -5,6 +5,7 @@
 
 #include "Verification/TermUtils.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
+#include "Verification/Utils.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
@@ -41,13 +42,23 @@ using array::ReadArrayOp;
 using component::MemberReadOp;
 using felt::FeltConstantOp;
 
+// Replace !struct.type<@S<[]>> with !struct.type<@S>
+static component::StructType normalize(component::StructType type) {
+  if (type.getParams() && type.getParams().empty()) {
+    return component::StructType::get(type.getNameRef());
+  }
+  return type;
+}
+
 namespace lleq {
 
 void TermBuilder::populateSubcomponent(component::StructDefOp subcmp) {
+  util::ensureProductFunc(subcmp->getParentOfType<ModuleOp>(), subcmp);
+  // llvm::dbgs() << "Populating " << subcmp.getSymName() << "\n";
   std::string subcmpName = subcmp.getSymName().str();
   // Materialize a sort: `struct.def @B` => `(decl-sort B)`
   cvc5::Sort sort = mgr.mkUninterpretedSort(subcmpName);
-  subcmpSorts.insert({subcmp.getType(), sort});
+  subcmpSorts.insert({normalize(subcmp.getType()), sort});
   // `@B::@product(...) -> <@B>` => `(decl-fun create-B (...) B)`
   std::vector<cvc5::Sort> argumentSorts;
   for (auto type : subcmp.getProductFuncOp().getFunctionType().getInputs()) {
@@ -55,12 +66,12 @@ void TermBuilder::populateSubcomponent(component::StructDefOp subcmp) {
   }
   if (argumentSorts.empty()) {
     cvc5::Term initConst = mgr.mkConst(sort, "init-" + subcmpName);
-    subcmpInits.insert({subcmp.getType(), initConst});
+    subcmpInits.insert({normalize(subcmp.getType()), initConst});
   } else {
     cvc5::Sort initFuncSort =
         mgr.mkFunctionSort(std::move(argumentSorts), sort);
     cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
-    subcmpInits.insert({subcmp.getType(), initFunc});
+    subcmpInits.insert({normalize(subcmp.getType()), initFunc});
   }
 
   // For each `@B::struct.member @foo : T` => `(decl-fun read-B-foo (B) T)`
@@ -157,7 +168,7 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
   os << "; Subcomponents\n";
   for (const auto &[subcmp, sort] : subcmpSorts) {
     os << "(declare-sort " << sort.toString() << " 0)\n";
-    auto it = subcmpInits.find(subcmp);
+    auto it = subcmpInits.find(normalize(subcmp));
     ensure(it != subcmpInits.end(), "unknown subcomponent type");
     auto initFunc = it->second;
     std::vector<cvc5::Sort> argTypes;
@@ -180,7 +191,7 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
 
 cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   if (auto structType = dyn_cast<component::StructType>(type)) {
-    auto it = subcmpSorts.find(structType);
+    auto it = subcmpSorts.find(normalize(structType));
     ensure(it != subcmpSorts.end(), "unknown subcomponent type");
     return it->second;
   }
@@ -401,7 +412,7 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
             // For now just deal with calls to @compute and error out on other
             // function calls
             SymbolTableCollection tables;
-            ensure(call.calleeIsCompute(),
+            ensure(call.calleeIsStructCompute() || call.calleeIsStructProduct(),
                    "arbitrary function calls not supported yet");
             auto target = call.getCalleeTarget(tables);
             ensure(succeeded(target), "failed to resolve callee target");
@@ -491,9 +502,14 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
 
 cvc5::Term TermBuilder::initSubcmp(component::StructDefOp subcmp,
                                    llvm::ArrayRef<Value> args) {
-  auto it = subcmpInits.find(subcmp.getType());
+  auto it = subcmpInits.find(normalize(subcmp.getType()));
   ensure(it != subcmpInits.end(),
          "unknown subcomponent: " + subcmp.getSymName().str());
+
+  if (args.empty()) {
+    // No function to call, just return the symbol directly
+    return it->second;
+  }
 
   std::vector<cvc5::Term> termArgs{it->second};
   termArgs.reserve(args.size() + 1);
@@ -509,9 +525,6 @@ cvc5::Term TermBuilder::readSubcmpMember(mlir::Value subcmp,
   auto it = subcmpMembers.find(member);
   ensure(it != subcmpMembers.end(),
          "unknown subcomponent member: " + member.getSymName().str());
-
-  llvm::dbgs() << it->second.toString() << ": "
-               << it->second.getSort().toString() << "\n";
 
   return mgr.mkTerm(cvc5::Kind::APPLY_UF, {it->second, getConstant(subcmp)});
 }
