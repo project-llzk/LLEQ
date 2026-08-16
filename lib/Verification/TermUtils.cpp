@@ -275,7 +275,9 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
        cvc5::Kind::INTS_DIVISION},
       {felt::NegFeltOp::getOperationName(), cvc5::Kind::NEG},
       {arith::AddIOp::getOperationName(), cvc5::Kind::ADD},
-      {arith::SubIOp::getOperationName(), cvc5::Kind::SUB}};
+      {arith::SubIOp::getOperationName(), cvc5::Kind::SUB},
+      {boolean::OrBoolOp::getOperationName(), cvc5::Kind::OR},
+      {boolean::AndBoolOp::getOperationName(), cvc5::Kind::AND}};
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
@@ -365,7 +367,8 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
           .Case<arith::ConstantIntOp, arith::ConstantIndexOp>(
               [this](auto constOp) {
                 auto val = dyn_cast<IntegerAttr>(constOp.getValue()).getValue();
-                return getInteger(val);
+                Type constType = constOp.getType();
+                return getInteger(val, constType.isInteger(1));
               })
           .Case<array::CreateArrayOp>([this](array::CreateArrayOp createArr) {
             // If the array is written to exactly one struct member later, just
@@ -493,7 +496,10 @@ cvc5::Term TermBuilder::getConstant(StringRef symbolName) {
   return newTerm;
 }
 
-cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
+cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val, bool asBoolean) {
+  if (asBoolean) {
+    return mgr.mkBoolean(val != 0);
+  }
   std::string str;
   llvm::raw_string_ostream os{str};
   val.print(os);

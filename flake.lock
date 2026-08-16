@@ -32,16 +32,16 @@
         "release-helpers": "release-helpers"
       },
       "locked": {
-        "lastModified": 1786468606,
-        "narHash": "sha256-1bJ95NWn7ZdHEDF7q5yuIR8yA7+GVtZf9L4bXDSVrW8=",
+        "lastModified": 1786745724,
+        "narHash": "sha256-J2wt0yTlwgZzHz9HjmjkOnIMFpo8GE4E+jRrQ+BO1zI=",
         "owner": "project-llzk",
         "repo": "llzk-lib",
-        "rev": "0d652966c80f3149aec874cc0572909bf7a61bda",
+        "rev": "0ee9279ecf7e35b5ed7c430207b3d9f1a1a19d4c",
         "type": "github"
       },
       "original": {
         "owner": "project-llzk",
-        "ref": "main",
+        "ref": "th/rdv_bug_workaround",
         "repo": "llzk-lib",
         "type": "github"
       }

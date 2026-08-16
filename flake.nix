@@ -14,7 +14,7 @@
     };
 
     llzk = {
-      url = "github:project-llzk/llzk-lib?ref=main";
+      url = "github:project-llzk/llzk-lib?ref=th/rdv_bug_workaround";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";

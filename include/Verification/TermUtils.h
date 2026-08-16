@@ -74,9 +74,9 @@ struct TermBuilder {
   cvc5::TermManager &manager() { return mgr; }
 
   // Build an integer constant
-  cvc5::Term getInteger(llvm::DynamicAPInt val);
-  cvc5::Term getInteger(auto val) {
-    return getInteger(llzk::toDynamicAPInt(val));
+  cvc5::Term getInteger(llvm::DynamicAPInt val, bool asBoolean = false);
+  cvc5::Term getInteger(auto val, bool asBoolean = false) {
+    return getInteger(llzk::toDynamicAPInt(val), asBoolean);
   }
 
   void addEquivalentMember(llzk::component::MemberDefOp memberDef);
