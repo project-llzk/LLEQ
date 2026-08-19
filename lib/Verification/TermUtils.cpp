@@ -319,13 +319,6 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                 return getConstant(constRead.getConstName());
               })
           .Case<boolean::CmpOp, arith::CmpIOp>([this, op](auto cmp) {
-            // static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
-            //     predicateToKind = {
-            //         {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
-            //         {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
-            //         {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
-            //         {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
-            //         {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
             SmallVector<cvc5::Term> operandTerms{
                 llvm::map_to_vector(op->getOperands(), [this](Value value) {
                   return getExpression(value);
