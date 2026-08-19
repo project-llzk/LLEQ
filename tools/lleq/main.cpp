@@ -25,7 +25,7 @@
 #include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/InitDialects.h>
-#include <llzk/Dialect/Pod/Transforms/TransformationPasses.h>
+#include <llzk/Dialect/POD/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Transforms/LLZKTransformationPasses.h>
