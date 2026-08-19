@@ -9,7 +9,6 @@
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/SymbolicStoreAnalysis.h"
 #include "Transforms/LLEQIfToIfElse.h"
-#include "Transforms/LLEQWhileToFor.h"
 
 #include <llvm/ADT/DynamicAPInt.h>
 #include <llvm/ADT/STLExtras.h>
@@ -75,9 +74,6 @@ SymbolicStore::buildStore(llzk::component::StructDefOp structDef) {
   auto productFunc = component.getProductFuncOp();
   llzk::ensure(productFunc, "alignment failed");
 
-  if (failed(transform::transformWhileToFor(productFunc))) {
-    report_fatal_error("while->for conversion failed");
-  }
   if (failed(transform::transformIfToIfElse(productFunc))) {
     report_fatal_error("default else conversion failed");
   }

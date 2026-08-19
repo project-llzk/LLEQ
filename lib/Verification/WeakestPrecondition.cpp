@@ -378,8 +378,9 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
                        postcondition, builder, field);
     for (auto [ann, elem] :
          llvm::zip(failingCore.annotations, failingCore.terms)) {
-      llvm::dbgs() << "Loop invariant was not strong enough to prove: "
-                   << elem.toString() << "\n";
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Loop invariant was not strong enough to prove: "
+                 << elem.toString() << '\n');
       // NOTE: Just asserting the full thing, even when its an array, should be
       // fine. Asserting equivalence of the full array should never overlap with
       // something provable by the invariant, because the "slice" strengthenings
@@ -476,7 +477,7 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
       })
       .Case<llzk::function::CallOp>([this, &postcondition](
                                         llzk::function::CallOp call) {
-        if (call.calleeIsConstrain()) {
+        if (call.calleeIsStructConstrain()) {
           // @constrain(%subcmp, %args...) => (assert (= %subcmp
           // (init-"subcmp" %args...)))
           auto target = call.getCalleeTarget(tables);
@@ -487,13 +488,15 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
           SmallVector<Value> args = call.getArgOperands().drop_front();
           postcondition.addAntecedent(
               builder.assertEqual(subcmpVal, builder.initSubcmp(subcmp, args)));
-        } else {
-          // Do the default (there's gotta be a better way)
-          llzk::ensure(call.calleeIsCompute(),
-                       "arbitrary function calls not supported");
+        } else if (call.calleeIsStructCompute()) {
           auto expression = builder.getExpression(call.getResult(0));
           postcondition.substitute(builder.getConstant(call->getResult(0)),
                                    expression);
+        } else {
+          // Technically a call to @product has already aligned the subcomponent
+          // values so there's nothing to prove
+          llzk::ensure(call.calleeIsStructProduct(),
+                       "arbitrary function calls not supported");
         }
       })
       .Default([this, &postcondition](auto op) {

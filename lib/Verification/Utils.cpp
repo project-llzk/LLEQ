@@ -44,7 +44,7 @@ void ensureProductFunc(ModuleOp module, component::StructDefOp structDef) {
 
   // Now, try fusing loops
   PassManager pm{module->getContext()};
-  pm.addPass(llzk::createFuseProductLoopsPass());
+  pm.addPass(llzk::createFuseProductControlFlowPass());
   ensure(succeeded(pm.run(module)), "failed to align loops");
 }
 } // namespace lleq::util

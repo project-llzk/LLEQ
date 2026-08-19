@@ -10,7 +10,6 @@ set(Analysis_SRC
     Analysis/SymbolicStoreAnalysis.cpp)
 
 set(Transforms_SRC
-    Transforms/LLEQWhileToFor.cpp
     Transforms/LLEQIfToIfElse.cpp)
 
 set(Verification_SRC

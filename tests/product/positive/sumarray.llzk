@@ -2,7 +2,7 @@
 
 module attributes {llzk.lang} {
     poly.template @SumArrTemplate {
-        poly.param @N
+        poly.param @N : index
 
         struct.def @SumArr {
             struct.member @sum : !array.type<@N x !felt.type>

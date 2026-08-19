@@ -74,9 +74,9 @@ struct TermBuilder {
   cvc5::TermManager &manager() { return mgr; }
 
   // Build an integer constant
-  cvc5::Term getInteger(llvm::DynamicAPInt val);
-  cvc5::Term getInteger(auto val) {
-    return getInteger(llzk::toDynamicAPInt(val));
+  cvc5::Term getInteger(llvm::DynamicAPInt val, bool asBoolean = false);
+  cvc5::Term getInteger(auto val, bool asBoolean = false) {
+    return getInteger(llzk::toDynamicAPInt(val), asBoolean);
   }
 
   void addEquivalentMember(llzk::component::MemberDefOp memberDef);
@@ -162,7 +162,8 @@ struct TermBuilder {
       : mgr{mgr}, field{field} {}
 
   // Generate the auxiliary definitions for a subcomponent
-  void populateSubcomponent(llzk::component::StructDefOp subcmp);
+  void registerSubcomponentSort(llzk::component::StructDefOp subcmpDef);
+  void registerSubcomponentFuncs(llzk::component::StructDefOp subcmpDef);
 
 private:
   cvc5::Sort _sort_of_type(mlir::Type);

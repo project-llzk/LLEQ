@@ -5,6 +5,7 @@
 
 #include "Verification/TermUtils.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
+#include "Verification/Utils.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
@@ -41,35 +42,51 @@ using array::ReadArrayOp;
 using component::MemberReadOp;
 using felt::FeltConstantOp;
 
+// Replace !struct.type<@S<[]>> with !struct.type<@S>
+static component::StructType normalize(component::StructType type) {
+  if (type.getParams() && type.getParams().empty()) {
+    return component::StructType::get(type.getNameRef());
+  }
+  return type;
+}
+
 namespace lleq {
 
-void TermBuilder::populateSubcomponent(component::StructDefOp subcmp) {
-  std::string subcmpName = subcmp.getSymName().str();
-  // Materialize a sort: `struct.def @B` => `(decl-sort B)`
-  cvc5::Sort sort = mgr.mkUninterpretedSort(subcmpName);
-  subcmpSorts.insert({subcmp.getType(), sort});
+// Materialize a sort: `struct.def @B` => `(decl-sort B)`
+void TermBuilder::registerSubcomponentSort(component::StructDefOp subcmpDef) {
+  auto name = subcmpDef.getSymName().str();
+  auto sort = mgr.mkUninterpretedSort(name);
+  subcmpSorts.insert({normalize(subcmpDef.getType()), sort});
+}
+
+void TermBuilder::registerSubcomponentFuncs(component::StructDefOp subcmpDef) {
+  util::ensureProductFunc(subcmpDef->getParentOfType<ModuleOp>(), subcmpDef);
+  auto subcmpType = normalize(subcmpDef.getType());
+  auto name = subcmpDef.getSymName().str();
+  auto it = subcmpSorts.find(subcmpType);
+  ensure(it != subcmpSorts.end(),
+         "Cannot register funcs for unregistered subcomponent: " +
+             subcmpDef.getSymName());
+  auto sort = it->second;
+
   // `@B::@product(...) -> <@B>` => `(decl-fun create-B (...) B)`
   std::vector<cvc5::Sort> argumentSorts;
-  for (auto type : subcmp.getComputeFuncOp().getFunctionType().getInputs()) {
+  for (auto type : subcmpDef.getProductFuncOp().getFunctionType().getInputs()) {
     argumentSorts.push_back(_sort_of_type(type));
   }
-  if (argumentSorts.empty()) {
-    cvc5::Term initConst = mgr.mkConst(sort, "init-" + subcmpName);
-    subcmpInits.insert({subcmp.getType(), initConst});
-  } else {
-    cvc5::Sort initFuncSort =
-        mgr.mkFunctionSort(std::move(argumentSorts), sort);
-    cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
-    subcmpInits.insert({subcmp.getType(), initFunc});
-  }
+
+  auto initSort = argumentSorts.empty()
+                      ? sort
+                      : mgr.mkFunctionSort(std::move(argumentSorts), sort);
+  subcmpInits.insert({subcmpType, mgr.mkConst(initSort, "init-" + name)});
 
   // For each `@B::struct.member @foo : T` => `(decl-fun read-B-foo (B) T)`
-  for (auto memberDef : subcmp.getMemberDefs()) {
-    cvc5::Sort memberReadFuncSort =
+  for (auto memberDef : subcmpDef.getMemberDefs()) {
+    auto memberReadFuncSort =
         mgr.mkFunctionSort({sort}, _sort_of_type(memberDef.getType()));
     cvc5::Term memberReadFunc =
         mgr.mkConst(memberReadFuncSort,
-                    "read-" + subcmpName + "-" + memberDef.getSymName().str());
+                    "read-" + name + "-" + memberDef.getSymName().str());
     subcmpMembers.insert({memberDef, memberReadFunc});
   }
 }
@@ -157,10 +174,13 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
   os << "; Subcomponents\n";
   for (const auto &[subcmp, sort] : subcmpSorts) {
     os << "(declare-sort " << sort.toString() << " 0)\n";
-    auto it = subcmpInits.find(subcmp);
+    auto it = subcmpInits.find(normalize(subcmp));
     ensure(it != subcmpInits.end(), "unknown subcomponent type");
     auto initFunc = it->second;
-    auto argTypes = initFunc.getSort().getFunctionDomainSorts();
+    std::vector<cvc5::Sort> argTypes;
+    if (auto initSort = initFunc.getSort(); initSort.isFunction()) {
+      argTypes = initSort.getFunctionDomainSorts();
+    }
     os << "(declare-fun " << initFunc.toString() << " (";
     llvm::interleave(
         argTypes, os, [&os](cvc5::Sort sort) { os << sort.toString(); }, " ");
@@ -177,7 +197,7 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
 
 cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   if (auto structType = dyn_cast<component::StructType>(type)) {
-    auto it = subcmpSorts.find(structType);
+    auto it = subcmpSorts.find(normalize(structType));
     ensure(it != subcmpSorts.end(), "unknown subcomponent type");
     return it->second;
   }
@@ -197,6 +217,44 @@ cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   }
   return mgr.getIntegerSort();
 }
+
+template <class PredicateT>
+static llvm::DenseMap<PredicateT, cvc5::Kind> predicateToKind;
+
+template <>
+llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
+    predicateToKind<boolean::FeltCmpPredicate> = {
+        {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
+        {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
+        {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
+        {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
+        {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
+
+template <>
+llvm::DenseMap<arith::CmpIPredicate, cvc5::Kind>
+    predicateToKind<arith::CmpIPredicate> = {
+        {arith::CmpIPredicate::eq, cvc5::Kind::EQUAL},
+        {arith::CmpIPredicate::slt, cvc5::Kind::LT},
+        {arith::CmpIPredicate::sle, cvc5::Kind::LEQ},
+        {arith::CmpIPredicate::sgt, cvc5::Kind::GT},
+        {arith::CmpIPredicate::sge, cvc5::Kind::GEQ},
+        {arith::CmpIPredicate::ult, cvc5::Kind::LT},
+        {arith::CmpIPredicate::ule, cvc5::Kind::LEQ},
+        {arith::CmpIPredicate::ugt, cvc5::Kind::GT},
+        {arith::CmpIPredicate::uge, cvc5::Kind::GEQ}};
+
+template <class PredicateT> PredicateT eqPred;
+template <class PredicateT> PredicateT neqPred;
+
+template <>
+auto eqPred<boolean::FeltCmpPredicate> = boolean::FeltCmpPredicate::EQ;
+
+template <>
+auto neqPred<boolean::FeltCmpPredicate> = boolean::FeltCmpPredicate::NE;
+
+template <> auto eqPred<arith::CmpIPredicate> = arith::CmpIPredicate::eq;
+
+template <> auto neqPred<arith::CmpIPredicate> = arith::CmpIPredicate::ne;
 
 cvc5::Term TermBuilder::getExpression(mlir::Value value) {
   // If we've already cached a value, just look it up
@@ -223,7 +281,9 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
        cvc5::Kind::INTS_DIVISION},
       {felt::NegFeltOp::getOperationName(), cvc5::Kind::NEG},
       {arith::AddIOp::getOperationName(), cvc5::Kind::ADD},
-      {arith::SubIOp::getOperationName(), cvc5::Kind::SUB}};
+      {arith::SubIOp::getOperationName(), cvc5::Kind::SUB},
+      {boolean::OrBoolOp::getOperationName(), cvc5::Kind::OR},
+      {boolean::AndBoolOp::getOperationName(), cvc5::Kind::AND}};
 
   if (auto it = opToTermKind.find(op->getName().getStringRef());
       it != opToTermKind.end()) {
@@ -264,25 +324,21 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
               [this](polymorphic::ConstReadOp constRead) {
                 return getConstant(constRead.getConstName());
               })
-          .Case<boolean::CmpOp>([this, op](boolean::CmpOp cmp) {
-            static llvm::DenseMap<boolean::FeltCmpPredicate, cvc5::Kind>
-                predicateToKind = {
-                    {boolean::FeltCmpPredicate::EQ, cvc5::Kind::EQUAL},
-                    {boolean::FeltCmpPredicate::LT, cvc5::Kind::LT},
-                    {boolean::FeltCmpPredicate::LE, cvc5::Kind::LEQ},
-                    {boolean::FeltCmpPredicate::GT, cvc5::Kind::GT},
-                    {boolean::FeltCmpPredicate::GE, cvc5::Kind::GEQ}};
+          .Case<boolean::CmpOp, arith::CmpIOp>([this, op](auto cmp) {
             SmallVector<cvc5::Term> operandTerms{
                 llvm::map_to_vector(op->getOperands(), [this](Value value) {
                   return getExpression(value);
                 })};
-            if (cmp.getPredicate() == boolean::FeltCmpPredicate::NE) {
+
+            using PredT = decltype(cmp.getPredicate());
+
+            if (cmp.getPredicate() == neqPred<PredT>) {
               return mgr
-                  .mkTerm(predicateToKind.at(boolean::FeltCmpPredicate::EQ),
+                  .mkTerm(predicateToKind<PredT>.at(eqPred<PredT>),
                           {operandTerms.begin(), operandTerms.end()})
                   .notTerm();
             }
-            return mgr.mkTerm(predicateToKind.at(cmp.getPredicate()),
+            return mgr.mkTerm(predicateToKind<PredT>.at(cmp.getPredicate()),
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
@@ -293,7 +349,9 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                                  isWitnessOp(read));
             }
             SymbolTableCollection tables;
-            return subcmpMembers.at(read.getMemberDefOp(tables)->get());
+            auto memberDef = read.getMemberDefOp(tables)->get();
+            return readSubcmpMember(read.getComponent(), memberDef);
+            // return subcmpMembers.at(memberDef);
           })
           .Case<ReadArrayOp>([this](ReadArrayOp read) {
             SmallVector<Value> indices(read.getIndices().begin(),
@@ -308,7 +366,8 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
           .Case<arith::ConstantIntOp, arith::ConstantIndexOp>(
               [this](auto constOp) {
                 auto val = dyn_cast<IntegerAttr>(constOp.getValue()).getValue();
-                return getInteger(val);
+                Type constType = constOp.getType();
+                return getInteger(val, constType.isInteger(1));
               })
           .Case<array::CreateArrayOp>([this](array::CreateArrayOp createArr) {
             // If the array is written to exactly one struct member later, just
@@ -355,7 +414,7 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
             // For now just deal with calls to @compute and error out on other
             // function calls
             SymbolTableCollection tables;
-            ensure(call.calleeIsCompute(),
+            ensure(call.calleeIsStructCompute() || call.calleeIsStructProduct(),
                    "arbitrary function calls not supported yet");
             auto target = call.getCalleeTarget(tables);
             ensure(succeeded(target), "failed to resolve callee target");
@@ -436,7 +495,10 @@ cvc5::Term TermBuilder::getConstant(StringRef symbolName) {
   return newTerm;
 }
 
-cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
+cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val, bool asBoolean) {
+  if (asBoolean) {
+    return mgr.mkBoolean(val != 0);
+  }
   std::string str;
   llvm::raw_string_ostream os{str};
   val.print(os);
@@ -445,9 +507,14 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val) {
 
 cvc5::Term TermBuilder::initSubcmp(component::StructDefOp subcmp,
                                    llvm::ArrayRef<Value> args) {
-  auto it = subcmpInits.find(subcmp.getType());
+  auto it = subcmpInits.find(normalize(subcmp.getType()));
   ensure(it != subcmpInits.end(),
          "unknown subcomponent: " + subcmp.getSymName().str());
+
+  if (args.empty()) {
+    // No function to call, just return the symbol directly
+    return it->second;
+  }
 
   std::vector<cvc5::Term> termArgs{it->second};
   termArgs.reserve(args.size() + 1);
@@ -549,6 +616,7 @@ cvc5::Term TermBuilder::_assert_equal_impl(cvc5::Term a, cvc5::Term b) {
 cvc5::Term TermBuilder::_array_read_impl(cvc5::Term arr,
                                          ArrayRef<cvc5::Term> indices) {
   ensure(!indices.empty(), "array read requires at least one index");
+  ensure(arr.getSort().isArray(), "cannot index into a non-array sort");
 
   cvc5::Term result = arr;
   for (cvc5::Term index : indices) {
