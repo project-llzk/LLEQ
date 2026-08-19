@@ -380,7 +380,7 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
          llvm::zip(failingCore.annotations, failingCore.terms)) {
       LLVM_DEBUG(llvm::dbgs()
                  << "Loop invariant was not strong enough to prove: "
-                 << elem.toString() << "\n");
+                 << elem.toString() << '\n');
       // NOTE: Just asserting the full thing, even when its an array, should be
       // fine. Asserting equivalence of the full array should never overlap with
       // something provable by the invariant, because the "slice" strengthenings
