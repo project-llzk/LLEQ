@@ -51,7 +51,10 @@ class WeakestPreconditionAnalysis {
   void initSubcomponents() {
     auto module = structDef->getParentOfType<mlir::ModuleOp>();
     module->walk([this](llzk::component::StructDefOp subcmpDef) {
-      builder.populateSubcomponent(subcmpDef);
+      builder.registerSubcomponentSort(subcmpDef);
+    });
+    module->walk([this](llzk::component::StructDefOp subcmpDef) {
+      builder.registerSubcomponentFuncs(subcmpDef);
     });
   }
 

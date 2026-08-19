@@ -52,35 +52,41 @@ static component::StructType normalize(component::StructType type) {
 
 namespace lleq {
 
-void TermBuilder::populateSubcomponent(component::StructDefOp subcmp) {
-  util::ensureProductFunc(subcmp->getParentOfType<ModuleOp>(), subcmp);
-  // llvm::dbgs() << "Populating " << subcmp.getSymName() << "\n";
-  std::string subcmpName = subcmp.getSymName().str();
-  // Materialize a sort: `struct.def @B` => `(decl-sort B)`
-  cvc5::Sort sort = mgr.mkUninterpretedSort(subcmpName);
-  subcmpSorts.insert({normalize(subcmp.getType()), sort});
+// Materialize a sort: `struct.def @B` => `(decl-sort B)`
+void TermBuilder::registerSubcomponentSort(component::StructDefOp subcmpDef) {
+  auto name = subcmpDef.getSymName().str();
+  auto sort = mgr.mkUninterpretedSort(name);
+  subcmpSorts.insert({normalize(subcmpDef.getType()), sort});
+}
+
+void TermBuilder::registerSubcomponentFuncs(component::StructDefOp subcmpDef) {
+  util::ensureProductFunc(subcmpDef->getParentOfType<ModuleOp>(), subcmpDef);
+  auto subcmpType = normalize(subcmpDef.getType());
+  auto name = subcmpDef.getSymName().str();
+  auto it = subcmpSorts.find(subcmpType);
+  ensure(it != subcmpSorts.end(),
+         "Cannot register funcs for unregistered subcomponent: " +
+             subcmpDef.getSymName());
+  auto sort = it->second;
+
   // `@B::@product(...) -> <@B>` => `(decl-fun create-B (...) B)`
   std::vector<cvc5::Sort> argumentSorts;
-  for (auto type : subcmp.getProductFuncOp().getFunctionType().getInputs()) {
+  for (auto type : subcmpDef.getProductFuncOp().getFunctionType().getInputs()) {
     argumentSorts.push_back(_sort_of_type(type));
   }
-  if (argumentSorts.empty()) {
-    cvc5::Term initConst = mgr.mkConst(sort, "init-" + subcmpName);
-    subcmpInits.insert({normalize(subcmp.getType()), initConst});
-  } else {
-    cvc5::Sort initFuncSort =
-        mgr.mkFunctionSort(std::move(argumentSorts), sort);
-    cvc5::Term initFunc = mgr.mkConst(initFuncSort, "init-" + subcmpName);
-    subcmpInits.insert({normalize(subcmp.getType()), initFunc});
-  }
+
+  auto initSort = argumentSorts.empty()
+                      ? sort
+                      : mgr.mkFunctionSort(std::move(argumentSorts), sort);
+  subcmpInits.insert({subcmpType, mgr.mkConst(initSort, "init-" + name)});
 
   // For each `@B::struct.member @foo : T` => `(decl-fun read-B-foo (B) T)`
-  for (auto memberDef : subcmp.getMemberDefs()) {
-    cvc5::Sort memberReadFuncSort =
+  for (auto memberDef : subcmpDef.getMemberDefs()) {
+    auto memberReadFuncSort =
         mgr.mkFunctionSort({sort}, _sort_of_type(memberDef.getType()));
     cvc5::Term memberReadFunc =
         mgr.mkConst(memberReadFuncSort,
-                    "read-" + subcmpName + "-" + memberDef.getSymName().str());
+                    "read-" + name + "-" + memberDef.getSymName().str());
     subcmpMembers.insert({memberDef, memberReadFunc});
   }
 }

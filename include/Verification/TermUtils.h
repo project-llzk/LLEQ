@@ -162,7 +162,8 @@ struct TermBuilder {
       : mgr{mgr}, field{field} {}
 
   // Generate the auxiliary definitions for a subcomponent
-  void populateSubcomponent(llzk::component::StructDefOp subcmp);
+  void registerSubcomponentSort(llzk::component::StructDefOp subcmpDef);
+  void registerSubcomponentFuncs(llzk::component::StructDefOp subcmpDef);
 
 private:
   cvc5::Sort _sort_of_type(mlir::Type);
