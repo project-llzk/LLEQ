@@ -201,8 +201,7 @@ cvc5::Sort TermBuilder::_sort_of_type(Type type) {
     ensure(it != subcmpSorts.end(), "unknown subcomponent type");
     return it->second;
   }
-  if (type.isSignlessInteger() &&
-      dyn_cast<IntegerType>(type).getIntOrFloatBitWidth() == 1) {
+  if (type.isSignlessInteger(1)) {
     return mgr.getBooleanSort();
   }
   if (auto arrType = dyn_cast<array::ArrayType>(type)) {
