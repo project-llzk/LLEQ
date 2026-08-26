@@ -519,7 +519,7 @@ cvc5::Term TermBuilder::initSubcmp(component::StructDefOp subcmp,
   termArgs.reserve(args.size() + 1);
 
   for (auto arg : args) {
-    termArgs.push_back(getConstant(arg));
+    termArgs.push_back(getExpression(arg));
   }
   return mgr.mkTerm(cvc5::Kind::APPLY_UF, termArgs);
 }
