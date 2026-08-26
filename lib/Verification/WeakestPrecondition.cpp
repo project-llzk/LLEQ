@@ -625,7 +625,7 @@ void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
       generateVerificationConditions();
 
   if (auto err = verificationConditions.takeError()) {
-    llvm::errs() << err << "\n";
+    llvm::logAllUnhandledErrors(std::move(err), llvm::errs());
     return;
   }
 
