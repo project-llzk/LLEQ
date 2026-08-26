@@ -557,7 +557,7 @@ void WeakestPreconditionAnalysis::calculateWP(Block *block,
 
 void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
                                               ConjunctionTerm &postcondition) {
-  auto condition = builder.getConstant(ifOp.getCondition());
+  auto condition = builder.getExpression(ifOp.getCondition());
   auto notCondition = mgr.mkTerm(cvc5::Kind::NOT, {condition});
 
   ConjunctionTerm thenBranch{postcondition}, elseBranch{postcondition};
