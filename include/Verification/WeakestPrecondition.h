@@ -8,6 +8,7 @@
 #include "Verification/TermUtils.h"
 #include <cvc5/cvc5.h>
 
+#include <llvm/Support/Error.h>
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
@@ -42,9 +43,9 @@ class WeakestPreconditionAnalysis {
   TermBuilder builder;
   mlir::SymbolTableCollection tables;
 
-  void calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
-  void calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
-  void calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
+  llvm::Error calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
+  llvm::Error calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
+  llvm::Error calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
 
   mlir::DenseMap<mlir::Value, cvc5::Term> valueExpressions;
 
@@ -58,7 +59,7 @@ class WeakestPreconditionAnalysis {
     });
   }
 
-  llvm::FailureOr<cvc5::Term>
+  llvm::Expected<cvc5::Term>
   computeInvariant(mlir::scf::ForOp loop, const ConjunctionTerm &postcondition);
 
 public:
@@ -70,7 +71,7 @@ public:
 
   ImplicationTerm getPostcondition();
   void populateVerificationConditions();
-  cvc5::Term generateVerificationConditions();
+  llvm::Expected<cvc5::Term> generateVerificationConditions();
 
   void applyStructContract(llzk::verif::ContractOp contract);
   void addEquivalentMember(llzk::component::MemberDefOp memberDef);

@@ -17,6 +17,7 @@
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Error.h>
 
 #include <llvm/Support/Casting.h>
 #include <llvm/Support/Debug.h>
@@ -223,7 +224,7 @@ FailingCore getFailingCore(cvc5::Term invariant,
 
 } // namespace
 
-FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
+llvm::Expected<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
     scf::ForOp loop, const ConjunctionTerm &postcondition) {
   SmallVector<LoopCounterInfo> loopInfo;
   auto *body = nestedLoopBody(loop, loopInfo, builder);
@@ -334,7 +335,9 @@ FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
 
     // Verify {strengthenedPrecondition} loopBody {postcondition} to show the
     // predicate is inductive
-    calculateWP(body, postcondition);
+    if (llvm::Error err = calculateWP(body, postcondition)) {
+      return err;
+    }
     auto isInductive =
         mgr.mkTerm(cvc5::Kind::IMPLIES,
                    {strengthenedPrecondition, postcondition.buildTerm(mgr)});
@@ -427,17 +430,18 @@ static inline bool valueIsMemberWrite(Value val,
   return false;
 }
 
-// TODO: Use TermBuilder to populate expressions instead of substitution
-void WeakestPreconditionAnalysis::calculateWP(Operation *op,
-                                              ConjunctionTerm &postcondition) {
-  llvm::TypeSwitch<mlir::Operation *, void>(op)
+llvm::Error
+WeakestPreconditionAnalysis::calculateWP(Operation *op,
+                                         ConjunctionTerm &postcondition) {
+  return llvm::TypeSwitch<mlir::Operation *, llvm::Error>(op)
       .Case<component::CreateStructOp>(
-          [&postcondition](auto) { return postcondition; })
+          [](auto) { return llvm::Error::success(); })
       .Case<MemberWriteOp>([this, &postcondition](MemberWriteOp writeOp) {
         postcondition.addAntecedent(builder.assertEqual(
             builder.getConstant(writeOp.getMemberDefOp(tables)->get(),
                                 /*isWitness=*/true),
             writeOp.getVal()));
+        return llvm::Error::success();
       })
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
         auto arr = writeOp.getArrRef();
@@ -448,88 +452,110 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         if (valueIsMemberRead(arr, tables) || valueIsMemberWrite(arr, tables)) {
           postcondition.addAntecedent(
               builder.assertEqual(builder.arrayRead(arr, indices), value));
-          return;
+          return llvm::Error::success();
         }
         postcondition.substitute(builder.getConstant(arr),
                                  builder.arrayWrite(arr, indices, value));
+        return llvm::Error::success();
       })
       .Case<constrain::EmitEqualityOp>(
           [this, &postcondition](EmitEqualityOp eqOp) {
             postcondition.addAntecedent(
                 builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
+            return llvm::Error::success();
           })
       .Case<scf::IfOp>([this, &postcondition](scf::IfOp op) {
-        calculateWP(op, postcondition);
+        return calculateWP(op, postcondition);
       })
-      .Case<UnrealizedConversionCastOp>([this](auto) { return; })
-      .Case<scf::ForOp>([this, &postcondition](scf::ForOp op) {
+      .Case<UnrealizedConversionCastOp>(
+          [this](auto) { return llvm::Error::success(); })
+      .Case<scf::ForOp>([this, &postcondition](scf::ForOp op) -> llvm::Error {
         auto invariant = computeInvariant(op, postcondition);
-        llzk::ensure(succeeded(invariant),
-                     "failed to infer invariant for loop");
+        if (auto err = invariant.takeError()) {
+          return err;
+        }
         // It should already be the case that invariant => postcondition
         postcondition = ConjunctionTerm::of(*invariant);
+        return llvm::Error::success();
       })
       .Case<boolean::AssertOp>([this, &postcondition](boolean::AssertOp op) {
         postcondition.addAntecedent(builder.getExpression(op.getCondition()));
+        return llvm::Error::success();
       })
       .Case<smt::AssertOp>([this, &postcondition](smt::AssertOp op) {
         postcondition.addAntecedent(builder.getExpression(op.getInput()));
+        return llvm::Error::success();
       })
-      .Case<llzk::function::CallOp>([this, &postcondition](
-                                        llzk::function::CallOp call) {
-        if (call.calleeIsStructConstrain()) {
-          // @constrain(%subcmp, %args...) => (assert (= %subcmp
-          // (init-"subcmp" %args...)))
-          auto target = call.getCalleeTarget(tables);
-          llzk::ensure(succeeded(target), "failed to resolve callee target");
-          auto subcmpVal = call.getArgOperands().front();
-          auto subcmp =
-              target->get()->getParentOfType<component::StructDefOp>();
-          SmallVector<Value> args = call.getArgOperands().drop_front();
-          postcondition.addAntecedent(
-              builder.assertEqual(subcmpVal, builder.initSubcmp(subcmp, args)));
-        } else if (call.calleeIsStructCompute()) {
-          auto expression = builder.getExpression(call.getResult(0));
-          postcondition.substitute(builder.getConstant(call->getResult(0)),
-                                   expression);
-        } else {
-          // Technically a call to @product has already aligned the subcomponent
-          // values so there's nothing to prove
-          llzk::ensure(call.calleeIsStructProduct(),
-                       "arbitrary function calls not supported");
-        }
-      })
+      .Case<llzk::function::CallOp>(
+          [this, &postcondition](llzk::function::CallOp call) -> llvm::Error {
+            if (call.calleeIsStructConstrain()) {
+              // @constrain(%subcmp, %args...) => (assert (= %subcmp
+              // (init-"subcmp" %args...)))
+              auto target = call.getCalleeTarget(tables);
+              llzk::ensure(succeeded(target),
+                           "failed to resolve callee target");
+              auto subcmpVal = call.getArgOperands().front();
+              auto subcmp =
+                  target->get()->getParentOfType<component::StructDefOp>();
+              SmallVector<Value> args = call.getArgOperands().drop_front();
+              postcondition.addAntecedent(builder.assertEqual(
+                  subcmpVal, builder.initSubcmp(subcmp, args)));
+            } else if (call.calleeIsStructCompute()) {
+              auto expression = builder.getExpression(call.getResult(0));
+              postcondition.substitute(builder.getConstant(call->getResult(0)),
+                                       expression);
+            } else if (!call.calleeIsStructProduct()) {
+              // Technically a call to @product has already aligned the
+              // subcomponent values so there's nothing to prove
+              return llvm::createStringError(
+                  "Unsupported: arbitrary function calls");
+            }
+            return llvm::Error::success();
+          })
       .Default([this, &postcondition](auto op) {
         auto expression = builder.getExpression(op->getResult(0));
         postcondition.substitute(builder.getConstant(op->getResult(0)),
                                  expression);
+        return llvm::Error::success();
       });
 }
 
-void WeakestPreconditionAnalysis::calculateWP(Block *block,
-                                              ConjunctionTerm &postcondition) {
+llvm::Error
+WeakestPreconditionAnalysis::calculateWP(Block *block,
+                                         ConjunctionTerm &postcondition) {
   for (auto &op : llvm::iterator_range(block->rbegin(), block->rend())) {
     if (&op == block->getTerminator()) {
       continue;
     }
-    calculateWP(&op, postcondition);
+    if (llvm::Error err = calculateWP(&op, postcondition)) {
+      return err;
+    }
   }
+  return llvm::Error::success();
 }
 
-void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
-                                              ConjunctionTerm &postcondition) {
+llvm::Error
+WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
+                                         ConjunctionTerm &postcondition) {
   auto condition = builder.getConstant(ifOp.getCondition());
   auto notCondition = mgr.mkTerm(cvc5::Kind::NOT, {condition});
 
   ConjunctionTerm thenBranch{postcondition}, elseBranch{postcondition};
-  calculateWP(&ifOp.getThenRegion().front(), thenBranch);
-  calculateWP(&ifOp.getElseRegion().front(), elseBranch);
+  if (llvm::Error err =
+          calculateWP(&ifOp.getThenRegion().front(), thenBranch)) {
+    return err;
+  }
+  if (llvm::Error err =
+          calculateWP(&ifOp.getElseRegion().front(), elseBranch)) {
+    return err;
+  }
 
   thenBranch.addAntecedent(condition);
   elseBranch.addAntecedent(notCondition);
 
   thenBranch.addConjuncts(elseBranch);
   postcondition = thenBranch;
+  return llvm::Error::success();
 }
 
 SmallVector<cvc5::Term> getArrayExtents(array::ArrayType type,
@@ -552,9 +578,8 @@ SmallVector<cvc5::Term> getArrayExtents(array::ArrayType type,
 
 ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
 
+  // The caller already checks for zero members, so no need to do it again
   auto members = structDef.getMemberDefs();
-  llzk::ensure(!members.empty(),
-               "cannot build postcondition for struct with empty members");
 
   SmallVector<cvc5::Term> memberEquivs;
   SmallVector<std::optional<Annotation>> annotations;
@@ -578,31 +603,33 @@ ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
   return ImplicationTerm{{}, memberEquivs, annotations};
 }
 
-void WeakestPreconditionAnalysis::populateVerificationConditions() {
+llvm::Expected<cvc5::Term>
+WeakestPreconditionAnalysis::generateVerificationConditions() {
   util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
+  if (structDef.getMemberDefs().empty()) {
+    return llvm::createStringError("Unsupported: struct has no members");
+  }
   auto postcondition = ConjunctionTerm::of(getPostcondition());
-  calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
-              postcondition);
-
-  verificationConditions = postcondition.buildTerm(mgr);
-  extraDecls = builder.getExtraDecls(verificationConditions);
-  declBounds = builder.getDeclBounds(extraDecls, field.prime());
-}
-
-cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
-  util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
-
-  auto postcondition = ConjunctionTerm::of(getPostcondition());
-  calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
-              postcondition);
+  if (llvm::Error err =
+          calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
+                      postcondition)) {
+    return err;
+  }
 
   return postcondition.buildTerm(mgr);
 }
 
 void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
-  auto verificationConditions = generateVerificationConditions();
-  auto extraDecls = builder.getExtraDecls(verificationConditions);
+  llvm::Expected<cvc5::Term> verificationConditions =
+      generateVerificationConditions();
+
+  if (auto err = verificationConditions.takeError()) {
+    llvm::errs() << err << "\n";
+    return;
+  }
+
+  auto extraDecls = builder.getExtraDecls(*verificationConditions);
   auto bounds = builder.getDeclBounds(extraDecls, field.prime());
 
   os << "(set-logic ALL)\n";
@@ -620,7 +647,7 @@ void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
   }
 
   os << "; Verification condition\n";
-  os << "(assert " << verificationConditions.notTerm().toString() << ")\n";
+  os << "(assert " << verificationConditions->notTerm().toString() << ")\n";
   os << "(check-sat)\n";
   os << "(get-model)\n";
 }
