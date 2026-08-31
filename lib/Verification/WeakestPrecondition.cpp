@@ -503,6 +503,20 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         }
         return llvm::Error::success();
       })
+      .Case<constrain::EmitEqualityOp>([this,
+                                        &postcondition](EmitEqualityOp eqOp) {
+        // XXX: If one side of the equality is a Bool
+        // and the other side is a constant `1`, then instead of asserting
+        // equality just directly assert the Bool. This is a hack until the
+        // SMT encoding can deal with this correctly.
+        if (auto assertedBool = getAssertedBool(eqOp.getLhs(), eqOp.getRhs());
+            succeeded(assertedBool)) {
+          postcondition.addAntecedent(builder.getExpression(*assertedBool));
+        } else {
+          postcondition.addAntecedent(
+              builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
+        }
+      })
       .Case<scf::IfOp>([this, &postcondition](scf::IfOp op) {
         return calculateWP(op, postcondition);
       })
@@ -551,7 +565,6 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         // do anything here because any places that use the result have already
         // called `builder.getExpression()` on the result so there shouldn't be
         // anything to substitute.
-        return llvm::Error::success();
       });
 }
 
@@ -567,7 +580,7 @@ void WeakestPreconditionAnalysis::calculateWP(Block *block,
 
 void WeakestPreconditionAnalysis::calculateWP(mlir::scf::IfOp ifOp,
                                               ConjunctionTerm &postcondition) {
-  auto condition = builder.getConstant(ifOp.getCondition());
+  auto condition = builder.getExpression(ifOp.getCondition());
   auto notCondition = mgr.mkTerm(cvc5::Kind::NOT, {condition});
 
   ConjunctionTerm thenBranch{postcondition}, elseBranch{postcondition};
