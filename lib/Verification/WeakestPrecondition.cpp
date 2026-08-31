@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#define DEBUG_TYPE "weakest-precondition"
-
 #include <llzk/Dialect/Bool/IR/Ops.h>
 #include <mlir/IR/BuiltinTypeInterfaces.h>
 
@@ -41,6 +39,8 @@
 #include <mlir/IR/Value.h>
 #include <optional>
 #include <vector>
+
+#define DEBUG_TYPE "weakest-precondition"
 
 using namespace llzk;
 using namespace mlir;
@@ -433,8 +433,8 @@ static inline bool isBool(Value val) {
   if (val.getType().isSignlessInteger(1)) {
     return true;
   }
-  if (auto cast = val.getDefiningOp<llzk::cast::IntToFeltOp>()) {
-    return isBool(cast.getOperand());
+  if (auto castOp = val.getDefiningOp<llzk::cast::IntToFeltOp>()) {
+    return isBool(castOp.getOperand());
   }
   return false;
 }
@@ -443,10 +443,13 @@ static inline bool isConstantOne(Value val) {
   if (auto constOp = val.getDefiningOp<felt::FeltConstantOp>()) {
     return constOp.getValue().getValue().isOne();
   }
+  if (auto castOp = val.getDefiningOp<cast::IntToFeltOp>()) {
+    return isConstantOne(castOp.getOperand());
+  }
   return false;
 }
 
-FailureOr<Value> getAssertedBool(Value a, Value b) {
+static inline FailureOr<Value> getAssertedBool(Value a, Value b) {
   if (isBool(a) && isConstantOne(b)) {
     return a;
   }
