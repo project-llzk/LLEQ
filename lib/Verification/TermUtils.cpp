@@ -201,8 +201,7 @@ cvc5::Sort TermBuilder::_sort_of_type(Type type) {
     ensure(it != subcmpSorts.end(), "unknown subcomponent type");
     return it->second;
   }
-  if (type.isSignlessInteger() &&
-      dyn_cast<IntegerType>(type).getIntOrFloatBitWidth() == 1) {
+  if (type.isSignlessInteger(1)) {
     return mgr.getBooleanSort();
   }
   if (auto arrType = dyn_cast<array::ArrayType>(type)) {
@@ -520,7 +519,7 @@ cvc5::Term TermBuilder::initSubcmp(component::StructDefOp subcmp,
   termArgs.reserve(args.size() + 1);
 
   for (auto arg : args) {
-    termArgs.push_back(getConstant(arg));
+    termArgs.push_back(getExpression(arg));
   }
   return mgr.mkTerm(cvc5::Kind::APPLY_UF, termArgs);
 }

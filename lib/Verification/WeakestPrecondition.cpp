@@ -5,7 +5,6 @@
 
 #include <llzk/Dialect/Bool/IR/Ops.h>
 #include <mlir/IR/BuiltinTypeInterfaces.h>
-#define DEBUG_TYPE "weakest-precondition"
 
 #include "Verification/SolverUtils.h"
 #include "Verification/Utils.h"
@@ -24,6 +23,7 @@
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
+#include <llzk/Dialect/Cast/IR/Ops.h>
 #include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
@@ -40,6 +40,8 @@
 #include <mlir/IR/Value.h>
 #include <optional>
 #include <vector>
+
+#define DEBUG_TYPE "weakest-precondition"
 
 using namespace llzk;
 using namespace mlir;
@@ -430,6 +432,37 @@ static inline bool valueIsMemberWrite(Value val,
   return false;
 }
 
+static inline bool isBool(Value val) {
+  if (val.getType().isSignlessInteger(1)) {
+    return true;
+  }
+  if (auto castOp = val.getDefiningOp<llzk::cast::IntToFeltOp>()) {
+    return isBool(castOp.getOperand());
+  }
+  return false;
+}
+
+static inline bool isConstantOne(Value val) {
+  if (auto constOp = val.getDefiningOp<felt::FeltConstantOp>()) {
+    return constOp.getValue().getValue().isOne();
+  }
+  if (auto castOp = val.getDefiningOp<cast::IntToFeltOp>()) {
+    return isConstantOne(castOp.getOperand());
+  }
+  return false;
+}
+
+static inline FailureOr<Value> getAssertedBool(Value a, Value b) {
+  if (isBool(a) && isConstantOne(b)) {
+    return a;
+  }
+  if (isBool(b) && isConstantOne(a)) {
+    return b;
+  }
+  return failure();
+}
+
+// TODO: Use TermBuilder to populate expressions instead of substitution
 llvm::Error
 WeakestPreconditionAnalysis::calculateWP(Operation *op,
                                          ConjunctionTerm &postcondition) {
@@ -458,12 +491,21 @@ WeakestPreconditionAnalysis::calculateWP(Operation *op,
                                  builder.arrayWrite(arr, indices, value));
         return llvm::Error::success();
       })
-      .Case<constrain::EmitEqualityOp>(
-          [this, &postcondition](EmitEqualityOp eqOp) {
-            postcondition.addAntecedent(
-                builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
-            return llvm::Error::success();
-          })
+      .Case<constrain::EmitEqualityOp>([this,
+                                        &postcondition](EmitEqualityOp eqOp) {
+        // XXX: If one side of the equality is a Bool
+        // and the other side is a constant `1`, then instead of asserting
+        // equality just directly assert the Bool. This is a hack until the
+        // SMT encoding can deal with this correctly.
+        if (auto assertedBool = getAssertedBool(eqOp.getLhs(), eqOp.getRhs());
+            succeeded(assertedBool)) {
+          postcondition.addAntecedent(builder.getExpression(*assertedBool));
+        } else {
+          postcondition.addAntecedent(
+              builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
+        }
+        return llvm::Error::success();
+      })
       .Case<scf::IfOp>([this, &postcondition](scf::IfOp op) {
         return calculateWP(op, postcondition);
       })
@@ -513,9 +555,10 @@ WeakestPreconditionAnalysis::calculateWP(Operation *op,
             return llvm::Error::success();
           })
       .Default([this, &postcondition](auto op) {
-        auto expression = builder.getExpression(op->getResult(0));
-        postcondition.substitute(builder.getConstant(op->getResult(0)),
-                                 expression);
+        // The default case is just an expression op, but we shouldn't have to
+        // do anything here because any places that use the result have already
+        // called `builder.getExpression()` on the result so there shouldn't be
+        // anything to substitute.
         return llvm::Error::success();
       });
 }
