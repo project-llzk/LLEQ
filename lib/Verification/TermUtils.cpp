@@ -406,15 +406,20 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
             return mgr.mkTerm(cvc5::Kind::ITE,
                               {condition, trueValue, falseValue});
           })
-          .Case<scf::ForOp>([this](auto) -> cvc5::Term {
-            llvm::report_fatal_error("loop-yielded values not yet supported");
+          .Case<scf::ForOp>([this](auto op) -> cvc5::Term {
+            throw util::UnsupportedConstruct(op->getLoc(),
+                                             "loop-yielded values");
           })
           .Case<function::CallOp>([this](function::CallOp call) {
             // For now just deal with calls to @compute and error out on other
             // function calls
             SymbolTableCollection tables;
-            ensure(call.calleeIsStructCompute() || call.calleeIsStructProduct(),
-                   "arbitrary function calls not supported yet");
+            if (!call.calleeIsStructCompute() &&
+                !call.calleeIsStructProduct()) {
+              throw util::UnsupportedConstruct(call->getLoc(),
+                                               "arbitrary function calls");
+            }
+
             auto target = call.getCalleeTarget(tables);
             ensure(succeeded(target), "failed to resolve callee target");
             SmallVector<Value> args = call.getArgOperands();
@@ -422,8 +427,8 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                 target->get()->getParentOfType<component::StructDefOp>(), args);
           })
           .Default([op](auto) -> cvc5::Term {
-            llvm::report_fatal_error("unknown op: " +
-                                     op->getName().getStringRef());
+            throw util::UnsupportedConstruct(
+                op->getLoc(), ("op: " + op->getName().getStringRef()).str());
           });
 
   expressions.insert({value, expression});

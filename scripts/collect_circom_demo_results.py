@@ -22,7 +22,15 @@ VERIFY_UNKNOWN_RE = re.compile(r"^\* @", re.MULTILINE)
 SAT_RE = re.compile(r"^\s*sat\s*$", re.MULTILINE)
 UNSAT_RE = re.compile(r"^\s*unsat\s*$", re.MULTILINE)
 UNKNOWN_RE = re.compile(r"^\s*unknown\s*$", re.MULTILINE)
-UNSUPPORTED_PREFIX = "Unsupported:"
+UNSUPPORTED_ERROR_RE = re.compile(
+    r"^error: .*?:Unsupported:",
+    re.MULTILINE,
+)
+
+
+def has_unsupported_error(stderr: str) -> bool:
+    """Return whether LLEQ reported an unsupported construct diagnostic."""
+    return UNSUPPORTED_ERROR_RE.search(stderr) is not None
 
 
 def get_benchmarks(benchmark_dir: pathlib.Path) -> list[tuple[str, pathlib.Path, str]]:
@@ -74,6 +82,9 @@ def run_verify(
         )
 
     elapsed = time.perf_counter() - start
+    if has_unsupported_error(proc.stderr):
+        message = proc.stderr.strip()[:500]
+        return (benchmark, root_struct, "verify", "unsupported", f"{elapsed:.6f}", message)
     if proc.returncode != 0:
         message = (proc.stderr or proc.stdout).strip()[:500]
         return (benchmark, root_struct, "verify", "error", f"{elapsed:.6f}", message)
@@ -151,7 +162,7 @@ def run_wp(
         return (benchmark, root_struct, "wp", "timeout", f"{elapsed:.6f}", "timeout")
 
     elapsed = time.perf_counter() - start
-    if not lleq_stdout.strip() and lleq_stderr.startswith(UNSUPPORTED_PREFIX):
+    if has_unsupported_error(lleq_stderr):
         message = lleq_stderr.strip()[:500]
         return (
             benchmark,

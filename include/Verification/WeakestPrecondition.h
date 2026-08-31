@@ -43,9 +43,9 @@ class WeakestPreconditionAnalysis {
   TermBuilder builder;
   mlir::SymbolTableCollection tables;
 
-  llvm::Error calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
-  llvm::Error calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
-  llvm::Error calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
+  void calculateWP(mlir::scf::IfOp ifOp, ConjunctionTerm &postcondition);
+  void calculateWP(mlir::Operation *op, ConjunctionTerm &postcondition);
+  void calculateWP(mlir::Block *block, ConjunctionTerm &postcondition);
 
   mlir::DenseMap<mlir::Value, cvc5::Term> valueExpressions;
 
@@ -59,8 +59,8 @@ class WeakestPreconditionAnalysis {
     });
   }
 
-  llvm::Expected<cvc5::Term>
-  computeInvariant(mlir::scf::ForOp loop, const ConjunctionTerm &postcondition);
+  cvc5::Term computeInvariant(mlir::scf::ForOp loop,
+                              const ConjunctionTerm &postcondition);
 
 public:
   WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
@@ -71,7 +71,7 @@ public:
 
   ImplicationTerm getPostcondition();
   void populateVerificationConditions();
-  llvm::Expected<cvc5::Term> generateVerificationConditions();
+  cvc5::Term generateVerificationConditions();
 
   void applyStructContract(llzk::verif::ContractOp contract);
   void addEquivalentMember(llzk::component::MemberDefOp memberDef);
