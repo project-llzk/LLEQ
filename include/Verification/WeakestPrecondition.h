@@ -70,7 +70,6 @@ public:
   }
 
   ImplicationTerm getPostcondition();
-  void populateVerificationConditions();
   cvc5::Term generateVerificationConditions();
 
   void applyStructContract(llzk::verif::ContractOp contract);
