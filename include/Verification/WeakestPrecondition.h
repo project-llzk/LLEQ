@@ -8,6 +8,7 @@
 #include "Verification/TermUtils.h"
 #include <cvc5/cvc5.h>
 
+#include <llvm/Support/Error.h>
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Dialect/Array/IR/Ops.h>
@@ -58,8 +59,8 @@ class WeakestPreconditionAnalysis {
     });
   }
 
-  llvm::FailureOr<cvc5::Term>
-  computeInvariant(mlir::scf::ForOp loop, const ConjunctionTerm &postcondition);
+  cvc5::Term computeInvariant(mlir::scf::ForOp loop,
+                              const ConjunctionTerm &postcondition);
 
 public:
   WeakestPreconditionAnalysis(llzk::component::StructDefOp structDef,
@@ -69,7 +70,6 @@ public:
   }
 
   ImplicationTerm getPostcondition();
-  void populateVerificationConditions();
   cvc5::Term generateVerificationConditions();
 
   void applyStructContract(llzk::verif::ContractOp contract);

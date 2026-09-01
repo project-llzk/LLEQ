@@ -16,6 +16,7 @@
 #include <llvm/ADT/SmallVectorExtras.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/TypeSwitch.h>
+#include <llvm/Support/Error.h>
 
 #include <llvm/Support/Casting.h>
 #include <llvm/Support/Debug.h>
@@ -225,7 +226,7 @@ FailingCore getFailingCore(cvc5::Term invariant,
 
 } // namespace
 
-FailureOr<cvc5::Term> WeakestPreconditionAnalysis::computeInvariant(
+cvc5::Term WeakestPreconditionAnalysis::computeInvariant(
     scf::ForOp loop, const ConjunctionTerm &postcondition) {
   SmallVector<LoopCounterInfo> loopInfo;
   auto *body = nestedLoopBody(loop, loopInfo, builder);
@@ -464,12 +465,13 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
                                               ConjunctionTerm &postcondition) {
   llvm::TypeSwitch<mlir::Operation *, void>(op)
       .Case<component::CreateStructOp>(
-          [&postcondition](auto) { return postcondition; })
+          [](auto) { return llvm::Error::success(); })
       .Case<MemberWriteOp>([this, &postcondition](MemberWriteOp writeOp) {
         postcondition.addAntecedent(builder.assertEqual(
             builder.getConstant(writeOp.getMemberDefOp(tables)->get(),
                                 /*isWitness=*/true),
             writeOp.getVal()));
+        return llvm::Error::success();
       })
       .Case<WriteArrayOp>([this, &postcondition](WriteArrayOp writeOp) {
         auto arr = writeOp.getArrRef();
@@ -480,10 +482,26 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         if (valueIsMemberRead(arr, tables) || valueIsMemberWrite(arr, tables)) {
           postcondition.addAntecedent(
               builder.assertEqual(builder.arrayRead(arr, indices), value));
-          return;
+          return llvm::Error::success();
         }
         postcondition.substitute(builder.getConstant(arr),
                                  builder.arrayWrite(arr, indices, value));
+        return llvm::Error::success();
+      })
+      .Case<constrain::EmitEqualityOp>([this,
+                                        &postcondition](EmitEqualityOp eqOp) {
+        // XXX: If one side of the equality is a Bool
+        // and the other side is a constant `1`, then instead of asserting
+        // equality just directly assert the Bool. This is a hack until the
+        // SMT encoding can deal with this correctly.
+        if (auto assertedBool = getAssertedBool(eqOp.getLhs(), eqOp.getRhs());
+            succeeded(assertedBool)) {
+          postcondition.addAntecedent(builder.getExpression(*assertedBool));
+        } else {
+          postcondition.addAntecedent(
+              builder.assertEqual(eqOp.getLhs(), eqOp.getRhs()));
+        }
+        return llvm::Error::success();
       })
       .Case<constrain::EmitEqualityOp>([this,
                                         &postcondition](EmitEqualityOp eqOp) {
@@ -500,21 +518,22 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         }
       })
       .Case<scf::IfOp>([this, &postcondition](scf::IfOp op) {
-        calculateWP(op, postcondition);
+        return calculateWP(op, postcondition);
       })
-      .Case<UnrealizedConversionCastOp>([this](auto) { return; })
+      .Case<UnrealizedConversionCastOp>(
+          [this](auto) { return llvm::Error::success(); })
       .Case<scf::ForOp>([this, &postcondition](scf::ForOp op) {
         auto invariant = computeInvariant(op, postcondition);
-        llzk::ensure(succeeded(invariant),
-                     "failed to infer invariant for loop");
         // It should already be the case that invariant => postcondition
-        postcondition = ConjunctionTerm::of(*invariant);
+        postcondition = ConjunctionTerm::of(invariant);
       })
       .Case<boolean::AssertOp>([this, &postcondition](boolean::AssertOp op) {
         postcondition.addAntecedent(builder.getExpression(op.getCondition()));
+        return llvm::Error::success();
       })
       .Case<smt::AssertOp>([this, &postcondition](smt::AssertOp op) {
         postcondition.addAntecedent(builder.getExpression(op.getInput()));
+        return llvm::Error::success();
       })
       .Case<llzk::function::CallOp>([this, &postcondition](
                                         llzk::function::CallOp call) {
@@ -533,12 +552,13 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
           auto expression = builder.getExpression(call.getResult(0));
           postcondition.substitute(builder.getConstant(call->getResult(0)),
                                    expression);
-        } else {
-          // Technically a call to @product has already aligned the subcomponent
-          // values so there's nothing to prove
-          llzk::ensure(call.calleeIsStructProduct(),
-                       "arbitrary function calls not supported");
+        } else if (!call.calleeIsStructProduct()) {
+          // Technically a call to @product has already aligned the
+          // subcomponent values so there's nothing to prove
+          throw util::UnsupportedConstruct(call->getLoc(),
+                                           "arbitrary function calls");
         }
+        return llvm::Error::success();
       })
       .Default([this, &postcondition](auto op) {
         // The default case is just an expression op, but we shouldn't have to
@@ -594,9 +614,8 @@ SmallVector<cvc5::Term> getArrayExtents(array::ArrayType type,
 
 ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
 
+  // The caller already checks for zero members, so no need to do it again
   auto members = structDef.getMemberDefs();
-  llzk::ensure(!members.empty(),
-               "cannot build postcondition for struct with empty members");
 
   SmallVector<cvc5::Term> memberEquivs;
   SmallVector<std::optional<Annotation>> annotations;
@@ -620,21 +639,13 @@ ImplicationTerm WeakestPreconditionAnalysis::getPostcondition() {
   return ImplicationTerm{{}, memberEquivs, annotations};
 }
 
-void WeakestPreconditionAnalysis::populateVerificationConditions() {
-  util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
-
-  auto postcondition = ConjunctionTerm::of(getPostcondition());
-  calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
-              postcondition);
-
-  verificationConditions = postcondition.buildTerm(mgr);
-  extraDecls = builder.getExtraDecls(verificationConditions);
-  declBounds = builder.getDeclBounds(extraDecls, field.prime());
-}
-
 cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
   util::ensureProductFunc(structDef->getParentOfType<ModuleOp>(), structDef);
 
+  if (structDef.getMemberDefs().empty()) {
+    throw util::UnsupportedConstruct(structDef->getLoc(),
+                                     "struct without members");
+  }
   auto postcondition = ConjunctionTerm::of(getPostcondition());
   calculateWP(&structDef.getProductFuncOp().getFunctionBody().front(),
               postcondition);
@@ -643,28 +654,33 @@ cvc5::Term WeakestPreconditionAnalysis::generateVerificationConditions() {
 }
 
 void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
-  auto verificationConditions = generateVerificationConditions();
-  auto extraDecls = builder.getExtraDecls(verificationConditions);
-  auto bounds = builder.getDeclBounds(extraDecls, field.prime());
+  try {
+    cvc5::Term verificationConditions = generateVerificationConditions();
+    auto extraDecls = builder.getExtraDecls(verificationConditions);
+    auto bounds = builder.getDeclBounds(extraDecls, field.prime());
 
-  os << "(set-logic ALL)\n";
-  builder.emitSubcmpDeclarations(os);
+    os << "(set-logic ALL)\n";
+    builder.emitSubcmpDeclarations(os);
 
-  os << "; Extra declarations\n";
-  for (auto decl : extraDecls) {
-    os << "(declare-const " << decl.toString() << " "
-       << decl.getSort().toString() << ")\n";
+    os << "; Extra declarations\n";
+    for (auto decl : extraDecls) {
+      os << "(declare-const " << decl.toString() << " "
+         << decl.getSort().toString() << ")\n";
+    }
+
+    os << "; Extra bounds\n";
+    for (auto bound : bounds) {
+      os << "(assert " << bound.toString() << ")\n";
+    }
+
+    os << "; Verification condition\n";
+    os << "(assert " << verificationConditions.notTerm().toString() << ")\n";
+    os << "(check-sat)\n";
+    os << "(get-model)\n";
+  } catch (const util::UnsupportedConstruct &exception) {
+    mlir::emitError(exception.getLoc()) << "Unsupported: " << exception.what();
+    return;
   }
-
-  os << "; Extra bounds\n";
-  for (auto bound : bounds) {
-    os << "(assert " << bound.toString() << ")\n";
-  }
-
-  os << "; Verification condition\n";
-  os << "(assert " << verificationConditions.notTerm().toString() << ")\n";
-  os << "(check-sat)\n";
-  os << "(get-model)\n";
 }
 
 } // namespace lleq

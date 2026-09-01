@@ -8,6 +8,14 @@ import subprocess
 import time
 
 ENTRYPOINT_RE = re.compile(r'module attributes {.*llzk\.main\s+=\s+\!struct.type<@([A-Za-z0-9_]+).*>}', re.ASCII)
+UNSUPPORTED_ERROR_RE = re.compile(r"^error: .*?:Unsupported:", re.MULTILINE)
+
+
+def has_unsupported_error(stderr: str) -> bool:
+    """Return whether a tool reported an unsupported construct diagnostic."""
+    return UNSUPPORTED_ERROR_RE.search(stderr) is not None
+
+
 def get_llzk_files(benchmark_dir: str) -> list[tuple[str, str, str]]:
     root = pathlib.Path(benchmark_dir)
 
@@ -32,7 +40,7 @@ def run_task(benchmark_name: str, args: list[str], timeout: int) -> tuple[str, s
     try:
         proc = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
         elapsed = time.perf_counter() - start
-        if proc.returncode == 0:
+        if proc.returncode == 0 and not has_unsupported_error(proc.stderr):
             return (benchmark_name, 'success', f'{elapsed:.6f}', '')
         error_msg = proc.stderr.strip()[:500]
         return (benchmark_name, 'error', f'{elapsed:.6f}', error_msg)
@@ -87,5 +95,3 @@ if __name__ == '__main__':
         writer.writerow(["Benchmark", "Result", "Time Seconds", "Error Message"])
         writer.writerows(results)
     print(f"success: {success_cnt}, errored: {error_cnt}, timeout: {timeout_cnt}")
-
-
