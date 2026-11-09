@@ -6,6 +6,7 @@
 #include "Verification/TermUtils.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
 #include "Verification/Utils.h"
+#include "Util/StructType.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
@@ -42,26 +43,18 @@ using array::ReadArrayOp;
 using component::MemberReadOp;
 using felt::FeltConstantOp;
 
-// Replace !struct.type<@S<[]>> with !struct.type<@S>
-static component::StructType normalize(component::StructType type) {
-  if (type.getParams() && type.getParams().empty()) {
-    return component::StructType::get(type.getNameRef());
-  }
-  return type;
-}
-
 namespace lleq {
 
 // Materialize a sort: `struct.def @B` => `(decl-sort B)`
 void TermBuilder::registerSubcomponentSort(component::StructDefOp subcmpDef) {
   auto name = subcmpDef.getSymName().str();
   auto sort = mgr.mkUninterpretedSort(name);
-  subcmpSorts.insert({normalize(subcmpDef.getType()), sort});
+  subcmpSorts.insert({util::normalizeStructType(subcmpDef.getType()), sort});
 }
 
 void TermBuilder::registerSubcomponentFuncs(component::StructDefOp subcmpDef) {
   util::ensureProductFunc(subcmpDef->getParentOfType<ModuleOp>(), subcmpDef);
-  auto subcmpType = normalize(subcmpDef.getType());
+  auto subcmpType = util::normalizeStructType(subcmpDef.getType());
   auto name = subcmpDef.getSymName().str();
   auto it = subcmpSorts.find(subcmpType);
   ensure(it != subcmpSorts.end(),
@@ -174,7 +167,7 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
   os << "; Subcomponents\n";
   for (const auto &[subcmp, sort] : subcmpSorts) {
     os << "(declare-sort " << sort.toString() << " 0)\n";
-    auto it = subcmpInits.find(normalize(subcmp));
+    auto it = subcmpInits.find(util::normalizeStructType(subcmp));
     ensure(it != subcmpInits.end(), "unknown subcomponent type");
     auto initFunc = it->second;
     std::vector<cvc5::Sort> argTypes;
@@ -197,7 +190,7 @@ void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
 
 cvc5::Sort TermBuilder::_sort_of_type(Type type) {
   if (auto structType = dyn_cast<component::StructType>(type)) {
-    auto it = subcmpSorts.find(normalize(structType));
+    auto it = subcmpSorts.find(util::normalizeStructType(structType));
     ensure(it != subcmpSorts.end(), "unknown subcomponent type");
     return it->second;
   }
@@ -341,8 +334,8 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
-            if (read.getComponent().getType() ==
-                read->getParentOfType<component::StructDefOp>().getType()) {
+            // Share normalized root-member classification with symbolic analysis.
+            if (!isSubcmpRead(read)) {
               // Not a subcomponent read, so just return the member constant
               return getConstant(read.getMemberName(), read.getType(),
                                  isWitnessOp(read));
@@ -511,7 +504,7 @@ cvc5::Term TermBuilder::getInteger(llvm::DynamicAPInt val, bool asBoolean) {
 
 cvc5::Term TermBuilder::initSubcmp(component::StructDefOp subcmp,
                                    llvm::ArrayRef<Value> args) {
-  auto it = subcmpInits.find(normalize(subcmp.getType()));
+  auto it = subcmpInits.find(util::normalizeStructType(subcmp.getType()));
   ensure(it != subcmpInits.end(),
          "unknown subcomponent: " + subcmp.getSymName().str());
 

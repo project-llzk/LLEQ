@@ -8,6 +8,7 @@
 #include "Analysis/Store.h"
 #include "Analysis/SymbolExpr.h"
 #include "Analysis/Unification.h"
+#include "Util/StructType.h"
 
 #include <functional>
 #include <llvm/Support/raw_ostream.h>
@@ -184,8 +185,10 @@ inline bool sourceMatchesOp(mlir::Operation *op, Signal::Source source) {
 }
 
 inline bool isSubcmpRead(llzk::component::MemberReadOp read) {
-  return read.getComponent().getType() !=
-         read->getParentOfType<llzk::component::StructDefOp>().getType();
+  // Empty parameter lists must not turn root reads into subcomponent reads.
+  return util::normalizeStructType(read.getComponent().getType()) !=
+         util::normalizeStructType(
+             read->getParentOfType<llzk::component::StructDefOp>().getType());
 }
 
 } // namespace lleq
