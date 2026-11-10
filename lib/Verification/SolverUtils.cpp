@@ -287,7 +287,7 @@ std::string buildSMTQuery(cvc5::Term query, TermBuilder &builder,
   llvm::raw_string_ostream os{queryStr};
 
   os << "(set-logic ALL)\n";
-  builder.emitSubcmpDeclarations(os);
+  builder.emitAuxiliaryDeclarations(os);
   for (auto decl : extraDecls) {
     os << "(declare-const " << decl.toString() << " "
        << decl.getSort().toString() << ")\n";

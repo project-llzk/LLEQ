@@ -14,6 +14,7 @@
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/StringMap.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/Field.h>
@@ -102,8 +103,13 @@ struct TermBuilder {
   // Build terms bounding each variable in `decls` in the range `[0, p - 1]`
   TermSet getDeclBounds(TermSet decls, llvm::DynamicAPInt prime);
 
-  // Emit auxiliary declarations for subcomponents
-  void emitSubcmpDeclarations(llvm::raw_ostream &os);
+  // Emit all function declarations used by final and internal SMT queries.
+  void emitAuxiliaryDeclarations(llvm::raw_ostream &os);
+
+  /// Encode all results of a supported pure free call, reusing one UF per
+  /// resolved callee and result index. Inputs/results are canonical field
+  /// values.
+  void encodeFreeFunctionCall(llzk::function::CallOp call);
 
   // Returns a call to `(init-@subcmp args...)`
   cvc5::Term initSubcmp(llzk::component::StructDefOp subcmp,
@@ -179,6 +185,13 @@ private:
   llvm::DenseMap<llzk::component::StructType, cvc5::Sort> subcmpSorts;
   llvm::DenseMap<llzk::component::StructType, cvc5::Term> subcmpInits;
   llvm::DenseMap<llzk::component::MemberDefOp, cvc5::Term> subcmpMembers;
+
+  // Function identity (not its leaf name) and return position identify each UF.
+  llvm::DenseMap<mlir::Operation *, llvm::SmallVector<cvc5::Term>>
+      freeFunctions;
+  llvm::SmallVector<cvc5::Term> freeFunctionDeclarations;
+
+  void emitSubcmpDeclarations(llvm::raw_ostream &os);
 
   // Term builder implementations
   cvc5::Term _is_mod(cvc5::Term, llvm::DynamicAPInt);

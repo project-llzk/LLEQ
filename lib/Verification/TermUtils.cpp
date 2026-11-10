@@ -85,12 +85,18 @@ void TermBuilder::registerSubcomponentFuncs(component::StructDefOp subcmpDef) {
 }
 
 static inline void traverse(cvc5::Term term, const TermBuilder::TermSet &vars,
-                            TermBuilder::TermSet &acc) {
+                            TermBuilder::TermSet &acc,
+                            TermBuilder::TermSet &visited) {
+  // UF applications share argument DAGs; visiting them as trees can be
+  // exponential.
+  if (!visited.insert(term).second) {
+    return;
+  }
   if (vars.find(term) != vars.end()) {
     acc.insert(term);
   } else {
     for (auto child : term) {
-      traverse(child, vars, acc);
+      traverse(child, vars, acc, visited);
     }
   }
 }
@@ -107,8 +113,8 @@ TermBuilder::TermSet TermBuilder::getExtraDecls(cvc5::Term term) {
     vars.insert(c);
   }
 
-  TermSet decls;
-  traverse(term, vars, decls);
+  TermSet decls, visited;
+  traverse(term, vars, decls, visited);
   return decls;
 }
 
@@ -158,6 +164,67 @@ static inline cvc5::Sort getElementSortOrSelf(cvc5::Sort s) {
     return getElementSortOrSelf(s.getArrayElementSort());
   }
   return s;
+}
+
+void TermBuilder::emitAuxiliaryDeclarations(llvm::raw_ostream &os) {
+  emitSubcmpDeclarations(os);
+  for (auto function : freeFunctionDeclarations) {
+    auto sort = function.getSort();
+    os << "(declare-fun " << function.toString() << " (";
+    if (sort.isFunction()) {
+      llvm::interleave(
+          sort.getFunctionDomainSorts(), os,
+          [&](cvc5::Sort input) { os << input.toString(); }, " ");
+    }
+    os << ") "
+       << (sort.isFunction() ? sort.getFunctionCodomainSort() : sort).toString()
+       << ")\n";
+  }
+}
+
+void TermBuilder::encodeFreeFunctionCall(function::CallOp call) {
+  if (call.getNumResults() && expressions.contains(call.getResult(0))) {
+    return;
+  }
+  auto callee = util::requirePureFieldFunction(call);
+  auto found = freeFunctions.find(callee.getOperation());
+  if (found == freeFunctions.end()) {
+    SmallVector<cvc5::Term> resultFunctions;
+    std::vector<cvc5::Sort> inputSorts(call.getNumOperands(),
+                                       mgr.getIntegerSort());
+    auto sort = inputSorts.empty()
+                    ? mgr.getIntegerSort()
+                    : mgr.mkFunctionSort(inputSorts, mgr.getIntegerSort());
+    auto functionNumber = freeFunctions.size();
+    for (unsigned i = 0; i < call.getNumResults(); ++i) {
+      auto symbol =
+          mgr.mkConst(sort, "lleq_free_" + std::to_string(functionNumber) +
+                                "_result_" + std::to_string(i));
+      resultFunctions.push_back(symbol);
+      freeFunctionDeclarations.push_back(symbol);
+    }
+    found =
+        freeFunctions.insert({callee.getOperation(), resultFunctions}).first;
+  }
+
+  // Cache the declarations before recursing into argument expressions: a call
+  // may consume another call's results, which can grow the DenseMap.
+  auto resultFunctions = found->second;
+  std::vector<cvc5::Term> arguments;
+  for (Value argument : call.getArgOperands()) {
+    arguments.push_back(reduceMod(getExpression(argument), field.prime()));
+  }
+  for (auto [value, function] : llvm::zip(call.getResults(), resultFunctions)) {
+    auto application = function;
+    if (!arguments.empty()) {
+      std::vector<cvc5::Term> operands{function};
+      operands.insert(operands.end(), arguments.begin(), arguments.end());
+      application = mgr.mkTerm(cvc5::Kind::APPLY_UF, operands);
+    }
+    // Return canonical field representatives so downstream comparisons and
+    // integer operations cannot observe an arbitrary integer UF representative.
+    expressions.insert({value, reduceMod(application, field.prime())});
+  }
 }
 
 void TermBuilder::emitSubcmpDeclarations(llvm::raw_ostream &os) {
@@ -255,6 +322,13 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
   }
 
   Operation *op = value.getDefiningOp();
+  if (auto call = dyn_cast_or_null<function::CallOp>(op);
+      call && !call.calleeIsStructCompute() && !call.calleeIsStructProduct() &&
+      !call.calleeIsStructConstrain()) {
+    // Free calls must be handled before the generic multi-result fallback.
+    encodeFreeFunctionCall(call);
+    return expressions.at(value);
+  }
   // TODO: we could theoretically handle a value yielded from an scf.if with
   // multiple values
   if (op == nullptr || op->getNumResults() != 1) {

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <llvm/Support/LogicalResult.h>
+#include <llzk/Dialect/Function/IR/Ops.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <mlir/Transforms/LocationSnapshot.h>
 #include <stdexcept>
@@ -20,6 +21,11 @@ public:
       : std::runtime_error{message}, loc{errorLoc} {}
   mlir::Location getLoc() const { return loc; }
 };
+
+/// Resolve a free call and verify a pure, total straight-line field body before
+/// abstracting it as a function of its explicit arguments. Throws Unsupported
+/// for unsupported signatures, operations, or captured values.
+llzk::function::FuncDefOp requirePureFieldFunction(llzk::function::CallOp call);
 
 /// Run product alignment on the module if no @product function is found; errors
 /// if product alignment failed

@@ -553,10 +553,10 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
           postcondition.substitute(builder.getConstant(call->getResult(0)),
                                    expression);
         } else if (!call.calleeIsStructProduct()) {
-          // Technically a call to @product has already aligned the
-          // subcomponent values so there's nothing to prove
-          throw util::UnsupportedConstruct(call->getLoc(),
-                                           "arbitrary function calls");
+          // Product calls already align subcomponent values. Other calls must
+          // be validated even if unused, so unsupported effects cannot
+          // disappear.
+          builder.encodeFreeFunctionCall(call);
         }
         return llvm::Error::success();
       })
@@ -660,7 +660,7 @@ void WeakestPreconditionAnalysis::emit(llvm::raw_ostream &os) {
     auto bounds = builder.getDeclBounds(extraDecls, field.prime());
 
     os << "(set-logic ALL)\n";
-    builder.emitSubcmpDeclarations(os);
+    builder.emitAuxiliaryDeclarations(os);
 
     os << "; Extra declarations\n";
     for (auto decl : extraDecls) {
