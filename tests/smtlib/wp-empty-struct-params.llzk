@@ -1,0 +1,32 @@
+// RUN: lleq wp --struct Circuit0 %s > %t.smt2
+// RUN: FileCheck %s --check-prefix=ENCODING < %t.smt2
+// RUN: sed '/^(get-model)$/d' %t.smt2 | "$LLEQ_Z3" -in | FileCheck %s --check-prefix=RESULT
+//
+// Supply @product directly: there are no compute/constrain functions to align.
+// Witness w2 = a+b; constraints require -a-b+w2 = 0. The explicit empty
+// parameters must not turn the root read into read-Circuit0-w2(self), leaving
+// w2_c disconnected from the constraints and producing a spurious sat result.
+// ENCODING: ; Verification condition
+// ENCODING-NOT: (read-Circuit0-w2
+// ENCODING: (+ (+ (- product_0) (- product_1)) w2_c)
+// ENCODING-NOT: (read-Circuit0-w2
+// ENCODING: (check-sat)
+// RESULT: {{^unsat$}}
+module attributes {llzk.lang = "ACIR"} {
+  struct.def @Circuit0 {
+    struct.member @w2 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Circuit0<[]>> attributes {function.allow_constraint, function.allow_witness} {
+      %self = struct.new : <@Circuit0<[]>> {product_source = "compute"}
+      %sum = felt.add %a, %b : !felt.type<"bn254">, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@w2] = %sum : <@Circuit0<[]>>, !felt.type<"bn254"> {product_source = "compute"}
+      %read = struct.readm %self[@w2] : <@Circuit0<[]>>, !felt.type<"bn254"> {product_source = "constrain"}
+      %negA = felt.neg %a : !felt.type<"bn254"> {product_source = "constrain"}
+      %negB = felt.neg %b : !felt.type<"bn254"> {product_source = "constrain"}
+      %negSum = felt.add %negA, %negB : !felt.type<"bn254">, !felt.type<"bn254"> {product_source = "constrain"}
+      %residual = felt.add %negSum, %read : !felt.type<"bn254">, !felt.type<"bn254"> {product_source = "constrain"}
+      %zero = felt.const 0 : <"bn254"> {product_source = "constrain"}
+      constrain.eq %residual, %zero : !felt.type<"bn254">, !felt.type<"bn254"> {product_source = "constrain"}
+      function.return %self : !struct.type<@Circuit0<[]>>
+    }
+  }
+}
