@@ -1,0 +1,480 @@
+// RUN: split-file %s %t
+// Each section runs independently so SMT declarations and unsupported diagnostics
+// cannot leak between cases. Use split-file because lleq has no split-input flag.
+// RUN: lleq wp --struct Top %t/chain.llzk > %t/chain.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/chain.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/chain.llzk
+// RUN: lleq wp --struct Top %t/distinct.llzk > %t/distinct.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/distinct.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/distinct.llzk
+// RUN: lleq wp --struct Top %t/effectful.llzk 2>&1 | FileCheck %t/effectful.llzk
+// RUN: lleq wp --struct Top %t/equal.llzk > %t/equal.llzk.smt2
+// RUN: FileCheck %t/equal.llzk --check-prefix=SMT < %t/equal.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/equal.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/equal.llzk
+// RUN: lleq wp --struct Top %t/modular.llzk > %t/modular.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/modular.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/modular.llzk
+// RUN: lleq wp --struct Top %t/precondition.llzk > %t/precondition.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/precondition.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/precondition.llzk
+// RUN: lleq wp --struct Top %t/scoped-callees.llzk > %t/scoped-callees.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/scoped-callees.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/scoped-callees.llzk
+// RUN: lleq wp --struct Top %t/single-result.llzk > %t/single-result.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/single-result.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/single-result.llzk
+// RUN: lleq wp --struct Top %t/swapped.llzk > %t/swapped.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/swapped.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/swapped.llzk
+// RUN: lleq wp --struct Top %t/unequal.llzk > %t/unequal.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/unequal.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/unequal.llzk
+// RUN: lleq wp --struct Top %t/unused-effectful.llzk 2>&1 | FileCheck %t/unused-effectful.llzk
+// RUN: lleq wp --struct Top %t/zero-args.llzk > %t/zero-args.llzk.smt2
+// RUN: sed '/^(get-model)$/d' %t/zero-args.llzk.smt2 | "$LLEQ_Z3" -in | FileCheck %t/zero-args.llzk
+
+//--- chain.llzk
+// CHECK: {{^unsat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">, %z: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %z : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w0:2 = function.call @F(%a, %b) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w1:2 = function.call @F(%w0#0, %w0#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w2:2 = function.call @F(%w1#0, %w1#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w3:2 = function.call @F(%w2#0, %w2#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w4:2 = function.call @F(%w3#0, %w3#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w5:2 = function.call @F(%w4#0, %w4#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w6:2 = function.call @F(%w5#0, %w5#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w7:2 = function.call @F(%w6#0, %w6#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w8:2 = function.call @F(%w7#0, %w7#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w9:2 = function.call @F(%w8#0, %w8#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w10:2 = function.call @F(%w9#0, %w9#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w11:2 = function.call @F(%w10#0, %w10#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w12:2 = function.call @F(%w11#0, %w11#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w13:2 = function.call @F(%w12#0, %w12#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w14:2 = function.call @F(%w13#0, %w13#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w15:2 = function.call @F(%w14#0, %w14#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w16:2 = function.call @F(%w15#0, %w15#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w17:2 = function.call @F(%w16#0, %w16#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w18:2 = function.call @F(%w17#0, %w17#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w19:2 = function.call @F(%w18#0, %w18#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w20:2 = function.call @F(%w19#0, %w19#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w21:2 = function.call @F(%w20#0, %w20#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w22:2 = function.call @F(%w21#0, %w21#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w23:2 = function.call @F(%w22#0, %w22#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w24:2 = function.call @F(%w23#0, %w23#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w25:2 = function.call @F(%w24#0, %w24#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w26:2 = function.call @F(%w25#0, %w25#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w27:2 = function.call @F(%w26#0, %w26#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w28:2 = function.call @F(%w27#0, %w27#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w29:2 = function.call @F(%w28#0, %w28#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w30:2 = function.call @F(%w29#0, %w29#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %w:2 = function.call @F(%w30#0, %w30#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c0:2 = function.call @F(%a, %b) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c1:2 = function.call @F(%c0#0, %c0#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c2:2 = function.call @F(%c1#0, %c1#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c3:2 = function.call @F(%c2#0, %c2#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c4:2 = function.call @F(%c3#0, %c3#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c5:2 = function.call @F(%c4#0, %c4#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c6:2 = function.call @F(%c5#0, %c5#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c7:2 = function.call @F(%c6#0, %c6#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c8:2 = function.call @F(%c7#0, %c7#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c9:2 = function.call @F(%c8#0, %c8#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c10:2 = function.call @F(%c9#0, %c9#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c11:2 = function.call @F(%c10#0, %c10#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c12:2 = function.call @F(%c11#0, %c11#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c13:2 = function.call @F(%c12#0, %c12#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c14:2 = function.call @F(%c13#0, %c13#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c15:2 = function.call @F(%c14#0, %c14#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c16:2 = function.call @F(%c15#0, %c15#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c17:2 = function.call @F(%c16#0, %c16#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c18:2 = function.call @F(%c17#0, %c17#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c19:2 = function.call @F(%c18#0, %c18#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c20:2 = function.call @F(%c19#0, %c19#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c21:2 = function.call @F(%c20#0, %c20#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c22:2 = function.call @F(%c21#0, %c21#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c23:2 = function.call @F(%c22#0, %c22#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c24:2 = function.call @F(%c23#0, %c23#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c25:2 = function.call @F(%c24#0, %c24#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c26:2 = function.call @F(%c25#0, %c25#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c27:2 = function.call @F(%c26#0, %c26#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c28:2 = function.call @F(%c27#0, %c27#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c29:2 = function.call @F(%c28#0, %c28#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c30:2 = function.call @F(%c29#0, %c29#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">)
+      %c:2 = function.call @F(%c30#0, %c30#1) : (!felt.type<"bn254">, !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- distinct.llzk
+// CHECK: {{^sat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  function.def @G(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 2 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @G(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- effectful.llzk
+// CHECK: Unsupported: free-function UF encoding requires a total straight-line field function
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) attributes {function.allow_constraint} {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    constrain.eq %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- equal.llzk
+// SMT: (declare-fun lleq_free_0_result_0 (Int) Int)
+// SMT-NEXT: (declare-fun lleq_free_0_result_1 (Int) Int)
+// SMT-NOT: (declare-fun lleq_free_1
+// SMT: (mod (lleq_free_0_result_0
+// CHECK: {{^unsat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- modular.llzk
+// CHECK: {{^unsat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %pm1 = felt.const 21888242871839275222246405745257275088548364400416034343698204186575808495616 : <"bn254">
+      %warg = felt.mul %a, %pm1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %carg = felt.neg %a : !felt.type<"bn254">
+      %w:2 = function.call @F(%warg) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F(%carg) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- precondition.llzk
+// CHECK: {{^unsat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F(%b) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %a, %b : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- scoped-callees.llzk
+// CHECK: {{^sat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  module @Left {
+  function.def @Shared(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  }
+  module @Right {
+  function.def @Shared(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 2 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @Left::@Shared(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @Right::@Shared(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- single-result.llzk
+// CHECK: {{^unsat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> !felt.type<"bn254"> {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x : !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w = function.call @F(%a) : (!felt.type<"bn254">) -> !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out0] = %w : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c = function.call @F(%a) : (!felt.type<"bn254">) -> !felt.type<"bn254"> {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- swapped.llzk
+// CHECK: {{^sat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#1 : !felt.type<"bn254">
+      %n1 = felt.neg %c#0 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- unequal.llzk
+// CHECK: {{^sat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F(%b) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- unused-effectful.llzk
+// CHECK: Unsupported: free-function UF encoding requires a total straight-line field function
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F(%x: !felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) attributes {function.allow_constraint} {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.add %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    constrain.eq %x, %one : !felt.type<"bn254">, !felt.type<"bn254">
+    function.return %x, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %unused:2 = function.call @F(%a) : (!felt.type<"bn254">) -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %a : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %a : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
+
+//--- zero-args.llzk
+// CHECK: {{^unsat$}}
+// Direct product fixture isolates native free-function UF encoding.
+module attributes {llzk.lang} {
+  function.def @F() -> (!felt.type<"bn254">, !felt.type<"bn254">) {
+    %one = felt.const 1 : <"bn254">
+    %y = felt.neg %one : !felt.type<"bn254">
+    function.return %one, %y : !felt.type<"bn254">, !felt.type<"bn254">
+  }
+  struct.def @Top {
+    struct.member @out0 : !felt.type<"bn254">
+    struct.member @out1 : !felt.type<"bn254">
+    function.def @product(%a: !felt.type<"bn254">, %b: !felt.type<"bn254">) -> !struct.type<@Top> attributes {function.allow_witness, function.allow_constraint} {
+      %self = struct.new : <@Top> {product_source = "compute"}
+      %w:2 = function.call @F() : () -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "compute"}
+      struct.writem %self[@out0] = %w#0 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      struct.writem %self[@out1] = %w#1 : <@Top>, !felt.type<"bn254"> {product_source = "compute"}
+      %c:2 = function.call @F() : () -> (!felt.type<"bn254">, !felt.type<"bn254">) {product_source = "constrain"}
+      %r0 = struct.readm %self[@out0] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %r1 = struct.readm %self[@out1] : <@Top>, !felt.type<"bn254"> {product_source = "constrain"}
+      %n0 = felt.neg %c#0 : !felt.type<"bn254">
+      %n1 = felt.neg %c#1 : !felt.type<"bn254">
+      %d0 = felt.add %r0, %n0 : !felt.type<"bn254">, !felt.type<"bn254">
+      %d1 = felt.add %r1, %n1 : !felt.type<"bn254">, !felt.type<"bn254">
+      %zero = felt.const 0 : <"bn254">
+      constrain.eq %d0, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      constrain.eq %d1, %zero : !felt.type<"bn254">, !felt.type<"bn254">
+      function.return %self : !struct.type<@Top>
+    }
+  }
+}
