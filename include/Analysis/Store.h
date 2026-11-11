@@ -22,7 +22,8 @@ using StoreIndex = llvm::SmallVector<Symbol>;
 } // namespace lleq
 
 namespace llvm {
-// LLVM 23 DenseMap tracks bucket state separately; only hash/equality are needed.
+// LLVM 23 DenseMap tracks bucket state separately; only hash/equality are
+// needed.
 template <> struct DenseMapInfo<lleq::StoreIndex> {
   static unsigned getHashValue(const lleq::StoreIndex &index) {
     return llvm::hash_combine(

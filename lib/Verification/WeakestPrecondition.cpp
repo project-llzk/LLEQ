@@ -531,10 +531,11 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         postcondition.addAntecedent(builder.getExpression(op.getCondition()));
         return llvm::Error::success();
       })
-      .Case<mlir::smt::AssertOp>([this, &postcondition](mlir::smt::AssertOp op) {
-        postcondition.addAntecedent(builder.getExpression(op.getInput()));
-        return llvm::Error::success();
-      })
+      .Case<mlir::smt::AssertOp>(
+          [this, &postcondition](mlir::smt::AssertOp op) {
+            postcondition.addAntecedent(builder.getExpression(op.getInput()));
+            return llvm::Error::success();
+          })
       .Case<llzk::function::CallOp>([this, &postcondition](
                                         llzk::function::CallOp call) {
         if (call.calleeIsStructConstrain()) {
