@@ -23,8 +23,8 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llzk/Analysis/AnalysisUtil.h>
 #include <llzk/Dialect/Array/Transforms/TransformationPasses.h>
+#include <llzk/Dialect/DialectRegistration.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
-#include <llzk/Dialect/InitDialects.h>
 #include <llzk/Dialect/POD/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Polymorphic/Transforms/TransformationPasses.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
@@ -129,7 +129,9 @@ int main(int argc, char **argv) {
   llvm::cl::ParseCommandLineOptions(argc, argv, "LLZK Equivalence Verifier\n");
 
   mlir::DialectRegistry registry;
-  llzk::registerAllDialects(registry);
+  llzk::registerDialects(registry);
+  // LLZK now registers the inlining extensions separately from its dialects.
+  llzk::registerInliningExtensions(registry);
 
   mlir::MLIRContext context(registry);
   context.getDiagEngine().registerHandler([](mlir::Diagnostic &diag) {

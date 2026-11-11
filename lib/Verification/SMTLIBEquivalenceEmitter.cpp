@@ -25,12 +25,12 @@
 #include <utility>
 
 #include <llzk/Dialect/Function/IR/Ops.h>
-#include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/Func/IR/FuncOps.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/Dialect/SMT/IR/SMTOps.h>
 #include <mlir/IR/IRMapping.h>
 #include <mlir/Pass/Pass.h>
 #include <mlir/Pass/PassManager.h>
@@ -99,10 +99,10 @@ private:
                     << "control flow not supported in SMT emitter";
                 return failure();
               })
-              .Case<smt::DeclareFunOp>([this](auto declFunOp) {
+              .Case<mlir::smt::DeclareFunOp>([this](auto declFunOp) {
                 return processDeclareFun(declFunOp);
               })
-              .Case<smt::AssertOp>(
+              .Case<mlir::smt::AssertOp>(
                   [this](auto assertOp) { return processAssert(assertOp); })
               .Case<UnrealizedConversionCastOp, cast::FeltToIndexOp,
                     cast::IntToFeltOp>(
@@ -134,7 +134,7 @@ private:
     return success();
   }
 
-  LogicalResult processDeclareFun(smt::DeclareFunOp &op) {
+  LogicalResult processDeclareFun(mlir::smt::DeclareFunOp &op) {
     auto namePrefix = op.getNamePrefix();
     std::string symbol = namePrefix ? sanitizeSymbol(*namePrefix)
                                     : ("tmp" + std::to_string(nextTempId++));
@@ -146,7 +146,7 @@ private:
     return success();
   }
 
-  LogicalResult processAssert(smt::AssertOp &op) {
+  LogicalResult processAssert(mlir::smt::AssertOp &op) {
     FailureOr<std::string> input = lookup(op.getInput());
     if (failed(input)) {
       return op.emitError() << "missing SMT expression for assertion input";
@@ -183,27 +183,27 @@ private:
     };
 
     return TypeSwitch<Operation *, FailureOr<std::string>>(op)
-        .Case<smt::IntConstantOp>([](smt::IntConstantOp constOp) {
+        .Case<mlir::smt::IntConstantOp>([](mlir::smt::IntConstantOp constOp) {
           SmallString<32> str;
           constOp.getValue().toStringSigned(str);
           return str.str().str();
         })
-        .Case<smt::BoolConstantOp>([](smt::BoolConstantOp constOp) {
+        .Case<mlir::smt::BoolConstantOp>([](mlir::smt::BoolConstantOp constOp) {
           return success(constOp.getValue() ? "true" : "false");
         })
-        .Case<smt::IntCmpOp>([this](smt::IntCmpOp cmpOp) {
+        .Case<mlir::smt::IntCmpOp>([this](mlir::smt::IntCmpOp cmpOp) {
           std::string smtOp;
           switch (cmpOp.getPred()) {
-          case smt::IntPredicate::lt:
+          case mlir::smt::IntPredicate::lt:
             smtOp = "<";
             break;
-          case smt::IntPredicate::le:
+          case mlir::smt::IntPredicate::le:
             smtOp = "<=";
             break;
-          case smt::IntPredicate::gt:
+          case mlir::smt::IntPredicate::gt:
             smtOp = ">";
             break;
-          case smt::IntPredicate::ge:
+          case mlir::smt::IntPredicate::ge:
             smtOp = ">=";
             break;
           }
@@ -260,8 +260,8 @@ private:
 
   std::string sortForType(Type type) {
     return TypeSwitch<Type, std::string>(type)
-        .Case<smt::IntType>([](auto) { return "Int"; })
-        .Case<smt::BoolType>([](auto) { return "Bool"; })
+        .Case<mlir::smt::IntType>([](auto) { return "Int"; })
+        .Case<mlir::smt::BoolType>([](auto) { return "Bool"; })
         .Default([](Type type) {
           if (type.isInteger(1)) {
             return "Bool";
