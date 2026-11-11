@@ -4,8 +4,8 @@
  */
 
 #include "Verification/StructContracts.h"
-#include "Verification/Utils.h"
 #include "Util/StructType.h"
+#include "Verification/Utils.h"
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
 #include <llzk/Dialect/Bool/IR/Ops.h>

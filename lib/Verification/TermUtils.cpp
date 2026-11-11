@@ -5,8 +5,8 @@
 
 #include "Verification/TermUtils.h"
 #include "Analysis/ScalarSymbolAnalysis.h"
-#include "Verification/Utils.h"
 #include "Util/StructType.h"
+#include "Verification/Utils.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/DynamicAPInt.h>
@@ -334,7 +334,8 @@ cvc5::Term TermBuilder::getExpression(mlir::Value value) {
                               {operandTerms.begin(), operandTerms.end()});
           })
           .Case<MemberReadOp>([this](MemberReadOp read) {
-            // Share normalized root-member classification with symbolic analysis.
+            // Share normalized root-member classification with symbolic
+            // analysis.
             if (!isSubcmpRead(read)) {
               // Not a subcomponent read, so just return the member constant
               return getConstant(read.getMemberName(), read.getType(),
