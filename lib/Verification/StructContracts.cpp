@@ -4,6 +4,7 @@
  */
 
 #include "Verification/StructContracts.h"
+#include "Util/StructType.h"
 #include "Verification/Utils.h"
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/TypeSwitch.h>
@@ -29,7 +30,9 @@ getAllocation(function::FuncDefOp func) {
       func.getFunctionBody().front().getTerminator());
 
   auto alloc = funcReturn.getOperand(0).getDefiningOp<CreateStructOp>();
-  if (!alloc || alloc.getType() != parentType) {
+  // A returned @S<[]> allocation belongs to the same struct as @S.
+  if (!alloc || util::normalizeStructType(alloc.getType()) !=
+                    util::normalizeStructType(parentType)) {
     return failure();
   }
   return alloc;

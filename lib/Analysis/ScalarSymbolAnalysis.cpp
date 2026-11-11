@@ -51,7 +51,9 @@ void ScalarSymbolAnalysis::visitExternalCall(
 
   std::string name;
   llvm::raw_string_ostream ss{name};
-  ss << subcmp.getType();
+  // Equivalent struct type spellings must produce the same symbolic call name.
+  ss << util::normalizeStructType(
+      llvm::cast<llzk::component::StructType>(subcmp.getType()));
 
   Symbol subcmpSym = pool.get().func_call(
       name, llvm::map_to_vector(args, [this](const Lattice *lat) -> Symbol {
