@@ -27,12 +27,12 @@
 #include <llzk/Dialect/Constrain/IR/Ops.h>
 #include <llzk/Dialect/Felt/IR/Ops.h>
 #include <llzk/Dialect/Function/IR/Ops.h>
-#include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Dialect/Struct/IR/Ops.h>
 #include <llzk/Util/DynamicAPIntHelper.h>
 #include <llzk/Util/TypeHelper.h>
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/Dialect/SMT/IR/SMTOps.h>
 #include <mlir/IR/BuiltinAttributes.h>
 #include <mlir/IR/BuiltinOps.h>
 
@@ -531,7 +531,7 @@ void WeakestPreconditionAnalysis::calculateWP(Operation *op,
         postcondition.addAntecedent(builder.getExpression(op.getCondition()));
         return llvm::Error::success();
       })
-      .Case<smt::AssertOp>([this, &postcondition](smt::AssertOp op) {
+      .Case<mlir::smt::AssertOp>([this, &postcondition](mlir::smt::AssertOp op) {
         postcondition.addAntecedent(builder.getExpression(op.getInput()));
         return llvm::Error::success();
       })

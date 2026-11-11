@@ -13,14 +13,12 @@
 #include <llvm/Support/LogicalResult.h>
 #include <llvm/Support/Process.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llzk/Dialect/SMT/IR/SMTOps.h>
 #include <llzk/Util/ErrorHelper.h>
 
 #include <llvm/Support/Program.h>
 #include <optional>
 
 using namespace mlir;
-using namespace llzk::smt;
 
 namespace lleq {
 

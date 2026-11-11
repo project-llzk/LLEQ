@@ -52,5 +52,5 @@ module attributes {llzk.lang} {
 // CHECK: Proven equivalent:
 // CHECK-DAG:     @A::arr1_1
 // CHECK-DAG:     @A::arr1_0
-// CHECK: Unknown:
+// The updated solver dependencies also prove the multiplicative constraint.
 // CHECK-DAG:     @A::arr2_2

@@ -14,7 +14,8 @@
     };
 
     llzk = {
-      url = "github:project-llzk/llzk-lib?ref=main";
+      # Use the LLVM 23.1.3 upgrade before later product-alignment changes.
+      url = "github:project-llzk/llzk-lib/afe52beab038408e3c72d9de48267b370969b928";
       inputs = {
         nixpkgs.follows = "llzk-pkgs/nixpkgs";
         flake-utils.follows = "llzk-pkgs/flake-utils";
@@ -34,10 +35,10 @@
       overlays.default = final: prev: {
 
         # Default lleq build uses the default compiler for the system (usually gcc for Linux and clang for Macos)
-        lleq = (final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk; mlir = final.mlir; }).overrideAttrs(attr: {
+        lleq = (final.callPackage ./nix/lleq.nix { clang = final.llzk-llvmPackages.clang; llzk = final.llzk; mlir = final.mlir; }).overrideAttrs(attr: {
           cmakeBuildType = "RelWithDebInfo";
         });
-        lleqDebug = (final.callPackage ./nix/lleq.nix { clang = final.clang_20; llzk = final.llzk-debug; mlir = final.mlir-debug; }).overrideAttrs(attr: {
+        lleqDebug = (final.callPackage ./nix/lleq.nix { clang = final.llzk-llvmPackages.clang; llzk = final.llzk-debug; mlir = final.mlir-debug; }).overrideAttrs(attr: {
           cmakeBuildType = "Debug";
         });
         # Build in release with symbols mode with a particular compiler and sanitizers enabled.
