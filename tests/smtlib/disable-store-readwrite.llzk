@@ -1,4 +1,5 @@
-// RUN: lleq verify --struct A --field babybear --flatten %s | FileCheck --enable-var-scope %s
+// RUN: lleq verify --struct A --field babybear --flatten %s | tee %t | FileCheck --enable-var-scope %s
+// RUN: FileCheck --check-prefix=NO-FAILURES --input-file=%t %s
 
 module attributes {llzk.lang} {
     struct.def @A {
@@ -52,5 +53,7 @@ module attributes {llzk.lang} {
 // CHECK: Proven equivalent:
 // CHECK-DAG:     @A::arr1_1
 // CHECK-DAG:     @A::arr1_0
-// CHECK: Unknown:
+// The updated solver dependencies also prove the multiplicative constraint.
 // CHECK-DAG:     @A::arr2_2
+// All three signals must be proven equivalent, regardless of their order.
+// NO-FAILURES-NOT: {{Unknown:|Proven inequivalent:}}
