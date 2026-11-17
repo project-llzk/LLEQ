@@ -240,9 +240,11 @@ template <class T> struct Store {
       return;
     }
 
+    // Defer erasure because LLVM 23 DenseMap invalidates all iterators.
+    llvm::SmallVector<IndexedLocation<T>> keysToErase;
     for (auto [key, val] : _store) {
       if (!other.contains(key) && !llvm::isa<Uninitialized>(val)) {
-        _store.erase(key);
+        keysToErase.push_back(key);
       } else if (other.canContain(key)) {
         auto aliasedEntries = llvm::filter_to_vector(
             other, [key](auto entry) { return key.canAlias(entry.first); });
@@ -250,6 +252,9 @@ template <class T> struct Store {
           write(key, otherVal, WriteMode::AntiUnify, tag);
         }
       }
+    }
+    for (const auto &key : keysToErase) {
+      _store.erase(key);
     }
   }
 
